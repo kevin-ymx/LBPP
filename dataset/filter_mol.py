@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 """
 Filter molecules from PubChem for contrastive SSL pretraining.
 
@@ -171,4 +168,5 @@ if __name__ == "__main__":
                         help="Filter only molecules with successful 3D conformers")
 
     args = parser.parse_args()
+
     main(args)
