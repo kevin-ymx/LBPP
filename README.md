@@ -141,13 +141,6 @@ CID,SMILES,DonorType,mlp_adsorption_energy
 280,CCN,amine_primary,-0.38
 ```
 
-## Performance
-
-The model achieves:
-- **Training MAE**: ~0.10 eV
-- **Validation MAE**: ~0.12 eV
-- **Test MAE**: ~0.12 eV
-
 ## License
 
 [Specify your license here]
