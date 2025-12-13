@@ -45,12 +45,18 @@ def train_epoch(
     model.train()
     total_loss = 0.0
     num_batches = 0
+    skipped_batches = 0
     
     pbar = tqdm(train_loader, desc="Training")
     for batch1, batch2 in pbar:
         # Move batches to device
         batch1 = batch1.to(device)
         batch2 = batch2.to(device)
+        
+        # Check for empty batches
+        if batch1.num_graphs == 0 or batch2.num_graphs == 0:
+            skipped_batches += 1
+            continue
         
         # Forward pass
         z1 = model(
@@ -67,12 +73,31 @@ def train_epoch(
             batch=batch2.batch
         )  # [batch_size, hidden_dim]
         
+        # Check for NaN in embeddings
+        if torch.isnan(z1).any() or torch.isnan(z2).any():
+            skipped_batches += 1
+            continue
+        
+        # Check batch size consistency
+        if z1.size(0) != z2.size(0):
+            skipped_batches += 1
+            continue
+        
         # Compute loss
         loss = criterion(z1, z2)
+        
+        # Check for NaN/Inf loss
+        if torch.isnan(loss) or torch.isinf(loss):
+            skipped_batches += 1
+            continue
         
         # Backward pass
         optimizer.zero_grad()
         loss.backward()
+        
+        # Gradient clipping to prevent exploding gradients
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+        
         optimizer.step()
         
         # Update statistics
@@ -80,9 +105,15 @@ def train_epoch(
         num_batches += 1
         
         # Update progress bar
-        pbar.set_postfix({'loss': loss.item()})
+        pbar.set_postfix({'loss': loss.item(), 'skipped': skipped_batches})
     
-    avg_loss = total_loss / num_batches if num_batches > 0 else 0.0
+    if num_batches == 0:
+        print(f"Warning: No valid batches in training set! Skipped {skipped_batches} batches.")
+        return float('nan')
+    
+    avg_loss = total_loss / num_batches
+    if skipped_batches > 0:
+        print(f"Warning: Skipped {skipped_batches} invalid batches during training")
     return avg_loss
 
 
@@ -102,6 +133,8 @@ def validate(
     model.eval()
     total_loss = 0.0
     num_batches = 0
+    skipped_batches = 0
+    skip_reasons = {'empty_batch': 0, 'nan_embedding': 0, 'size_mismatch': 0, 'nan_loss': 0}
     
     with torch.no_grad():
         pbar = tqdm(val_loader, desc="Validation")
@@ -109,6 +142,12 @@ def validate(
             # Move batches to device
             batch1 = batch1.to(device)
             batch2 = batch2.to(device)
+            
+            # Check for empty batches
+            if batch1.num_graphs == 0 or batch2.num_graphs == 0:
+                skipped_batches += 1
+                skip_reasons['empty_batch'] += 1
+                continue
             
             # Forward pass
             z1 = model(
@@ -125,8 +164,26 @@ def validate(
                 batch=batch2.batch
             )
             
+            # Check for NaN in embeddings
+            if torch.isnan(z1).any() or torch.isnan(z2).any():
+                skipped_batches += 1
+                skip_reasons['nan_embedding'] += 1
+                continue
+            
+            # Check batch size consistency
+            if z1.size(0) != z2.size(0):
+                skipped_batches += 1
+                skip_reasons['size_mismatch'] += 1
+                continue
+            
             # Compute loss
             loss = criterion(z1, z2)
+            
+            # Check for NaN loss
+            if torch.isnan(loss) or torch.isinf(loss):
+                skipped_batches += 1
+                skip_reasons['nan_loss'] += 1
+                continue
             
             # Update statistics
             total_loss += loss.item()
@@ -135,7 +192,12 @@ def validate(
             # Update progress bar
             pbar.set_postfix({'loss': loss.item()})
     
-    avg_loss = total_loss / num_batches if num_batches > 0 else 0.0
+    if num_batches == 0:
+        print(f"Warning: No valid batches in validation set! Skipped {skipped_batches}/{len(val_loader)} batches.")
+        print(f"  Skip reasons: {skip_reasons}")
+        return float('nan')
+    
+    avg_loss = total_loss / num_batches
     return avg_loss
 
 
@@ -144,10 +206,9 @@ def save_checkpoint(
     optimizer: torch.optim.Optimizer,
     epoch: int,
     loss: float,
-    checkpoint_dir: str,
-    is_best: bool = False
+    checkpoint_dir: str
 ):
-    """Save model checkpoint."""
+    """Save periodic epoch checkpoint."""
     os.makedirs(checkpoint_dir, exist_ok=True)
     
     checkpoint = {
@@ -157,15 +218,31 @@ def save_checkpoint(
         'loss': loss,
     }
     
-    # Save regular checkpoint
     checkpoint_path = os.path.join(checkpoint_dir, f'checkpoint_epoch_{epoch}.pt')
     torch.save(checkpoint, checkpoint_path)
+    print(f"Saved checkpoint to {checkpoint_path}")
+
+
+def save_best_model(
+    model: nn.Module,
+    optimizer: torch.optim.Optimizer,
+    epoch: int,
+    loss: float,
+    checkpoint_dir: str
+):
+    """Save best model checkpoint immediately."""
+    os.makedirs(checkpoint_dir, exist_ok=True)
     
-    # Save best checkpoint
-    if is_best:
-        best_path = os.path.join(checkpoint_dir, 'best_model.pt')
-        torch.save(checkpoint, best_path)
-        print(f"Saved best model to {best_path}")
+    checkpoint = {
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'loss': loss,
+    }
+    
+    best_path = os.path.join(checkpoint_dir, 'best_model.pt')
+    torch.save(checkpoint, best_path)
+    print(f"Saved best model (epoch {epoch}, loss {loss:.4f}) to {best_path}")
 
 
 def main():
@@ -186,13 +263,57 @@ def main():
     
     # Load dataset
     print("Loading molecules from SDF file...")
-    dataset = MolecularGraphDataset(config.sdf_file)
+    dataset = MolecularGraphDataset(config.sdf_file, max_molecules=config.max_molecules)
     print(f"Loaded {len(dataset)} molecules")
     
     # Convert molecules to graphs
     print("Converting molecules to graphs...")
     graphs = dataset.get_all_graphs()
     print(f"Created {len(graphs)} graphs")
+    
+    # Filter out invalid graphs
+    print("Filtering invalid graphs...")
+    valid_graphs = []
+    invalid_count = 0
+    invalid_reasons = {'zero_nodes': 0, 'no_edges': 0, 'size_mismatch': 0, 'nan_features': 0, 'too_small': 0}
+    
+    for i, graph in enumerate(graphs):
+        # Check if graph is valid
+        if graph.num_nodes == 0:
+            invalid_count += 1
+            invalid_reasons['zero_nodes'] += 1
+            continue
+        if graph.num_nodes < 2:
+            invalid_count += 1
+            invalid_reasons['too_small'] += 1
+            continue
+        if graph.edge_index.size(1) == 0:
+            invalid_count += 1
+            invalid_reasons['no_edges'] += 1
+            continue
+        if graph.x.size(0) != graph.num_nodes:
+            invalid_count += 1
+            invalid_reasons['size_mismatch'] += 1
+            continue
+        # Check for NaN or Inf in features
+        if torch.isnan(graph.x).any() or torch.isinf(graph.x).any():
+            invalid_count += 1
+            invalid_reasons['nan_features'] += 1
+            continue
+        if graph.edge_attr is not None:
+            if torch.isnan(graph.edge_attr).any() or torch.isinf(graph.edge_attr).any():
+                invalid_count += 1
+                invalid_reasons['nan_features'] += 1
+                continue
+        valid_graphs.append(graph)
+    
+    graphs = valid_graphs
+    print(f"Filtered out {invalid_count} invalid graphs. Remaining: {len(graphs)} valid graphs")
+    if invalid_count > 0:
+        print(f"  Invalid reasons: {invalid_reasons}")
+    
+    if len(graphs) == 0:
+        raise ValueError("No valid graphs after filtering! Check your data.")
     
     # Split into train and validation sets
     print("Splitting into train and validation sets...")
@@ -219,6 +340,24 @@ def main():
         batch_size=config.batch_size,
         num_workers=config.num_workers
     )
+    
+    # Check validation set
+    if len(val_graphs) == 0:
+        raise ValueError("Validation set is empty! Check your data split.")
+    
+    # Check data loaders
+    print(f"Training batches: {len(train_loader)}")
+    print(f"Validation batches: {len(val_loader)}")
+    
+    # Test a validation batch to see if there are issues
+    if len(val_loader) > 0:
+        try:
+            test_batch1, test_batch2 = next(iter(val_loader))
+            print(f"Test validation batch - batch1 graphs: {test_batch1.num_graphs}, batch2 graphs: {test_batch2.num_graphs}")
+            if test_batch1.num_graphs == 0 or test_batch2.num_graphs == 0:
+                print("WARNING: Validation batches contain zero graphs! Check augmentation function.")
+        except Exception as e:
+            print(f"WARNING: Error testing validation batch: {e}")
     
     # Create model
     print("Initializing model...")
@@ -283,19 +422,27 @@ def main():
         # Print statistics
         print(f"Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}, LR: {scheduler.get_last_lr()[0]:.6f}")
         
-        # Save checkpoint
-        is_best = val_loss < best_val_loss
-        if is_best:
-            best_val_loss = val_loss
+        # Save best model immediately when found (only if val_loss is valid)
+        if not torch.isnan(torch.tensor(val_loss)) and not torch.isinf(torch.tensor(val_loss)):
+            is_best = val_loss < best_val_loss
+            if is_best:
+                best_val_loss = val_loss
+                save_best_model(
+                    model=model,
+                    optimizer=optimizer,
+                    epoch=epoch,
+                    loss=val_loss,
+                    checkpoint_dir=config.checkpoint_dir
+                )
         
-        if epoch % 10 == 0 or is_best:
+        # Save periodic checkpoint every 5 epochs
+        if epoch % 5 == 0:
             save_checkpoint(
                 model=model,
                 optimizer=optimizer,
                 epoch=epoch,
                 loss=val_loss,
-                checkpoint_dir=config.checkpoint_dir,
-                is_best=is_best
+                checkpoint_dir=config.checkpoint_dir
             )
     
     print("\nTraining completed!")
@@ -304,4 +451,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
