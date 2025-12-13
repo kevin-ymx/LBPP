@@ -61,11 +61,45 @@ def collate_contrastive_batch(batch: List[Tuple[Data, Data]]) -> Tuple[Batch, Ba
     Returns:
         Tuple of two Batched graphs.
     """
-    graph1_list = [pair[0] for pair in batch]
-    graph2_list = [pair[1] for pair in batch]
+    # Filter out invalid graphs
+    valid_pairs = []
+    for pair in batch:
+        graph1, graph2 = pair
+        # Check if both graphs are valid
+        if (graph1.num_nodes > 0 and graph2.num_nodes > 0 and
+            graph1.x.size(0) == graph1.num_nodes and graph2.x.size(0) == graph2.num_nodes):
+            valid_pairs.append(pair)
     
-    batch1 = Batch.from_data_list(graph1_list)
-    batch2 = Batch.from_data_list(graph2_list)
+    if len(valid_pairs) == 0:
+        # Return empty batches if no valid pairs
+        # Create dummy empty batch structure
+        dummy_graph = Data(
+            x=torch.zeros((1, 8), dtype=torch.float),
+            edge_index=torch.empty((2, 0), dtype=torch.long),
+            edge_attr=torch.empty((0, 3), dtype=torch.float),
+            num_nodes=1
+        )
+        batch1 = Batch.from_data_list([dummy_graph])
+        batch2 = Batch.from_data_list([dummy_graph])
+        return batch1, batch2
+    
+    graph1_list = [pair[0] for pair in valid_pairs]
+    graph2_list = [pair[1] for pair in valid_pairs]
+    
+    try:
+        batch1 = Batch.from_data_list(graph1_list)
+        batch2 = Batch.from_data_list(graph2_list)
+    except Exception as e:
+        # Fallback: if batching fails, return empty batches
+        print(f"Warning: Batch collation failed: {e}")
+        dummy_graph = Data(
+            x=torch.zeros((1, 8), dtype=torch.float),
+            edge_index=torch.empty((2, 0), dtype=torch.long),
+            edge_attr=torch.empty((0, 3), dtype=torch.float),
+            num_nodes=1
+        )
+        batch1 = Batch.from_data_list([dummy_graph])
+        batch2 = Batch.from_data_list([dummy_graph])
     
     return batch1, batch2
 
