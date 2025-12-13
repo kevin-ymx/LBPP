@@ -137,7 +137,7 @@ CID,SMILES,DonorType,mlp_adsorption_energy
 
 ## License
 
-[Specify your license here]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
@@ -147,4 +147,4 @@ CID,SMILES,DonorType,mlp_adsorption_energy
 
 ## Contact
 
-For questions or issues, please open an issue on GitHub or contact [your email].
+For questions or issues, please open an issue on GitHub or contact ym.xian0@gmail.com.
