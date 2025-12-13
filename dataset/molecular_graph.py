@@ -1,6 +1,8 @@
 """
 Molecular graph dataset for extracting molecules from SDF files and constructing molecular graphs.
+Supports both .sdf and .sdf.gz (gzipped) files.
 """
+import gzip
 import numpy as np
 import torch
 from torch_geometric.data import Data
@@ -8,13 +10,14 @@ from rdkit import Chem
 from rdkit.Chem import rdMolDescriptors
 from typing import List, Tuple, Optional
 import os
+from tqdm import tqdm
 
 
 class MolecularGraphDataset:
     """
     Dataset for constructing molecular graphs from SDF files.
-    Extracts node features: atomic number, atom chirality, partial charges,
-    hybridization, coordination number, valence electrons, electronegativity.
+    Extracts node features: atomic number, local atom chirality, partial charges,
+    hybridization, coordination number, valence electrons, electronegativity and zero-padded binding tag (for downstream prediction tasks).
     Extracts edge features: bond type, bond direction, coulombic term.
     """
     
@@ -41,31 +44,66 @@ class MolecularGraphDataset:
         53: 2.66,   # I
     }
     
-    def __init__(self, sdf_file: str):
+    def __init__(self, sdf_file: str, max_molecules: int = None):
         """
         Initialize the dataset.
         
         Args:
             sdf_file: Path to the SDF file containing molecules.
+            max_molecules: Maximum number of molecules to load (None = all).
         """
         self.sdf_file = sdf_file
+        self.max_molecules = max_molecules
         self.molecules = []
-        self._load_molecules()
+        self._load_molecules(max_molecules)
     
-    def _load_molecules(self):
-        """Load molecules from SDF file."""
+    def _load_molecules(self, max_molecules: int = None):
+        """Load molecules from SDF file. Supports both .sdf and .sdf.gz files."""
         if not os.path.exists(self.sdf_file):
             raise FileNotFoundError(f"SDF file not found: {self.sdf_file}")
         
-        supplier = Chem.SDMolSupplier(self.sdf_file, removeHs=False)
-        for mol in supplier:
-            if mol is not None:
-                self.molecules.append(mol)
+        print(f"Loading molecules from {self.sdf_file}...")
+        if max_molecules:
+            print(f"  (Limited to {max_molecules:,} molecules)")
+        
+        count = 0
+        
+        # Check if file is gzipped
+        if self.sdf_file.endswith('.gz'):
+            # Use gzip + ForwardSDMolSupplier for .sdf.gz files
+            with gzip.open(self.sdf_file, 'rb') as gz_file:
+                supplier = Chem.ForwardSDMolSupplier(gz_file, removeHs=False)
+                for mol in supplier:
+                    if mol is not None:
+                        self.molecules.append(mol)
+                        count += 1
+                        
+                        # Progress update every 100k molecules
+                        if count % 100000 == 0:
+                            print(f"  Loaded {count:,} molecules...")
+                        
+                        # Check limit
+                        if max_molecules and count >= max_molecules:
+                            print(f"  Reached limit of {max_molecules:,} molecules")
+                            break
+        else:
+            # Use SDMolSupplier for regular .sdf files
+            supplier = Chem.SDMolSupplier(self.sdf_file, removeHs=False)
+            for mol in tqdm(supplier, desc="Loading molecules"):
+                if mol is not None:
+                    self.molecules.append(mol)
+                    count += 1
+                    
+                    if max_molecules and count >= max_molecules:
+                        break
+        
+        print(f"Loaded {len(self.molecules):,} molecules")
     
     def _get_partial_charges(self, mol: Chem.Mol) -> List[float]:
         """
         Extract partial charges from molecule.
         If not present in properties, compute Gasteiger charges.
+        Handles NaN values by replacing with 0.0.
         """
         try:
             # Try to get charges from SDF properties
@@ -81,6 +119,9 @@ class MolecularGraphDataset:
                 from rdkit.Chem import AllChem
                 AllChem.ComputeGasteigerCharges(mol)
                 charges = [atom.GetDoubleProp('_GasteigerCharge') for atom in mol.GetAtoms()]
+            
+            # Replace NaN values with 0.0 (Gasteiger can produce NaN for some atoms)
+            charges = [0.0 if (c != c) else c for c in charges]  # NaN != NaN is True
             
             return charges
         except:
@@ -159,7 +200,8 @@ class MolecularGraphDataset:
         # Get partial charges
         partial_charges = self._get_partial_charges(mol)
         
-        # Node features: [atomic_num, chirality, partial_charge, hybridization, coordination_num, valence_electrons, electronegativity]
+        # Node features: [atomic_num, chirality, partial_charge, hybridization, coordination_num, valence_electrons, electronegativity, binding_tag]
+        # binding_tag: 1 if atom binds with Pb, 0 if spectator (zero-padded for SSL pretraining)
         node_features = []
         for atom in mol.GetAtoms():
             atomic_num = atom.GetAtomicNum()
@@ -169,6 +211,7 @@ class MolecularGraphDataset:
             coordination_num = self._get_coordination_number(atom, mol)
             valence_electrons = self._get_valence_electrons(atomic_num)
             electronegativity = self._get_electronegativity(atomic_num)
+            binding_tag = 0.0  # Zero-padded for SSL; set to 1.0 for Pb-binding atoms in downstream tasks
             
             node_features.append([
                 float(atomic_num),
@@ -178,6 +221,7 @@ class MolecularGraphDataset:
                 float(coordination_num),
                 float(valence_electrons),
                 float(electronegativity),
+                float(binding_tag),
             ])
         
         node_features = torch.tensor(node_features, dtype=torch.float)
@@ -234,9 +278,13 @@ class MolecularGraphDataset:
             List of Data objects.
         """
         graphs = []
-        for mol in self.molecules:
-            graph = self.mol_to_graph(mol)
-            graphs.append(graph)
+        for mol in tqdm(self.molecules, desc="Converting to graphs"):
+            try:
+                graph = self.mol_to_graph(mol)
+                graphs.append(graph)
+            except Exception as e:
+                # Skip molecules that fail conversion
+                continue
         return graphs
     
     def __len__(self) -> int:
