@@ -85,6 +85,7 @@ class GINEEncoder(nn.Module):
         """
         super(GINEEncoder, self).__init__()
         
+        self.hidden_dim = hidden_dim
         self.num_layers = num_layers
         self.dropout = dropout
         self.pooling = pooling
