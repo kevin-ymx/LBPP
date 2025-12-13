@@ -20,17 +20,11 @@ This project consists of two main components:
 
 ## Installation
 
-### Requirements
-
-- Python 3.8+
-- PyTorch 2.0+
-- CUDA-capable GPU (recommended)
-
 ### Setup
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/kevin-ymx/LBPP.git
 cd LBPP
 ```
 
