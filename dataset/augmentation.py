@@ -105,17 +105,31 @@ class SubgraphRemovalAugmentation:
             Augmented graph with connected subgraph masked.
         """
         num_nodes = graph.num_nodes
+        
+        # Safety check: ensure graph has nodes and edges
+        if num_nodes == 0:
+            return graph  # Return original if empty
+        if graph.edge_index.size(1) == 0:
+            return graph  # Return original if no edges
+        
+        # Safety: if graph is too small, don't remove anything
+        if num_nodes <= 2:
+            return graph  # Return original for very small graphs
+        
         num_to_remove = max(1, int(num_nodes * self.removal_ratio))
         
-        # Ensure we don't remove all nodes
-        num_to_remove = min(num_to_remove, num_nodes - 1)
+        # Ensure we don't remove all nodes (keep at least 2 nodes)
+        num_to_remove = min(num_to_remove, num_nodes - 2)
         
         # Find connected subgraph to remove
-        nodes_to_mask = self._find_connected_subgraph(
-            graph.edge_index,
-            num_nodes,
-            num_to_remove
-        )
+        if num_to_remove > 0:
+            nodes_to_mask = self._find_connected_subgraph(
+                graph.edge_index,
+                num_nodes,
+                num_to_remove
+            )
+        else:
+            nodes_to_mask = set()
         
         # Create masked node features
         x = graph.x.clone()
@@ -129,25 +143,34 @@ class SubgraphRemovalAugmentation:
         edge_attr = graph.edge_attr.clone() if graph.edge_attr is not None else None
         
         # Filter edges: keep only edges where both endpoints are NOT masked
-        edge_index_np = edge_index.cpu().numpy()
-        valid_edges = []
-        
-        for i in range(edge_index_np.shape[1]):
-            src, dst = edge_index_np[0, i], edge_index_np[1, i]
-            # Keep edge only if both nodes are not masked
-            if src not in nodes_to_mask and dst not in nodes_to_mask:
-                valid_edges.append(i)
-        
-        if len(valid_edges) > 0:
-            valid_edges = torch.tensor(valid_edges, dtype=torch.long, device=edge_index.device)
-            edge_index = edge_index[:, valid_edges]
-            if edge_attr is not None:
-                edge_attr = edge_attr[valid_edges]
-        else:
-            # If no valid edges, create empty edge tensors on the same device
-            edge_index = torch.empty((2, 0), dtype=torch.long, device=graph.edge_index.device)
-            if edge_attr is not None:
-                edge_attr = torch.empty((0, edge_attr.shape[1]), dtype=torch.float, device=edge_attr.device)
+        if len(nodes_to_mask) > 0:
+            edge_index_np = edge_index.cpu().numpy()
+            valid_edges = []
+            
+            for i in range(edge_index_np.shape[1]):
+                src, dst = edge_index_np[0, i], edge_index_np[1, i]
+                # Keep edge only if both nodes are not masked
+                if src not in nodes_to_mask and dst not in nodes_to_mask:
+                    valid_edges.append(i)
+            
+            if len(valid_edges) > 0:
+                valid_edges = torch.tensor(valid_edges, dtype=torch.long, device=edge_index.device)
+                edge_index = edge_index[:, valid_edges]
+                if edge_attr is not None:
+                    edge_attr = edge_attr[valid_edges]
+            else:
+                # If no valid edges, keep at least one edge to maintain connectivity
+                # This prevents completely disconnected graphs
+                if graph.edge_index.size(1) > 0:
+                    # Keep the first edge
+                    edge_index = graph.edge_index[:, 0:1]
+                    if edge_attr is not None:
+                        edge_attr = graph.edge_attr[0:1]
+                else:
+                    edge_index = torch.empty((2, 0), dtype=torch.long, device=graph.edge_index.device)
+                    if edge_attr is not None:
+                        edge_attr = torch.empty((0, edge_attr.shape[1]), dtype=torch.float, device=edge_attr.device)
+        # If no nodes to mask, keep original edges
         
         # Create augmented graph (keeping all nodes but with masked features)
         augmented_graph = Data(
