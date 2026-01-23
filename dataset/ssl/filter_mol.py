@@ -4,7 +4,7 @@ Filter molecules from PubChem for contrastive SSL pretraining.
 Criteria applied:
 - Single connected component
 - Allowed atom types: H,C,N,O,S,P,F,Cl,Br,I
-- Heavy atoms <= 40
+- Heavy atoms <= 30
 - No valence errors
 - No radicals
 - Max ring size <= 6
@@ -13,18 +13,17 @@ Criteria applied:
 Reads multiple .sdf.gz files with pattern:
 stage0_5_ha50_neutral_elem_HA01_05__Compound_000000001_000500000.sdf.gz
 through
-stage0_5_ha50_neutral_elem_HA36_40__Compound_000000001_000500000.sdf.gz
+stage0_5_ha50_neutral_elem_HA26_30__Compound_000000001_000500000.sdf.gz
 
-Combines all filtered molecules, randomly selects 20%, and saves to a single .sdf.gz file.
+Combines all filtered molecules and saves to a single .sdf.gz file.
 
 Usage:
-python ./filter_mol.py --input_dir /global/cfs/cdirs/m3342/jhxie/database/pubchem/outputs/stage0_5_parent_ha50_neutral_elem_bins_sdf/shard__Compound_000000001_000500000 --output /pscratch/sd/y/yeming/AI4M/SSL/SDFs --sample_ratio 0.2 --workers 1
+python ./filter_mol.py --input_dir /global/cfs/cdirs/m3342/jhxie/database/pubchem/outputs/stage0_5_parent_ha50_neutral_elem_bins_sdf/shard__Compound_000000001_000500000 --output /pscratch/sd/y/yeming/AI4M/SSL/SDFs --workers 1
 """
 
 import argparse
 import gzip
 import os
-import random
 import multiprocessing as mp
 from functools import partial
 from tqdm import tqdm
@@ -37,10 +36,10 @@ ALLOWED_ATOMS = {"H", "C", "N", "O", "S", "P", "F", "Cl", "Br", "I"}
 FILE_PREFIX = "stage0_5_ha50_neutral_elem_HA"
 FILE_SUFFIX = "__Compound_000000001_000500000.sdf.gz"
 
-# HA ranges: 01_05, 06_10, 11_15, 16_20, 21_25, 26_30, 31_35, 36_40
+# HA ranges: 01_05, 06_10, 11_15, 16_20, 21_25, 26_30 (only up to 30 heavy atoms)
 HA_RANGES = [
     "01_05", "06_10", "11_15", "16_20",
-    "21_25", "26_30", "31_35", "36_40"
+    "21_25", "26_30"
 ]
 
 
@@ -75,7 +74,7 @@ def passes_filters(mol, require_3d=False):
 
     # Heavy atom count (excluding H)
     heavy_atoms = sum(1 for a in atoms if a.GetAtomicNum() > 1)
-    if heavy_atoms > 40:
+    if heavy_atoms > 30:
         return False
 
     # Radicals
@@ -202,9 +201,6 @@ def filter_molecules_from_file(input_path, ha_range, args, pool):
 # -------------------------
 
 def main(args):
-    # Set random seed for reproducibility
-    random.seed(args.seed)
-    
     # Generate all input file paths
     file_paths = generate_file_paths(args.input_dir)
     
@@ -238,7 +234,7 @@ def main(args):
         pool.close()
         pool.join()
     
-    # Print statistics before sampling
+    # Print statistics
     print(f"\n{'='*60}")
     print("FILTERING COMPLETE")
     print(f"{'='*60}")
@@ -249,20 +245,9 @@ def main(args):
         print("No molecules passed the filters. Exiting.")
         return
     
-    # Randomly sample molecules
-    sample_size = int(len(all_filtered_molecules) * args.sample_ratio)
-    print(f"\nRandomly selecting {args.sample_ratio*100:.0f}% of molecules...")
-    print(f"Sample size: {sample_size} molecules")
-    
-    if sample_size >= len(all_filtered_molecules):
-        selected_molecules = all_filtered_molecules
-        print("Sample size >= total, keeping all molecules")
-    else:
-        selected_molecules = random.sample(all_filtered_molecules, sample_size)
-        print(f"Selected {len(selected_molecules)} molecules")
-    
-    # Save to single output file
-    save_molecules_to_gzip_sdf(selected_molecules, args.output)
+    # Save all filtered molecules to single output file
+    print(f"\nSaving all {len(all_filtered_molecules)} filtered molecules...")
+    save_molecules_to_gzip_sdf(all_filtered_molecules, args.output)
     
     # Print final summary
     print(f"\n{'='*60}")
@@ -270,8 +255,6 @@ def main(args):
     print(f"{'='*60}")
     print(f"Files processed: {files_processed} / {len(file_paths)}")
     print(f"Total filtered molecules: {len(all_filtered_molecules)}")
-    print(f"Sample ratio: {args.sample_ratio*100:.0f}%")
-    print(f"Selected molecules: {len(selected_molecules)}")
     print(f"Output file: {args.output}")
     print("\nDone!")
 
@@ -289,14 +272,10 @@ if __name__ == "__main__":
                         help="Directory containing the input SDF.gz files")
     parser.add_argument("--output", type=str, required=True,
                         help="Output file path for the combined filtered molecules (.sdf.gz)")
-    parser.add_argument("--sample_ratio", type=float, default=0.2,
-                        help="Ratio of filtered molecules to randomly select (default: 0.2 = 20%%)")
     parser.add_argument("--workers", type=int, default=8,
                         help="Number of CPU workers for parallel filtering")
     parser.add_argument("--require_3d", action="store_true",
                         help="Filter only molecules with successful 3D conformers")
-    parser.add_argument("--seed", type=int, default=42,
-                        help="Random seed for reproducible sampling")
 
     args = parser.parse_args()
     main(args)
