@@ -1,0 +1,57 @@
+functional group	chemical structure	SMILES	SMARTS
+Alcohol	R–OH	CO	[OX2H]
+Phenol	Ar–OH	c1ccc(cc1)O	[OX2H][c]
+Ether	R–O–R	COC	[OX2]
+Epoxide	3-membered cyclic ether	C1OC1	[OX2r3]
+Aldehyde	R–C(=O)H	C=O	[CX3H1](=O)[OX1]
+Ketone	R–C(=O)–R	C(=O)C	[CX3](=O)[OX1]
+Carboxylic acid	–C(=O)OH	C(=O)O	C(=O)[OX2H]
+Ester	–C(=O)OR	C(=O)OC	C(=O)[OX2]
+Amide (O)	–C(=O)NR	C(=O)N	C(=O)[OX1]
+Acyl halide	–COCl	C(=O)Cl	C(=O)[Cl]
+Anhydride	–(CO)–O–(CO)–	C(=O)OC(=O)C	C(=O)OC(=O)
+Peroxide	–O–O–	OO	[OX2][OX2]
+Hydroperoxide	–OOH	OOH	[OX2][OX2H]
+Nitro	–NO₂	[N+](=O)[O-]	[NX3+](=O)[OX1-]
+
+Amine (primary)	–NH2	CN	[NX3H2]
+Amine (secondary)	–NHR	CNC	[NX3H1]
+Amine (tertiary)	–NR2	CN(C)C	[NX3]
+Aniline	Ar–NH2	c1ccc(cc1)N	[NX3H2][c]
+Amide (N)	–CONH–, –CONH₂, –CONR₂	C(=O)N	[NX3][CX3](=O)
+Urea	–NH–CO–NH–	NC(=O)N	[NX3]C(=O)[NX3]
+Imine	C=N–	C=N	[CX3]=[NX2]
+Oxime	C=NOH	C=NO	[NX2][OX2H]
+Hydrazone	C=NNR	C=NN	[NX2][NX3]
+Imide	–CO–NH–CO–	C(=O)NC(=O)C	C(=O)[NX3]C(=O)
+Carbamate	–O–CO–NH–	OC(=O)N	[OX2]C(=O)[NX3]
+Pyridine N	aromatic N	n1ccccc1	[nH0]
+Pyrrole N	aromatic NH	[nH]1cccc1	[nH]
+Imidazole (pyridine N)	heterocycle	n1cncc1	[nH0]
+Imidazole (pyrrole N)	heterocycle	[nH]1cncc1	[nH]
+Azine	–C=NN=C–	C=NN=C	[CX3]=[NX2][NX2]=[CX3]
+Nitroso	–N=O	[N]=O	[NX2]=[OX1]
+
+Thiol	–SH	CS	[SX2H]
+Sulfide (thioether)	–S–	CSC	[SX2]
+Disulfide	–S–S–	CSSC	[SX2][SX2]
+Sulfoxide	–S(=O)–	CS(=O)C	[SX3](=O)
+Sulfone	–S(=O)2–	CS(=O)(=O)C	[SX4](=O)(=O)
+Sulfonic acid	–SO3H	S(=O)(=O)(O)O	S(=O)(=O)[OX2H]
+Sulfonate ester	–SO₃R	S(=O)(=O)(O)C	S(=O)(=O)[OX2]
+Sulfonamide	–SO2NR2	S(=O)(=O)N	S(=O)(=O)[NX3]
+Thioaldehyde / thioketone	C=S	C=S	[CX3]=[SX1]
+Thioamide	–CSNH–	C(=S)N	C(=S)[NX3]
+Thiourea	–NH–CS–NH–	NC(=S)N	[NX3]C(=S)[NX3]
+
+Phosphine	PR3	P(C)(C)C	[PX3]
+Phosphine oxide	PR3=O	P(=O)(C)(C)C	[PX4](=O)
+Phosphite	P(OR)3	P(OC)(OC)OC	[PX3](O)(O)(O)
+Phosphonite	P(R)₂OR	P(OC)(C)C	[PX3]([OX2])([CX4])[CX4]
+Phosphoric acid	PO(OH)3	P(=O)(O)(O)O	P(=O)([OX2H])([OX2H])[OX2H]
+Phosphonic acid	–PO(OH)2	P(=O)(O)O	P(=O)([OX2H])[OX2H]
+Phosphonate	PO(OR)₂R	P(=O)(OC)(OC)C	P(=O)([OX2])([OX2])[CX4]
+Phosphinate	PO(OR)R₂	P(=O)(OC)(C)C	P(=O)([OX2])([CX4])[CX4]
+Phosphate ester	PO(OR)3	P(=O)(OC)(OC)OC	P(=O)([OX2])([OX2])[OX2]
+Phosphoramidate	PO(NR2)(OR)2	P(=O)(N)(OC)OC	P(=O)([NX3])([OX2])[OX2]
+Phosphazene	P=N–	P=N	[PX3]=[NX2]
