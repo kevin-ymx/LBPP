@@ -18,7 +18,7 @@ stage0_5_ha50_neutral_elem_HA26_30__Compound_000000001_000500000.sdf.gz
 Combines all filtered molecules and saves to a single .sdf.gz file.
 
 Usage:
-python ./filter_mol.py --input_dir /global/cfs/cdirs/m3342/jhxie/database/pubchem/outputs/stage0_5_parent_ha50_neutral_elem_bins_sdf/shard__Compound_000000001_000500000 --output /pscratch/sd/y/yeming/AI4M/SSL/SDFs --workers 1
+python ./filter_mol.py --input_dir /global/cfs/cdirs/m3342/jhxie/database/pubchem/outputs/stage0_5_parent_ha50_neutral_elem_bins_sdf/shard__Compound_000000001_000500000 --output /pscratch/sd/y/yeming/AI4M/SSL/SDFs_all --workers 128
 """
 
 import argparse
