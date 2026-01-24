@@ -11,14 +11,13 @@
 
 # Set paths
 BASE_INPUT_DIR="/global/cfs/cdirs/m3342/jhxie/database/pubchem/outputs/stage0_5_parent_ha50_neutral_elem_bins_sdf"
-OUTPUT_DIR="/pscratch/sd/y/yeming/AI4M/SSL/SDFs"
-FILTER_SCRIPT="./dataset/filter_mol.py"
+OUTPUT_DIR="/pscratch/sd/y/yeming/AI4M/prediction/SDFs_all"
+FILTER_SCRIPT="/pscratch/sd/y/yeming/AI4M/prediction/dataset/ssl/filter_mol.py"
 
 # Create output directory
 mkdir -p ${OUTPUT_DIR}
 
 # Parameters
-SAMPLE_RATIO=0.2
 WORKERS=128
 
 # Compound range parameters
@@ -79,7 +78,6 @@ for (( RANGE_START=${START_COMPOUND}; RANGE_START<${END_COMPOUND}; RANGE_START+=
     srun -n 1 -c ${WORKERS} python ${FILTER_SCRIPT} \
         --input_dir ${INPUT_DIR} \
         --output ${OUTPUT_FILE} \
-        --sample_ratio ${SAMPLE_RATIO} \
         --workers ${WORKERS}
     
     if [ $? -eq 0 ]; then
