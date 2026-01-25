@@ -2,8 +2,12 @@
 Script to combine .sdf.gz files and sample/visualize molecular structures.
 
 Usage:
-    # Combine all .sdf.gz files into one
+    # Combine all .sdf.gz files into one (no filtering)
     python sample_molecules.py combine --input_dir /path/to/sdfs --output combined.sdf.gz
+    
+    # Randomly sample from each .sdf.gz file and combine (default: 10%); supports resume if interrupted
+    python sample_molecules.py combine_sample --input_dir /path/to/sdfs --output combined.sdf.gz --sample_ratio 0.1
+    # Re-run with same --output to resume. Use --no-resume to start over.
     
     # Sample and visualize from a file
     python sample_molecules.py sample --input combined.sdf.gz --num_samples 10 --output samples.png
@@ -13,10 +17,36 @@ import argparse
 import gzip
 import os
 import random
+import shutil
 from glob import glob
 
 from rdkit import Chem
 from rdkit.Chem import Draw, Descriptors, rdMolDescriptors
+from tqdm import tqdm
+
+
+def _load_processed_files(checkpoint_path):
+    """Load set of already-processed input file paths from checkpoint."""
+    if not os.path.exists(checkpoint_path):
+        return set()
+    with open(checkpoint_path, "r") as f:
+        return set(line.strip() for line in f if line.strip())
+
+
+def _save_checkpoint(checkpoint_path, filepath):
+    """Append one processed file path to checkpoint."""
+    with open(checkpoint_path, "a") as f:
+        f.write(filepath + "\n")
+
+
+def _finalize_output(partial_path, output_path, checkpoint_path):
+    """Compress partial SDF to final gzip and remove temporary files."""
+    with open(partial_path, "rb") as f_in:
+        with gzip.open(output_path, "wb") as f_out:
+            shutil.copyfileobj(f_in, f_out)
+    os.remove(partial_path)
+    if os.path.exists(checkpoint_path):
+        os.remove(checkpoint_path)
 
 
 def load_molecules_from_gzip_sdf(filepath, max_mols=None):
@@ -137,6 +167,111 @@ def combine_sdf_files(input_dir, output_path):
     print(f"Total molecules: {len(all_molecules)}")
 
 
+def combine_and_sample_sdf_files(input_dir, output_path, sample_ratio=0.1, seed=42, resume=True):
+    """
+    Combine all .sdf.gz files in a directory into one file,
+    randomly sampling a percentage of molecules from each file.
+
+    Uses streaming and a partial file so the run can be resumed if killed
+    (e.g. by a job time limit). Checkpoint and .partial files are removed
+    after successful completion. Re-run with the same --output to resume.
+
+    Args:
+        input_dir: Directory containing .sdf.gz files
+        output_path: Output path for combined sampled .sdf.gz file
+        sample_ratio: Fraction of molecules to sample from each file (default: 0.1 = 10%)
+        seed: Random seed for reproducibility (default: 42)
+        resume: If True, skip files already in checkpoint and append to partial (default: True)
+    """
+    random.seed(seed)
+
+    checkpoint_path = output_path + ".checkpoint"
+    partial_path = output_path + ".partial"
+
+    if not resume:
+        for p in (checkpoint_path, partial_path):
+            if os.path.exists(p):
+                os.remove(p)
+                print(f"Starting fresh (--no-resume): removed {p}")
+
+    processed = _load_processed_files(checkpoint_path) if resume else set()
+    if processed and not os.path.exists(partial_path):
+        print("Checkpoint exists but partial file missing (inconsistent). Starting fresh.")
+        processed = set()
+        if os.path.exists(checkpoint_path):
+            os.remove(checkpoint_path)
+
+    pattern = os.path.join(input_dir, "*.sdf.gz")
+    all_files = sorted(glob(pattern))
+    files = [f for f in all_files if f not in processed]
+
+    if len(all_files) == 0:
+        print(f"No .sdf.gz files found in {input_dir}")
+        return
+
+    if len(files) == 0:
+        if processed and os.path.exists(partial_path):
+            print("All files already processed. Finalizing from previous run...")
+            _finalize_output(partial_path, output_path, checkpoint_path)
+            print(f"Output saved to: {output_path}")
+        elif processed:
+            if os.path.exists(checkpoint_path):
+                os.remove(checkpoint_path)
+        return
+
+    if processed:
+        print(f"Resuming: {len(processed)} files already done, {len(files)} remaining")
+
+    print(f"Found {len(all_files)} .sdf.gz files ({len(files)} to process)")
+    print(f"Sample ratio: {sample_ratio*100:.1f}%")
+    print(f"Random seed: {seed}")
+    print("=" * 60)
+
+    output_dir = os.path.dirname(output_path)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
+
+    total_processed = 0
+    total_sampled = 0
+    partial_mode = "a" if processed else "w"
+
+    with open(partial_path, partial_mode) as partial_file:
+        writer = Chem.SDWriter(partial_file)
+        for filepath in tqdm(files, desc="Processing files"):
+            file_processed = 0
+            file_sampled = 0
+
+            with gzip.open(filepath, "rb") as gz_file:
+                suppl = Chem.ForwardSDMolSupplier(gz_file)
+                for mol in suppl:
+                    if mol is None:
+                        continue
+                    file_processed += 1
+                    if random.random() < sample_ratio:
+                        writer.write(mol)
+                        file_sampled += 1
+                        total_sampled += 1
+
+            total_processed += file_processed
+            partial_file.flush()
+            _save_checkpoint(checkpoint_path, filepath)
+            tqdm.write(f"  {os.path.basename(filepath)}: {file_sampled:,}/{file_processed:,} sampled")
+        writer.close()
+
+    _finalize_output(partial_path, output_path, checkpoint_path)
+
+    print("\n" + "=" * 60)
+    print("SAMPLING SUMMARY")
+    print("=" * 60)
+    print(f"Molecules processed (this run): {total_processed:,}")
+    if total_processed > 0:
+        actual_ratio = total_sampled / total_processed
+        print(f"Molecules sampled: {total_sampled:,} ({100*actual_ratio:.2f}%)")
+        print(f"Target sample ratio: {sample_ratio*100:.1f}%")
+    print("=" * 60)
+    print(f"\nOutput saved to: {output_path}")
+
+
 def get_mol_info(mol):
     """Get basic molecular information."""
     info = {
@@ -218,12 +353,26 @@ def main():
     
     subparsers = parser.add_subparsers(dest='command', help='Commands')
     
-    # Combine command
-    combine_parser = subparsers.add_parser('combine', help='Combine all .sdf.gz files into one')
+    # Combine command (no filtering)
+    combine_parser = subparsers.add_parser('combine', help='Combine all .sdf.gz files into one (no filtering)')
     combine_parser.add_argument("--input_dir", type=str, required=True,
                                 help="Directory containing .sdf.gz files")
     combine_parser.add_argument("--output", type=str, required=True,
                                 help="Output combined .sdf.gz file")
+    
+    # Combine with random sampling command
+    combine_sample_parser = subparsers.add_parser('combine_sample', 
+                                                   help='Randomly sample from each .sdf.gz file and combine')
+    combine_sample_parser.add_argument("--input_dir", type=str, required=True,
+                                        help="Directory containing .sdf.gz files")
+    combine_sample_parser.add_argument("--output", type=str, required=True,
+                                        help="Output combined sampled .sdf.gz file")
+    combine_sample_parser.add_argument("--sample_ratio", type=float, default=0.1,
+                                        help="Fraction of molecules to sample from each file (default: 0.1 = 10%%)")
+    combine_sample_parser.add_argument("--seed", type=int, default=42,
+                                        help="Random seed for reproducibility (default: 42)")
+    combine_sample_parser.add_argument("--no-resume", action="store_true",
+                                        help="Ignore any checkpoint and start from scratch (overwrites partial)")
     
     # Sample command
     sample_parser = subparsers.add_parser('sample', help='Sample and visualize molecules')
@@ -246,6 +395,10 @@ def main():
     
     if args.command == 'combine':
         combine_sdf_files(args.input_dir, args.output)
+    
+    elif args.command == 'combine_sample':
+        resume = not getattr(args, "no_resume", False)
+        combine_and_sample_sdf_files(args.input_dir, args.output, args.sample_ratio, args.seed, resume=resume)
     
     elif args.command == 'sample':
         fast_mode = not getattr(args, 'no_fast', False)
