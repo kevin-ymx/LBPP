@@ -1,12 +1,13 @@
 """
 Data loading utilities for creating training and validation sets.
 """
-import torch
-from torch_geometric.data import Data, Batch
-from torch.utils.data import Dataset, DataLoader
-from typing import List, Tuple, Optional
 import random
+from typing import List, Tuple, Optional
+
 import numpy as np
+import torch
+from torch.utils.data import DataLoader, Dataset
+from torch_geometric.data import Batch, Data
 
 
 class ContrastiveDataset(Dataset):
@@ -76,7 +77,7 @@ def collate_contrastive_batch(batch: List[Tuple[Data, Data]]) -> Tuple[Batch, Ba
         dummy_graph = Data(
             x=torch.zeros((1, 8), dtype=torch.float),
             edge_index=torch.empty((2, 0), dtype=torch.long),
-            edge_attr=torch.empty((0, 3), dtype=torch.float),
+            edge_attr=torch.empty((0, 2), dtype=torch.float),
             num_nodes=1
         )
         batch1 = Batch.from_data_list([dummy_graph])
@@ -95,7 +96,7 @@ def collate_contrastive_batch(batch: List[Tuple[Data, Data]]) -> Tuple[Batch, Ba
         dummy_graph = Data(
             x=torch.zeros((1, 8), dtype=torch.float),
             edge_index=torch.empty((2, 0), dtype=torch.long),
-            edge_attr=torch.empty((0, 3), dtype=torch.float),
+            edge_attr=torch.empty((0, 2), dtype=torch.float),
             num_nodes=1
         )
         batch1 = Batch.from_data_list([dummy_graph])
@@ -148,6 +149,42 @@ def create_data_loaders(
     )
     
     return train_loader, val_loader
+
+
+def create_val_loader(
+    val_graphs: List[Data],
+    augmentation_fn,
+    batch_size: int = 32,
+    num_workers: int = 4,
+) -> DataLoader:
+    """Create validation DataLoader from in-memory list of graphs."""
+    ds = ContrastiveDataset(val_graphs, augmentation_fn, split="val")
+    return DataLoader(
+        ds,
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=num_workers,
+        collate_fn=collate_contrastive_batch,
+        pin_memory=True,
+    )
+
+
+def create_train_loader(
+    train_graphs: List[Data],
+    augmentation_fn,
+    batch_size: int = 32,
+    num_workers: int = 4,
+) -> DataLoader:
+    """Create training DataLoader from in-memory list of graphs. No shuffle: splits were already randomly assigned in build_graph_cache."""
+    ds = ContrastiveDataset(train_graphs, augmentation_fn, split="train")
+    return DataLoader(
+        ds,
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=num_workers,
+        collate_fn=collate_contrastive_batch,
+        pin_memory=True,
+    )
 
 
 def split_graphs(
