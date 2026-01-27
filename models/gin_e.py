@@ -16,7 +16,7 @@ class NodeFeatureEncoder(nn.Module):
     def __init__(self, input_dim: int, embedding_dim: int):
         """
         Args:
-            input_dim: Dimension of input node features (7).
+            input_dim: Dimension of input node features (8: atomic_num, chirality, partial_charge, hybridization, coordination_num, valence_electrons, electronegativity, binding_tag).
             embedding_dim: Dimension of node embeddings.
         """
         super(NodeFeatureEncoder, self).__init__()
@@ -38,7 +38,7 @@ class EdgeFeatureEncoder(nn.Module):
     def __init__(self, input_dim: int, embedding_dim: int):
         """
         Args:
-            input_dim: Dimension of input edge features (3).
+            input_dim: Dimension of input edge features (2: bond_type, bond_direction).
             embedding_dim: Dimension of edge embeddings.
         """
         super(EdgeFeatureEncoder, self).__init__()
@@ -59,8 +59,8 @@ class GINEEncoder(nn.Module):
     """
     def __init__(
         self,
-        node_feature_dim: int = 7,
-        edge_feature_dim: int = 3,
+        node_feature_dim: int = 8,
+        edge_feature_dim: int = 2,
         node_embedding_dim: int = 128,
         edge_embedding_dim: int = 64,
         hidden_dim: int = 256,
