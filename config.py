@@ -9,7 +9,7 @@ from typing import Optional
 class Config:
     # Data paths
     sdf_file: str = "/pscratch/sd/y/yeming/AI4M/prediction/combine_all.sdf.gz"
-    cache_dir: str = "/pscratch/sd/y/yeming/AI4M/prediction/"  # val.pt, train1.pt, train2.pt (build with build_graph_cache.py)
+    cache_dir: str = "/pscratch/sd/y/yeming/AI4M/prediction/"  # val.pt + train_shard_0.pt to train_shard_5.pt (pre-augmented pairs, built by build_graph_cache.py)
     max_molecules: Optional[int] = 2000000  # Limit molecules to load (None = all). Used only by build_graph_cache if needed
     train_split: float = 0.8
     val_split: float = 0.2
@@ -32,7 +32,7 @@ class Config:
     learning_rate: float = 0.001
     weight_decay: float = 1e-5
     temperature: float = 0.07  # Temperature parameter for NT-Xent loss
-    checkpoint_frequency: int = 10  # Save periodic checkpoint every N epochs (10 = 5 train1+train2 cycles)
+    checkpoint_frequency: int = 5  # Save periodic checkpoint every N epochs (each epoch trains on all 6 shards)
     resume_checkpoint: Optional[str] = None  # Path to checkpoint to resume from (e.g., "./checkpoints/best_model.pt")
     
     # Downstream model parameters
