@@ -210,23 +210,6 @@ class MolecularGraphWithBinding:
         }
         return valence_map.get(atomic_num, 4)
     
-    @staticmethod
-    def compute_coulombic_term(atom1_idx: int, atom2_idx: int, partial_charges: List[float], bond: Chem.Bond) -> float:
-        """Compute coulombic term for bond."""
-        q1 = partial_charges[atom1_idx]
-        q2 = partial_charges[atom2_idx]
-        
-        bond_type_map = {
-            Chem.BondType.SINGLE: 1.5,
-            Chem.BondType.DOUBLE: 1.3,
-            Chem.BondType.TRIPLE: 1.2,
-            Chem.BondType.AROMATIC: 1.4,
-        }
-        bond_length = bond_type_map.get(bond.GetBondType(), 1.5)
-        
-        coulombic = (q1 * q2) / (bond_length ** 2 + 1e-6)
-        return coulombic
-    
     @classmethod
     def mol_to_graph(cls, mol: Chem.Mol, binding_atom_indices: List[int] = None) -> Data:
         """
@@ -274,7 +257,7 @@ class MolecularGraphWithBinding:
         
         node_features = torch.tensor(node_features, dtype=torch.float)
         
-        # Edge features: [bond_type, bond_direction, coulombic_term]
+        # Edge features: [bond_type, bond_direction]
         edge_index = []
         edge_features = []
         
@@ -287,9 +270,8 @@ class MolecularGraphWithBinding:
             
             bond_type = int(bond.GetBondType())
             bond_direction = int(bond.GetBondDir())
-            coulombic_term = cls.compute_coulombic_term(i, j, partial_charges, bond)
             
-            edge_feat = [float(bond_type), float(bond_direction), float(coulombic_term)]
+            edge_feat = [float(bond_type), float(bond_direction)]
             edge_features.append(edge_feat)
             edge_features.append(edge_feat)
         
