@@ -11,11 +11,10 @@ import numpy as np
 import random
 
 from config import Config
-from dataset.molecular_graph import MolecularGraphDataset
-from dataset.augmentation import SubgraphRemovalAugmentation
+from dataset.ssl.augmentation import SubgraphRemovalAugmentation
+from dataset.ssl.data_loader import create_val_loader, create_train_loader
 from models.gin_e import GINEEncoder
 from utils.loss import NTXentLoss
-from dataset.data_loader import create_data_loaders, split_graphs
 
 
 def set_seed(seed: int):
@@ -245,6 +244,36 @@ def save_best_model(
     print(f"Saved best model (epoch {epoch}, loss {loss:.4f}) to {best_path}")
 
 
+def load_checkpoint(
+    checkpoint_path: str,
+    model: nn.Module,
+    optimizer: torch.optim.Optimizer,
+    scheduler: torch.optim.lr_scheduler.LRScheduler,
+    device: torch.device
+) -> tuple:
+    """
+    Load checkpoint and restore model, optimizer, and scheduler states.
+    
+    Returns:
+        Tuple of (start_epoch, best_val_loss) to resume training.
+    """
+    print(f"Loading checkpoint from {checkpoint_path}...")
+    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
+    
+    model.load_state_dict(checkpoint['model_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    
+    start_epoch = checkpoint['epoch'] + 1  # Resume from next epoch
+    best_val_loss = checkpoint['loss']
+    
+    # Advance scheduler to the correct state
+    for _ in range(checkpoint['epoch']):
+        scheduler.step()
+    
+    print(f"Resumed from epoch {checkpoint['epoch']} (best val loss: {best_val_loss:.4f})")
+    return start_epoch, best_val_loss
+
+
 def main():
     """Main training function."""
     # Load configuration
@@ -260,104 +289,34 @@ def main():
     # Create directories
     os.makedirs(config.checkpoint_dir, exist_ok=True)
     os.makedirs(config.log_dir, exist_ok=True)
-    
-    # Load dataset
-    print("Loading molecules from SDF file...")
-    dataset = MolecularGraphDataset(config.sdf_file, max_molecules=config.max_molecules)
-    print(f"Loaded {len(dataset)} molecules")
-    
-    # Convert molecules to graphs
-    print("Converting molecules to graphs...")
-    graphs = dataset.get_all_graphs()
-    print(f"Created {len(graphs)} graphs")
-    
-    # Filter out invalid graphs
-    print("Filtering invalid graphs...")
-    valid_graphs = []
-    invalid_count = 0
-    invalid_reasons = {'zero_nodes': 0, 'no_edges': 0, 'size_mismatch': 0, 'nan_features': 0, 'too_small': 0}
-    
-    for i, graph in enumerate(graphs):
-        # Check if graph is valid
-        if graph.num_nodes == 0:
-            invalid_count += 1
-            invalid_reasons['zero_nodes'] += 1
-            continue
-        if graph.num_nodes < 2:
-            invalid_count += 1
-            invalid_reasons['too_small'] += 1
-            continue
-        if graph.edge_index.size(1) == 0:
-            invalid_count += 1
-            invalid_reasons['no_edges'] += 1
-            continue
-        if graph.x.size(0) != graph.num_nodes:
-            invalid_count += 1
-            invalid_reasons['size_mismatch'] += 1
-            continue
-        # Check for NaN or Inf in features
-        if torch.isnan(graph.x).any() or torch.isinf(graph.x).any():
-            invalid_count += 1
-            invalid_reasons['nan_features'] += 1
-            continue
-        if graph.edge_attr is not None:
-            if torch.isnan(graph.edge_attr).any() or torch.isinf(graph.edge_attr).any():
-                invalid_count += 1
-                invalid_reasons['nan_features'] += 1
-                continue
-        valid_graphs.append(graph)
-    
-    graphs = valid_graphs
-    print(f"Filtered out {invalid_count} invalid graphs. Remaining: {len(graphs)} valid graphs")
-    if invalid_count > 0:
-        print(f"  Invalid reasons: {invalid_reasons}")
-    
-    if len(graphs) == 0:
-        raise ValueError("No valid graphs after filtering! Check your data.")
-    
-    # Split into train and validation sets
-    print("Splitting into train and validation sets...")
-    train_graphs, val_graphs = split_graphs(
-        graphs,
-        train_ratio=config.train_split,
-        val_ratio=config.val_split,
-        seed=config.seed
-    )
-    print(f"Training graphs: {len(train_graphs)}, Validation graphs: {len(val_graphs)}")
-    
-    # Create augmentation function
+
+    # Check graph cache (val.pt, train1.pt, train2.pt) exists
+    val_pt = os.path.join(config.cache_dir, "val.pt")
+    train1_pt = os.path.join(config.cache_dir, "train1.pt")
+    train2_pt = os.path.join(config.cache_dir, "train2.pt")
+    for p in (val_pt, train1_pt, train2_pt):
+        if not os.path.isfile(p):
+            raise FileNotFoundError(
+                f"Cache not found: {p}. Run build_graph_cache first, e.g.:\n"
+                f"  python dataset/ssl/build_graph_cache.py --sdf_file {config.sdf_file} --cache_dir {config.cache_dir}"
+            )
+    print(f"Using graph cache: {config.cache_dir}")
+
+    # Create augmentation
     augmentation = SubgraphRemovalAugmentation(
         removal_ratio=config.subgraph_removal_ratio,
         seed=config.seed
     )
-    
-    # Create data loaders
-    print("Creating data loaders...")
-    train_loader, val_loader = create_data_loaders(
-        train_graphs=train_graphs,
+
+    # Load validation graphs and create val_loader once (kept in memory for whole run)
+    val_graphs = torch.load(val_pt, weights_only=False)
+    val_loader = create_val_loader(
         val_graphs=val_graphs,
         augmentation_fn=augmentation,
         batch_size=config.batch_size,
         num_workers=config.num_workers
     )
-    
-    # Check validation set
-    if len(val_graphs) == 0:
-        raise ValueError("Validation set is empty! Check your data split.")
-    
-    # Check data loaders
-    print(f"Training batches: {len(train_loader)}")
-    print(f"Validation batches: {len(val_loader)}")
-    
-    # Test a validation batch to see if there are issues
-    if len(val_loader) > 0:
-        try:
-            test_batch1, test_batch2 = next(iter(val_loader))
-            print(f"Test validation batch - batch1 graphs: {test_batch1.num_graphs}, batch2 graphs: {test_batch2.num_graphs}")
-            if test_batch1.num_graphs == 0 or test_batch2.num_graphs == 0:
-                print("WARNING: Validation batches contain zero graphs! Check augmentation function.")
-        except Exception as e:
-            print(f"WARNING: Error testing validation batch: {e}")
+    print(f"Validation: {len(val_graphs):,} graphs, {len(val_loader)} batches")
     
     # Create model
     print("Initializing model...")
@@ -390,13 +349,40 @@ def main():
         eta_min=1e-6
     )
     
+    # Resume from checkpoint if specified
+    start_epoch = 1
+    best_val_loss = float('inf')
+    if config.resume_checkpoint is not None:
+        if os.path.isfile(config.resume_checkpoint):
+            start_epoch, best_val_loss = load_checkpoint(
+                checkpoint_path=config.resume_checkpoint,
+                model=model,
+                optimizer=optimizer,
+                scheduler=scheduler,
+                device=device
+            )
+        else:
+            print(f"Warning: Checkpoint not found at {config.resume_checkpoint}, starting from scratch.")
+    
     # Training loop
     print("Starting training...")
-    best_val_loss = float('inf')
+    last_val_loss = None
     
-    for epoch in range(1, config.num_epochs + 1):
+    for epoch in range(start_epoch, config.num_epochs + 1):
         print(f"\nEpoch {epoch}/{config.num_epochs}")
-        
+
+        # Alternate train1 / train2: load full split into memory for this epoch
+        if epoch % 2 == 1:
+            train_graphs = torch.load(train1_pt, weights_only=False)
+        else:
+            train_graphs = torch.load(train2_pt, weights_only=False)
+        train_loader = create_train_loader(
+            train_graphs=train_graphs,
+            augmentation_fn=augmentation,
+            batch_size=config.batch_size,
+            num_workers=config.num_workers
+        )
+
         # Train
         train_loss = train_epoch(
             model=model,
@@ -407,47 +393,59 @@ def main():
             config=config
         )
         
-        # Validate
-        val_loss = validate(
-            model=model,
-            val_loader=val_loader,
-            criterion=criterion,
-            device=device,
-            config=config
-        )
+        # Validate every 2 epochs
+        if epoch % 2 == 0:
+            val_loss = validate(
+                model=model,
+                val_loader=val_loader,
+                criterion=criterion,
+                device=device,
+                config=config
+            )
+            last_val_loss = val_loss
+            
+            # Save best model immediately when found (only if val_loss is valid)
+            if not torch.isnan(torch.tensor(val_loss)) and not torch.isinf(torch.tensor(val_loss)):
+                is_best = val_loss < best_val_loss
+                if is_best:
+                    best_val_loss = val_loss
+                    save_best_model(
+                        model=model,
+                        optimizer=optimizer,
+                        epoch=epoch,
+                        loss=val_loss,
+                        checkpoint_dir=config.checkpoint_dir
+                    )
+        else:
+            val_loss = None
         
         # Update learning rate
         scheduler.step()
         
         # Print statistics
-        print(f"Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}, LR: {scheduler.get_last_lr()[0]:.6f}")
+        if val_loss is not None:
+            print(f"Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}, LR: {scheduler.get_last_lr()[0]:.6f}")
+        else:
+            print(f"Train Loss: {train_loss:.4f}, Val Loss: N/A (skip), LR: {scheduler.get_last_lr()[0]:.6f}")
         
-        # Save best model immediately when found (only if val_loss is valid)
-        if not torch.isnan(torch.tensor(val_loss)) and not torch.isinf(torch.tensor(val_loss)):
-            is_best = val_loss < best_val_loss
-            if is_best:
-                best_val_loss = val_loss
-                save_best_model(
-                    model=model,
-                    optimizer=optimizer,
-                    epoch=epoch,
-                    loss=val_loss,
-                    checkpoint_dir=config.checkpoint_dir
-                )
-        
-        # Save periodic checkpoint every 5 epochs
-        if epoch % 5 == 0:
+        # Save periodic checkpoint (use last_val_loss if available)
+        if epoch % config.checkpoint_frequency == 0:
+            checkpoint_loss = last_val_loss if last_val_loss is not None else train_loss
             save_checkpoint(
                 model=model,
                 optimizer=optimizer,
                 epoch=epoch,
-                loss=val_loss,
+                loss=checkpoint_loss,
                 checkpoint_dir=config.checkpoint_dir
             )
-    
+
+        # Free train split before loading the other one next epoch
+        del train_graphs, train_loader
+
     print("\nTraining completed!")
     print(f"Best validation loss: {best_val_loss:.4f}")
 
 
 if __name__ == "__main__":
     main()
+
