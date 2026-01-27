@@ -1,5 +1,6 @@
 """
 Training script for contrastive self-supervised learning of charge-aware molecular representation.
+Uses pre-augmented graph pairs from cache (built by build_graph_cache.py).
 """
 import os
 import torch
@@ -11,10 +12,11 @@ import numpy as np
 import random
 
 from config import Config
-from dataset.ssl.augmentation import SubgraphRemovalAugmentation
 from dataset.ssl.data_loader import create_val_loader, create_train_loader
 from models.gin_e import GINEEncoder
 from utils.loss import NTXentLoss
+
+NUM_TRAIN_SHARDS = 6
 
 
 def set_seed(seed: int):
@@ -27,26 +29,27 @@ def set_seed(seed: int):
     torch.backends.cudnn.benchmark = False
 
 
-def train_epoch(
+def train_shard(
     model: nn.Module,
     train_loader,
     criterion: nn.Module,
     optimizer: torch.optim.Optimizer,
     device: torch.device,
-    config: Config
-) -> float:
+    shard_idx: int,
+    pbar_position: int = 0
+) -> tuple:
     """
-    Train for one epoch.
+    Train on a single shard.
     
     Returns:
-        Average training loss.
+        Tuple of (total_loss, num_batches, skipped_batches).
     """
     model.train()
     total_loss = 0.0
     num_batches = 0
     skipped_batches = 0
     
-    pbar = tqdm(train_loader, desc="Training")
+    pbar = tqdm(train_loader, desc=f"  Shard {shard_idx}", position=pbar_position, leave=False)
     for batch1, batch2 in pbar:
         # Move batches to device
         batch1 = batch1.to(device)
@@ -104,15 +107,76 @@ def train_epoch(
         num_batches += 1
         
         # Update progress bar
-        pbar.set_postfix({'loss': loss.item(), 'skipped': skipped_batches})
+        pbar.set_postfix({'loss': loss.item(), 'skip': skipped_batches})
     
-    if num_batches == 0:
-        print(f"Warning: No valid batches in training set! Skipped {skipped_batches} batches.")
+    pbar.close()
+    return total_loss, num_batches, skipped_batches
+
+
+def train_epoch(
+    model: nn.Module,
+    train_shard_paths: list,
+    criterion: nn.Module,
+    optimizer: torch.optim.Optimizer,
+    device: torch.device,
+    config: Config
+) -> float:
+    """
+    Train for one epoch, cycling through all shards.
+    
+    Returns:
+        Average training loss across all shards.
+    """
+    total_loss = 0.0
+    total_batches = 0
+    total_skipped = 0
+    
+    # Progress bar for shards
+    shard_pbar = tqdm(range(NUM_TRAIN_SHARDS), desc="Training shards", position=0)
+    
+    for shard_idx in shard_pbar:
+        shard_path = train_shard_paths[shard_idx]
+        
+        # Load shard
+        train_pairs = torch.load(shard_path, weights_only=False)
+        train_loader = create_train_loader(
+            train_pairs=train_pairs,
+            batch_size=config.batch_size,
+            num_workers=config.num_workers
+        )
+        
+        # Train on this shard
+        shard_loss, shard_batches, shard_skipped = train_shard(
+            model=model,
+            train_loader=train_loader,
+            criterion=criterion,
+            optimizer=optimizer,
+            device=device,
+            shard_idx=shard_idx,
+            pbar_position=1
+        )
+        
+        total_loss += shard_loss
+        total_batches += shard_batches
+        total_skipped += shard_skipped
+        
+        # Update shard progress bar with running average
+        if total_batches > 0:
+            avg_loss = total_loss / total_batches
+            shard_pbar.set_postfix({'avg_loss': f'{avg_loss:.4f}', 'skipped': total_skipped})
+        
+        # Free memory
+        del train_pairs, train_loader
+    
+    shard_pbar.close()
+    
+    if total_batches == 0:
+        print(f"Warning: No valid batches in training set! Skipped {total_skipped} batches.")
         return float('nan')
     
-    avg_loss = total_loss / num_batches
-    if skipped_batches > 0:
-        print(f"Warning: Skipped {skipped_batches} invalid batches during training")
+    avg_loss = total_loss / total_batches
+    if total_skipped > 0:
+        print(f"Warning: Skipped {total_skipped} invalid batches during training")
     return avg_loss
 
 
@@ -290,33 +354,37 @@ def main():
     os.makedirs(config.checkpoint_dir, exist_ok=True)
     os.makedirs(config.log_dir, exist_ok=True)
 
-    # Check graph cache (val.pt, train1.pt, train2.pt) exists
+    # Check pre-augmented graph cache exists (val.pt + 6 training shards)
     val_pt = os.path.join(config.cache_dir, "val.pt")
-    train1_pt = os.path.join(config.cache_dir, "train1.pt")
-    train2_pt = os.path.join(config.cache_dir, "train2.pt")
-    for p in (val_pt, train1_pt, train2_pt):
+    train_shard_paths = [os.path.join(config.cache_dir, f"train_shard_{i}.pt") for i in range(NUM_TRAIN_SHARDS)]
+    
+    # Check val.pt exists
+    if not os.path.isfile(val_pt):
+        raise FileNotFoundError(
+            f"Validation cache not found: {val_pt}. Run build_graph_cache first, e.g.:\n"
+            f"  python dataset/ssl/build_graph_cache.py --sdf_file {config.sdf_file} --cache_dir {config.cache_dir}"
+        )
+    
+    # Check all training shards exist
+    for p in train_shard_paths:
         if not os.path.isfile(p):
             raise FileNotFoundError(
-                f"Cache not found: {p}. Run build_graph_cache first, e.g.:\n"
+                f"Training shard not found: {p}. Run build_graph_cache first, e.g.:\n"
                 f"  python dataset/ssl/build_graph_cache.py --sdf_file {config.sdf_file} --cache_dir {config.cache_dir}"
             )
-    print(f"Using graph cache: {config.cache_dir}")
+    
+    print(f"Using pre-augmented graph cache: {config.cache_dir}")
+    print(f"  Validation: val.pt")
+    print(f"  Training: {NUM_TRAIN_SHARDS} shards (train_shard_0.pt to train_shard_{NUM_TRAIN_SHARDS-1}.pt)")
 
-    # Create augmentation
-    augmentation = SubgraphRemovalAugmentation(
-        removal_ratio=config.subgraph_removal_ratio,
-        seed=config.seed
-    )
-
-    # Load validation graphs and create val_loader once (kept in memory for whole run)
-    val_graphs = torch.load(val_pt, weights_only=False)
+    # Load validation pairs and create val_loader once (kept in memory for whole run)
+    val_pairs = torch.load(val_pt, weights_only=False)
     val_loader = create_val_loader(
-        val_graphs=val_graphs,
-        augmentation_fn=augmentation,
+        val_pairs=val_pairs,
         batch_size=config.batch_size,
         num_workers=config.num_workers
     )
-    print(f"Validation: {len(val_graphs):,} graphs, {len(val_loader)} batches")
+    print(f"Validation: {len(val_pairs):,} pre-augmented pairs, {len(val_loader)} batches")
     
     # Create model
     print("Initializing model...")
@@ -366,86 +434,67 @@ def main():
     
     # Training loop
     print("Starting training...")
-    last_val_loss = None
+    print(f"Each epoch trains on all {NUM_TRAIN_SHARDS} shards")
     
-    for epoch in range(start_epoch, config.num_epochs + 1):
-        print(f"\nEpoch {epoch}/{config.num_epochs}")
-
-        # Alternate train1 / train2: load full split into memory for this epoch
-        if epoch % 2 == 1:
-            train_graphs = torch.load(train1_pt, weights_only=False)
-        else:
-            train_graphs = torch.load(train2_pt, weights_only=False)
-        train_loader = create_train_loader(
-            train_graphs=train_graphs,
-            augmentation_fn=augmentation,
-            batch_size=config.batch_size,
-            num_workers=config.num_workers
-        )
-
-        # Train
+    # Epoch progress bar
+    epoch_pbar = tqdm(range(start_epoch, config.num_epochs + 1), desc="Epochs", position=0)
+    
+    for epoch in epoch_pbar:
+        epoch_pbar.set_description(f"Epoch {epoch}/{config.num_epochs}")
+        
+        # Train on all shards
         train_loss = train_epoch(
             model=model,
-            train_loader=train_loader,
+            train_shard_paths=train_shard_paths,
             criterion=criterion,
             optimizer=optimizer,
             device=device,
             config=config
         )
         
-        # Validate every 2 epochs
-        if epoch % 2 == 0:
-            val_loss = validate(
-                model=model,
-                val_loader=val_loader,
-                criterion=criterion,
-                device=device,
-                config=config
-            )
-            last_val_loss = val_loss
-            
-            # Save best model immediately when found (only if val_loss is valid)
-            if not torch.isnan(torch.tensor(val_loss)) and not torch.isinf(torch.tensor(val_loss)):
-                is_best = val_loss < best_val_loss
-                if is_best:
-                    best_val_loss = val_loss
-                    save_best_model(
-                        model=model,
-                        optimizer=optimizer,
-                        epoch=epoch,
-                        loss=val_loss,
-                        checkpoint_dir=config.checkpoint_dir
-                    )
-        else:
-            val_loss = None
+        # Validate every epoch
+        val_loss = validate(
+            model=model,
+            val_loader=val_loader,
+            criterion=criterion,
+            device=device,
+            config=config
+        )
+        
+        # Save best model immediately when found (only if val_loss is valid)
+        if not torch.isnan(torch.tensor(val_loss)) and not torch.isinf(torch.tensor(val_loss)):
+            is_best = val_loss < best_val_loss
+            if is_best:
+                best_val_loss = val_loss
+                save_best_model(
+                    model=model,
+                    optimizer=optimizer,
+                    epoch=epoch,
+                    loss=val_loss,
+                    checkpoint_dir=config.checkpoint_dir
+                )
         
         # Update learning rate
         scheduler.step()
         
-        # Print statistics
-        if val_loss is not None:
-            print(f"Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}, LR: {scheduler.get_last_lr()[0]:.6f}")
-        else:
-            print(f"Train Loss: {train_loss:.4f}, Val Loss: N/A (skip), LR: {scheduler.get_last_lr()[0]:.6f}")
+        # Update epoch progress bar
+        epoch_pbar.set_postfix({'train': f'{train_loss:.4f}', 'val': f'{val_loss:.4f}', 'best': f'{best_val_loss:.4f}'})
+        tqdm.write(f"Epoch {epoch}: Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}, LR: {scheduler.get_last_lr()[0]:.6f}")
         
-        # Save periodic checkpoint (use last_val_loss if available)
+        # Save periodic checkpoint every N epochs
         if epoch % config.checkpoint_frequency == 0:
-            checkpoint_loss = last_val_loss if last_val_loss is not None else train_loss
             save_checkpoint(
                 model=model,
                 optimizer=optimizer,
                 epoch=epoch,
-                loss=checkpoint_loss,
+                loss=val_loss,
                 checkpoint_dir=config.checkpoint_dir
             )
 
-        # Free train split before loading the other one next epoch
-        del train_graphs, train_loader
-
+    epoch_pbar.close()
     print("\nTraining completed!")
     print(f"Best validation loss: {best_val_loss:.4f}")
 
 
 if __name__ == "__main__":
     main()
-
