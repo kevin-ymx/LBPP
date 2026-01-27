@@ -8,8 +8,9 @@ from typing import Optional
 @dataclass
 class Config:
     # Data paths
-    sdf_file: str = "/pscratch/sd/y/yeming/AI4M/SSL/combined.sdf.gz"
-    max_molecules: Optional[int] = 2000000  # Limit molecules to load (None = all). Set e.g. 1000000 for testing
+    sdf_file: str = "/pscratch/sd/y/yeming/AI4M/prediction/combine_all.sdf.gz"
+    cache_dir: str = "/pscratch/sd/y/yeming/AI4M/prediction/"  # val.pt, train1.pt, train2.pt (build with build_graph_cache.py)
+    max_molecules: Optional[int] = 2000000  # Limit molecules to load (None = all). Used only by build_graph_cache if needed
     train_split: float = 0.8
     val_split: float = 0.2
     
@@ -18,11 +19,11 @@ class Config:
     
     # Model parameters
     node_feature_dim: int = 8  # atomic_num, chirality, partial_charge, hybridization, coordination_num, valence_electrons, electronegativity, binding_tag
-    edge_feature_dim: int = 3  # bond_type, bond_direction, coulombic_term
+    edge_feature_dim: int = 2  # bond_type, bond_direction
     node_embedding_dim: int = 128
     edge_embedding_dim: int = 64
     hidden_dim: int = 256
-    num_gin_layers: int = 5
+    num_gin_layers: int = 6
     dropout: float = 0.1
     
     # GIN-E training parameters
@@ -31,6 +32,8 @@ class Config:
     learning_rate: float = 0.001
     weight_decay: float = 1e-5
     temperature: float = 0.07  # Temperature parameter for NT-Xent loss
+    checkpoint_frequency: int = 10  # Save periodic checkpoint every N epochs (10 = 5 train1+train2 cycles)
+    resume_checkpoint: Optional[str] = None  # Path to checkpoint to resume from (e.g., "./checkpoints/best_model.pt")
     
     # Downstream model parameters
     num_property_tasks: int = 1  # Number of molecular properties to predict (1 = binding energy only)
@@ -54,14 +57,11 @@ class Config:
     # Device
     device: str = "cuda"  # or "cpu"
     
-    # Distributed training (only for train_ssl_ddp.py)
-    distributed: bool = False  # Set True for multi-GPU training
-    num_gpus: int = 4  # Number of GPUs (for DDP)
-    
     # Output paths
     checkpoint_dir: str = "./checkpoints/"
     log_dir: str = "./logs"
     
     # Other
     seed: int = 42
-    num_workers: int = 16  # DataLoader workers
+    num_workers: int = 64  # DataLoader workers
+
