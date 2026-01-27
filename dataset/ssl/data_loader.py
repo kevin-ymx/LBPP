@@ -1,5 +1,6 @@
 """
 Data loading utilities for creating training and validation sets.
+Works with pre-augmented graph pairs from build_graph_cache.py.
 """
 import random
 from typing import List, Tuple, Optional
@@ -10,45 +11,37 @@ from torch.utils.data import DataLoader, Dataset
 from torch_geometric.data import Batch, Data
 
 
-class ContrastiveDataset(Dataset):
+class PreAugmentedDataset(Dataset):
     """
-    Dataset for contrastive learning that generates graph pairs.
+    Dataset for contrastive learning that loads pre-augmented graph pairs.
+    Each item is already a (graph1, graph2) tuple from the cache.
     """
     
-    def __init__(
-        self,
-        graphs: List[Data],
-        augmentation_fn,
-        split: str = "train"
-    ):
+    def __init__(self, pairs: List[Tuple[Data, Data]], split: str = "train"):
         """
-        Initialize contrastive dataset.
+        Initialize dataset with pre-augmented pairs.
         
         Args:
-            graphs: List of molecular graphs.
-            augmentation_fn: Augmentation function that takes a graph and returns a pair.
+            pairs: List of (graph1, graph2) tuples.
             split: Dataset split ("train" or "val").
         """
-        self.graphs = graphs
-        self.augmentation_fn = augmentation_fn
+        self.pairs = pairs
         self.split = split
     
     def __len__(self) -> int:
-        return len(self.graphs)
+        return len(self.pairs)
     
     def __getitem__(self, idx: int) -> Tuple[Data, Data]:
         """
-        Get a pair of augmented graphs.
+        Get a pre-augmented pair of graphs.
         
         Args:
-            idx: Index of the graph.
+            idx: Index of the pair.
             
         Returns:
             Tuple of two augmented graphs.
         """
-        graph = self.graphs[idx]
-        graph1, graph2 = self.augmentation_fn(graph)
-        return graph1, graph2
+        return self.pairs[idx]
 
 
 def collate_contrastive_batch(batch: List[Tuple[Data, Data]]) -> Tuple[Batch, Batch]:
@@ -105,60 +98,13 @@ def collate_contrastive_batch(batch: List[Tuple[Data, Data]]) -> Tuple[Batch, Ba
     return batch1, batch2
 
 
-def create_data_loaders(
-    train_graphs: List[Data],
-    val_graphs: List[Data],
-    augmentation_fn,
-    batch_size: int = 32,
-    num_workers: int = 4,
-    shuffle_train: bool = True
-) -> Tuple[DataLoader, DataLoader]:
-    """
-    Create training and validation data loaders.
-    
-    Args:
-        train_graphs: Training graphs.
-        val_graphs: Validation graphs.
-        augmentation_fn: Augmentation function.
-        batch_size: Batch size.
-        num_workers: Number of worker processes.
-        shuffle_train: Whether to shuffle training data.
-        
-    Returns:
-        Tuple of (train_loader, val_loader).
-    """
-    train_dataset = ContrastiveDataset(train_graphs, augmentation_fn, split="train")
-    val_dataset = ContrastiveDataset(val_graphs, augmentation_fn, split="val")
-    
-    train_loader = DataLoader(
-        train_dataset,
-        batch_size=batch_size,
-        shuffle=shuffle_train,
-        num_workers=num_workers,
-        collate_fn=collate_contrastive_batch,
-        pin_memory=True
-    )
-    
-    val_loader = DataLoader(
-        val_dataset,
-        batch_size=batch_size,
-        shuffle=False,
-        num_workers=num_workers,
-        collate_fn=collate_contrastive_batch,
-        pin_memory=True
-    )
-    
-    return train_loader, val_loader
-
-
 def create_val_loader(
-    val_graphs: List[Data],
-    augmentation_fn,
+    val_pairs: List[Tuple[Data, Data]],
     batch_size: int = 32,
     num_workers: int = 4,
 ) -> DataLoader:
-    """Create validation DataLoader from in-memory list of graphs."""
-    ds = ContrastiveDataset(val_graphs, augmentation_fn, split="val")
+    """Create validation DataLoader from pre-augmented pairs."""
+    ds = PreAugmentedDataset(val_pairs, split="val")
     return DataLoader(
         ds,
         batch_size=batch_size,
@@ -170,13 +116,12 @@ def create_val_loader(
 
 
 def create_train_loader(
-    train_graphs: List[Data],
-    augmentation_fn,
+    train_pairs: List[Tuple[Data, Data]],
     batch_size: int = 32,
     num_workers: int = 4,
 ) -> DataLoader:
-    """Create training DataLoader from in-memory list of graphs. No shuffle: splits were already randomly assigned in build_graph_cache."""
-    ds = ContrastiveDataset(train_graphs, augmentation_fn, split="train")
+    """Create training DataLoader from pre-augmented pairs. No shuffle: pairs were already randomly assigned in build_graph_cache."""
+    ds = PreAugmentedDataset(train_pairs, split="train")
     return DataLoader(
         ds,
         batch_size=batch_size,
@@ -225,4 +170,3 @@ def split_graphs(
     val_graphs = [graphs[i] for i in val_indices]
     
     return train_graphs, val_graphs
-
