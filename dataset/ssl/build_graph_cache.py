@@ -1,15 +1,17 @@
 """
-Preprocessing script: stream SDF once, keep SMILES in memory, then convert → augment → save per split.
+Preprocessing script: read CSV (CID, SMILES), assign to splits, then convert → augment → save per split.
 
-Resumable single-pass approach with low memory usage:
-  1. Check if SMILES splits already exist in cache; if so, load them instead of streaming SDF
-  2. If not, stream SDF once, extract SMILES, assign to splits, save SMILES splits to cache
+Resumable approach with low memory usage:
+  1. Check if SMILES splits already exist in cache; if so, load them instead of reading CSV
+  2. If not, read CSV file, extract SMILES, assign to splits, save SMILES splits to cache
   3. For each split: skip if .pt already exists; otherwise convert SMILES → Mol → graph → augment → save
+
+Input: CSV file with columns PUBCHEM_COMPOUND_CID, SMILES (output from sample_molecules.py sample_csv)
 
 Output files:
   - smiles_splits.pt: Dictionary of {split_name: [smiles_list]} for resumability
   - val.pt: List of (graph1, graph2) tuples for validation
-  - train_shard_0.pt to train_shard_5.pt: Lists of (graph1, graph2) tuples for training
+  - train_shard_0.pt to train_shard_3.pt: Lists of (graph1, graph2) tuples for training
 
 All molecules go through augmentation before being stored in cache, which can be
 directly loaded for training and validation without on-the-fly augmentation.
@@ -19,11 +21,11 @@ NOTE: This approach keeps only SMILES strings in memory (~1-1.5 GB for 7.3M mole
       SMILES preserves chirality info if present in the original mol.
 
 Run from project root:
-  python dataset/ssl/build_graph_cache.py --sdf_file /path/to/file.sdf.gz --cache_dir /path/to/cache
-  python -m dataset.ssl.build_graph_cache --sdf_file /path/to/file.sdf.gz --cache_dir /path/to/cache
+  python dataset/ssl/build_graph_cache.py --csv_file /path/to/sampled.csv --cache_dir /path/to/cache
+  python -m dataset.ssl.build_graph_cache --csv_file /path/to/sampled.csv --cache_dir /path/to/cache
 """
 import argparse
-import gzip
+import csv
 import os
 import random
 import sys
@@ -40,26 +42,32 @@ if _TOP not in sys.path:
 from dataset.ssl.molecular_graph import MolToGraphConverter, is_valid_graph
 from dataset.ssl.augmentation import SubgraphRemovalAugmentation
 
-NUM_TRAIN_SHARDS = 6
+NUM_TRAIN_SHARDS = 4
 SPLIT_VAL = "val"  # Use string keys for cleaner dict serialization
 SMILES_CACHE_FILE = "smiles_splits.pt"
 
 
+def count_csv_rows(csv_path: str) -> int:
+    """Count total rows in CSV file (excluding header) for progress bar."""
+    with open(csv_path, 'r', encoding='utf-8') as f:
+        return sum(1 for _ in f) - 1  # Subtract 1 for header
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Build pre-augmented graph cache from SDF: val.pt + 6 training shards (20% val / 80% train)."
+        description="Build pre-augmented graph cache from CSV: val.pt + 4 training shards (20% val / 80% train)."
     )
-    parser.add_argument("--sdf_file", required=True, help="Path to .sdf or .sdf.gz")
+    parser.add_argument("--csv_file", required=True, help="Path to CSV file with columns: PUBCHEM_COMPOUND_CID, SMILES")
     parser.add_argument("--cache_dir", required=True, help="Output directory for cache files")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
     parser.add_argument("--removal_ratio", type=float, default=0.25, help="Subgraph removal ratio for augmentation")
-    parser.add_argument("--force_resplit", action="store_true", help="Force re-streaming SDF even if SMILES splits exist")
+    parser.add_argument("--force_resplit", action="store_true", help="Force re-reading CSV even if SMILES splits exist")
     args = parser.parse_args()
 
     random.seed(args.seed)
     os.makedirs(args.cache_dir, exist_ok=True)
 
-    print(f"SDF file: {args.sdf_file}")
+    print(f"CSV file: {args.csv_file}")
     print(f"Cache dir: {args.cache_dir}")
     print(f"Seed: {args.seed}")
     print(f"Augmentation: subgraph removal with ratio={args.removal_ratio}")
@@ -80,35 +88,27 @@ def main() -> None:
             print(f"  Train shard {i}: {len(split_smiles[f'train_{i}']):,} SMILES")
         print()
     else:
-        # Stream SDF and create SMILES splits
-        print("Step 1: Streaming SDF, extracting SMILES, and assigning splits...")
+        # Read CSV and create SMILES splits
+        print("Step 1: Reading CSV, extracting SMILES, and assigning splits...")
         
-        gz = args.sdf_file.endswith(".gz")
-        opener = gzip.open if gz else open
+        # Count total rows for progress bar
+        total_rows = count_csv_rows(args.csv_file)
+        print(f"  Total rows in CSV: {total_rows:,}")
 
         # Create split containers for SMILES
         split_smiles = {SPLIT_VAL: []}  # validation
         for i in range(NUM_TRAIN_SHARDS):
             split_smiles[f"train_{i}"] = []
         
-        invalid_count = 0
-        smiles_failed = 0
+        empty_smiles = 0
         
-        with opener(args.sdf_file, "rb") as f:
-            supp = Chem.ForwardSDMolSupplier(f, removeHs=False)
-            for mol in tqdm(supp, desc="Streaming SDF"):
-                if mol is None:
-                    invalid_count += 1
-                    continue
+        with open(args.csv_file, 'r', newline='', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in tqdm(reader, total=total_rows, desc="Reading CSV"):
+                smiles = row.get('SMILES', '').strip()
                 
-                # Extract SMILES (with stereochemistry)
-                try:
-                    smiles = Chem.MolToSmiles(mol, isomericSmiles=True)
-                    if not smiles:
-                        smiles_failed += 1
-                        continue
-                except Exception:
-                    smiles_failed += 1
+                if not smiles:
+                    empty_smiles += 1
                     continue
                 
                 # Assign to split
@@ -117,15 +117,14 @@ def main() -> None:
                     # Validation: 20%
                     split_smiles[SPLIT_VAL].append(smiles)
                 else:
-                    # Training: 80% split into 6 shards
+                    # Training: 80% split into NUM_TRAIN_SHARDS shards
                     shard_idx = int((r - 0.2) / 0.8 * NUM_TRAIN_SHARDS)
                     shard_idx = min(shard_idx, NUM_TRAIN_SHARDS - 1)  # Safety clamp
                     split_smiles[f"train_{shard_idx}"].append(smiles)
         
         total_smiles = len(split_smiles[SPLIT_VAL]) + sum(len(split_smiles[f"train_{i}"]) for i in range(NUM_TRAIN_SHARDS))
-        print(f"  Total SMILES extracted: {total_smiles:,}")
-        print(f"  Invalid molecules: {invalid_count:,}")
-        print(f"  SMILES extraction failed: {smiles_failed:,}")
+        print(f"  Total SMILES loaded: {total_smiles:,}")
+        print(f"  Empty/missing SMILES: {empty_smiles:,}")
         print(f"  Validation: {len(split_smiles[SPLIT_VAL]):,} SMILES")
         for i in range(NUM_TRAIN_SHARDS):
             print(f"  Train shard {i}: {len(split_smiles[f'train_{i}']):,} SMILES")
