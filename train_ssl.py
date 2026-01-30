@@ -16,7 +16,7 @@ from dataset.ssl.data_loader import create_val_loader, create_train_loader
 from models.gin_e import GINEEncoder
 from utils.loss import NTXentLoss
 
-NUM_TRAIN_SHARDS = 6
+NUM_TRAIN_SHARDS = 4
 
 
 def set_seed(seed: int):
@@ -354,7 +354,7 @@ def main():
     os.makedirs(config.checkpoint_dir, exist_ok=True)
     os.makedirs(config.log_dir, exist_ok=True)
 
-    # Check pre-augmented graph cache exists (val.pt + 6 training shards)
+    # Check pre-augmented graph cache exists (val.pt + 4 training shards)
     val_pt = os.path.join(config.cache_dir, "val.pt")
     train_shard_paths = [os.path.join(config.cache_dir, f"train_shard_{i}.pt") for i in range(NUM_TRAIN_SHARDS)]
     
@@ -362,7 +362,7 @@ def main():
     if not os.path.isfile(val_pt):
         raise FileNotFoundError(
             f"Validation cache not found: {val_pt}. Run build_graph_cache first, e.g.:\n"
-            f"  python dataset/ssl/build_graph_cache.py --sdf_file {config.sdf_file} --cache_dir {config.cache_dir}"
+            f"  python dataset/ssl/build_graph_cache.py --csv_file {config.csv_file} --cache_dir {config.cache_dir}"
         )
     
     # Check all training shards exist
@@ -370,7 +370,7 @@ def main():
         if not os.path.isfile(p):
             raise FileNotFoundError(
                 f"Training shard not found: {p}. Run build_graph_cache first, e.g.:\n"
-                f"  python dataset/ssl/build_graph_cache.py --sdf_file {config.sdf_file} --cache_dir {config.cache_dir}"
+                f"  python dataset/ssl/build_graph_cache.py --csv_file {config.csv_file} --cache_dir {config.cache_dir}"
             )
     
     print(f"Using pre-augmented graph cache: {config.cache_dir}")
