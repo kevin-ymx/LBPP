@@ -30,7 +30,7 @@ Amine (primary)	–NH2	CN	[NX3H2]
 Amine (secondary)	–NHR	CNC	[NX3H1]
 Amine (tertiary)	–NR2	CN(C)C	[NX3]
 Aniline	Ar–NH2	Nc1ccccc1	[NX3H2][c]
-Amide (N)	–CONH–, –CONH2, –CONR2	CC(=O)N	[NX3][CX3](=O)
+Amide (N)	–CONH–,–CONH2,–CONR2	CC(=O)N	[NX3][CX3](=O)
 Urea	–NH–CO–NH–	NC(=O)N	[NX3]C(=O)[NX3]
 Imine	C=N–	CC=N	[CX3]=[NX2]
 Oxime	C=NOH	CC=NO	[NX2][OX2H]
@@ -55,6 +55,7 @@ Phosphine	PR3	CP(C)C	[PX3]
 Phosphite	P(OR)3	COP(OC)OC	[PX3](O)(O)(O)
 Phosphonite	P(R)2OR	CP(C)OC	[PX3]([OX2])([CX4])[CX4]
 Phosphazene	P=N–	CP=N	[PX3]=[NX2]
+
 
 
 
