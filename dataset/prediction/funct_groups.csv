@@ -3,16 +3,28 @@ Alcohol	R–OH	CO	[OX2H]
 Phenol	Ar–OH	c1ccc(O)cc1	[OX2H][c]
 Ether	R–O–R	COC	[OX2]
 Epoxide	3-membered cyclic ether	C1CO1	[OX2r3]
-Aldehyde	R–C(=O)H	CC=O	[CX3H1](=O)[OX1]
-Ketone	R–C(=O)–R	CC(C)=O	[CX3](=O)[OX1]
+Aldehyde	R–C(=O)H	CC=O	[CX3H1](=O)
+Ketone	R–C(=O)–R	CC(C)=O	[#6][CX3](=O)[#6]
 Carboxylic acid	–C(=O)OH	CC(=O)O	C(=O)[OX2H]
 Ester	–C(=O)OR	CC(=O)OC	C(=O)[OX2]
-Amide (O)	–C(=O)NR	CC(=O)N	C(=O)[OX1]
+Amide (O)	–C(=O)NR	CC(=O)N	[OX1]=[CX3][NX3]
 Acyl halide	–COCl	CC(=O)Cl	C(=O)[Cl]
 Anhydride	–(CO)–O–(CO)–	CC(=O)OC(C)=O	C(=O)OC(=O)
 Peroxide	–O–O–	COO	[OX2][OX2]
 Hydroperoxide	–OOH	OO	[OX2][OX2H]
 Nitro	–NO2	C[N+](=O)[O-]	[NX3+](=O)[OX1-]
+Sulfoxide	–S(=O)–	CS(=O)C	[SX3](=O)
+Sulfone	–S(=O)2–	CS(=O)(=O)C	[SX4](=O)(=O)
+Sulfonic acid	–SO3H	CS(=O)(=O)O	S(=O)(=O)[OX2H]
+Sulfonate ester	–SO3R	COS(=O)(=O)C	S(=O)(=O)[OX2]
+Sulfonamide	–SO2NR2	CS(=O)(=O)N	S(=O)(=O)[NX3]
+Phosphine oxide	PR3=O	CP(=O)(C)C	[PX4](=O)
+Phosphoric acid	PO(OH)3	OP(=O)(O)O	P(=O)([OX2H])([OX2H])[OX2H]
+Phosphonic acid	–PO(OH)2	CP(=O)(O)O	P(=O)([OX2H])[OX2H]
+Phosphonate	PO(OR)2R	COP(=O)(C)OC	P(=O)([OX2])([OX2])[CX4]
+Phosphinate	PO(OR)R2	COP(=O)(C)C	P(=O)([OX2])([CX4])[CX4]
+Phosphate ester	PO(OR)3	COP(=O)(OC)OC	P(=O)([OX2])([OX2])[OX2]
+Phosphoramidate	PO(NR2)(OR)2	COP(=O)(N)OC	P(=O)([NX3])([OX2])[OX2]
 
 Amine (primary)	–NH2	CN	[NX3H2]
 Amine (secondary)	–NHR	CNC	[NX3H1]
@@ -35,23 +47,18 @@ Nitroso	–N=O	CN=O	[NX2]=[OX1]
 Thiol	–SH	CS	[SX2H]
 Sulfide (thioether)	–S–	CSC	[SX2]
 Disulfide	–S–S–	CSSC	[SX2][SX2]
-Sulfoxide	–S(=O)–	CS(=O)C	[SX3](=O)
-Sulfone	–S(=O)2–	CS(=O)(=O)C	[SX4](=O)(=O)
-Sulfonic acid	–SO3H	CS(=O)(=O)O	S(=O)(=O)[OX2H]
-Sulfonate ester	–SO3R	COS(=O)(=O)C	S(=O)(=O)[OX2]
-Sulfonamide	–SO2NR2	CS(=O)(=O)N	S(=O)(=O)[NX3]
 Thioaldehyde / thioketone	C=S	CC=S	[CX3]=[SX1]
 Thioamide	–CSNH–	CC(=S)N	C(=S)[NX3]
 Thiourea	–NH–CS–NH–	NC(=S)N	[NX3]C(=S)[NX3]
 
 Phosphine	PR3	CP(C)C	[PX3]
-Phosphine oxide	PR3=O	CP(=O)(C)C	[PX4](=O)
 Phosphite	P(OR)3	COP(OC)OC	[PX3](O)(O)(O)
 Phosphonite	P(R)2OR	CP(C)OC	[PX3]([OX2])([CX4])[CX4]
-Phosphoric acid	PO(OH)3	OP(=O)(O)O	P(=O)([OX2H])([OX2H])[OX2H]
-Phosphonic acid	–PO(OH)2	CP(=O)(O)O	P(=O)([OX2H])[OX2H]
-Phosphonate	PO(OR)2R	COP(=O)(C)OC	P(=O)([OX2])([OX2])[CX4]
-Phosphinate	PO(OR)R2	COP(=O)(C)C	P(=O)([OX2])([CX4])[CX4]
-Phosphate ester	PO(OR)3	COP(=O)(OC)OC	P(=O)([OX2])([OX2])[OX2]
-Phosphoramidate	PO(NR2)(OR)2	COP(=O)(N)OC	P(=O)([NX3])([OX2])[OX2]
 Phosphazene	P=N–	CP=N	[PX3]=[NX2]
+
+
+
+
+
+
+
