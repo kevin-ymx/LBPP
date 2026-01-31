@@ -3,59 +3,58 @@ Alcohol	R–OH	CO	[OX2H]
 Phenol	Ar–OH	c1ccc(O)cc1	[OX2H][c]
 Ether	R–O–R	COC	[OX2]
 Epoxide	3-membered cyclic ether	C1CO1	[OX2r3]
-Aldehyde	R–C(=O)H	CC=O	[CX3H1](=O)
-Ketone	R–C(=O)–R	CC(C)=O	[#6][CX3](=O)[#6]
-Carboxylic acid	–C(=O)OH	CC(=O)O	C(=O)[OX2H]
-Ester	–C(=O)OR	CC(=O)OC	C(=O)[OX2]
+Aldehyde	R–C(=O)H	CC=O	[OX1]=[CX3H1]
+Ketone	R–C(=O)–R	CC(C)=O	[OX1]=[CX3]([#6])[#6]
+Carboxylic acid	–C(=O)OH	CC(=O)O	[OX2H]C(=O)
+Ester	–C(=O)OR	CC(=O)OC	[OX2]C(=O)
 Amide (O)	–C(=O)NR	CC(=O)N	[OX1]=[CX3][NX3]
-Acyl halide	–COCl	CC(=O)Cl	C(=O)[Cl]
-Anhydride	–(CO)–O–(CO)–	CC(=O)OC(C)=O	C(=O)OC(=O)
+Acyl halide	–COCl	CC(=O)Cl	[OX1]=C[Cl]
+Anhydride	–(CO)–O–(CO)–	CC(=O)OC(C)=O	[OX2](C(=O))C(=O)
 Peroxide	–O–O–	COO	[OX2][OX2]
 Hydroperoxide	–OOH	OO	[OX2][OX2H]
-Nitro	–NO2	C[N+](=O)[O-]	[NX3+](=O)[OX1-]
-Sulfoxide	–S(=O)–	CS(=O)C	[SX3](=O)
-Sulfone	–S(=O)2–	CS(=O)(=O)C	[SX4](=O)(=O)
-Sulfonic acid	–SO3H	CS(=O)(=O)O	S(=O)(=O)[OX2H]
-Sulfonate ester	–SO3R	COS(=O)(=O)C	S(=O)(=O)[OX2]
-Sulfonamide	–SO2NR2	CS(=O)(=O)N	S(=O)(=O)[NX3]
-Phosphine oxide	PR3=O	CP(=O)(C)C	[PX4](=O)
-Phosphoric acid	PO(OH)3	OP(=O)(O)O	P(=O)([OX2H])([OX2H])[OX2H]
-Phosphonic acid	–PO(OH)2	CP(=O)(O)O	P(=O)([OX2H])[OX2H]
-Phosphonate	PO(OR)2R	COP(=O)(C)OC	P(=O)([OX2])([OX2])[CX4]
-Phosphinate	PO(OR)R2	COP(=O)(C)C	P(=O)([OX2])([CX4])[CX4]
-Phosphate ester	PO(OR)3	COP(=O)(OC)OC	P(=O)([OX2])([OX2])[OX2]
-Phosphoramidate	PO(NR2)(OR)2	COP(=O)(N)OC	P(=O)([NX3])([OX2])[OX2]
+Nitro	–NO2	C[N+](=O)[O-]	[OX1-][NX3+](=O)
+Sulfoxide	–S(=O)–	CS(=O)C	[OX1]=[SX3]
+Sulfone	–S(=O)2–	CS(=O)(=O)C	[OX1]=[SX4](=O)
+Sulfonic acid	–SO3H	CS(=O)(=O)O	[OX2H]S(=O)(=O)
+Sulfonate ester	–SO3R	COS(=O)(=O)C	[OX2]S(=O)(=O)
+Sulfonamide	–SO2NR2	CS(=O)(=O)N	[OX1]=S(=O)[NX3]
+Phosphine oxide	PR3=O	CP(=O)(C)C	[OX1]=[PX4]
+Phosphoric acid	PO(OH)3	OP(=O)(O)O	[OX2H]P(=O)([OX2H])[OX2H]
+Phosphonic acid	–PO(OH)2	CP(=O)(O)O	[OX2H]P(=O)[OX2H]
+Phosphonate	PO(OR)2R	COP(=O)(C)OC	[OX2]P(=O)([OX2])[CX4]
+Phosphinate	PO(OR)R2	COP(=O)(C)C	[OX2]P(=O)([CX4])[CX4]
+Phosphate ester	PO(OR)3	COP(=O)(OC)OC	[OX2]P(=O)([OX2])[OX2]
+Phosphoramidate	PO(NR2)(OR)2	COP(=O)(N)OC	[OX2]P(=O)([NX3])[OX2]
 
 Amine (primary)	–NH2	CN	[NX3H2]
 Amine (secondary)	–NHR	CNC	[NX3H1]
 Amine (tertiary)	–NR2	CN(C)C	[NX3]
 Aniline	Ar–NH2	Nc1ccccc1	[NX3H2][c]
-Amide (N)	–CONH–,–CONH2,–CONR2	CC(=O)N	[NX3][CX3](=O)
+Amide (N)	–CONH–, –CONH2, –CONR2	CC(=O)N	[NX3][CX3](=O)
 Urea	–NH–CO–NH–	NC(=O)N	[NX3]C(=O)[NX3]
-Imine	C=N–	CC=N	[CX3]=[NX2]
+Imine	C=N–	CC=N	[NX2]=[CX3]
 Oxime	C=NOH	CC=NO	[NX2][OX2H]
 Hydrazone	C=NNR	CC=NN	[NX2][NX3]
-Imide	–CO–NH–CO–	CC(=O)NC(C)=O	C(=O)[NX3]C(=O)
-Carbamate	–O–CO–NH–	NC(=O)OC	[OX2]C(=O)[NX3]
-Pyridine N	aromatic N	c1ccncc1	[nH0]
-Pyrrole N	aromatic NH	c1cc[nH]c1	[nH]
-Imidazole (pyridine N)	heterocycle	c1cnc[nH]1	[nH0]
-Imidazole (pyrrole N)	heterocycle	c1cnc[nH]1	[nH]
-Azine	–C=NN=C–	CC=NN=C	[CX3]=[NX2][NX2]=[CX3]
+Imide	–CO–NH–CO–	CC(=O)NC(C)=O	[NX3](C(=O))C(=O)
+Carbamate	–O–CO–NH–	NC(=O)OC	[NX3]C(=O)[OX2]
+Pyridine N	aromatic N (6-ring)	c1ccncc1	[nH0;r6]
+Pyrrole N	aromatic NH (5-ring)	c1cc[nH]c1	[nH;r5]
+Imidazole (pyridine N)	imidazole =N-	c1cnc[nH]1	[nH0]1cnc[nH]1
+Imidazole (pyrrole N)	imidazole -NH-	c1cnc[nH]1	[nH]1cnc[nH0]1
+Azine	–C=NN=C–	CC=NN=C	[NX2](=[CX3])[NX2]=[CX3]
 Nitroso	–N=O	CN=O	[NX2]=[OX1]
 
 Thiol	–SH	CS	[SX2H]
 Sulfide (thioether)	–S–	CSC	[SX2]
 Disulfide	–S–S–	CSSC	[SX2][SX2]
-Thioaldehyde / thioketone	C=S	CC=S	[CX3]=[SX1]
-Thioamide	–CSNH–	CC(=S)N	C(=S)[NX3]
-Thiourea	–NH–CS–NH–	NC(=S)N	[NX3]C(=S)[NX3]
+Thioaldehyde / thioketone	C=S	CC=S	[SX1]=[CX3]
+Thioamide	–CSNH–	CC(=S)N	[SX1]=C[NX3]
+Thiourea	–NH–CS–NH–	NC(=S)N	[SX1]=C([NX3])[NX3]
 
 Phosphine	PR3	CP(C)C	[PX3]
-Phosphite	P(OR)3	COP(OC)OC	[PX3](O)(O)(O)
+Phosphite	P(OR)3	COP(OC)OC	[PX3]([OX2])([OX2])[OX2]
 Phosphonite	P(R)2OR	CP(C)OC	[PX3]([OX2])([CX4])[CX4]
 Phosphazene	P=N–	CP=N	[PX3]=[NX2]
-
 
 
 
