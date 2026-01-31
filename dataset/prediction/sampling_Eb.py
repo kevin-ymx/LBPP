@@ -2,17 +2,19 @@
 Functional Group-Based Molecule Sampling Script
 
 This script:
-1. Reads molecules from a root SDF file
-2. Classifies molecules by functional groups using SMARTS patterns from funct_groups.csv
+1. Reads molecules from a CSV file (with PUBCHEM_COMPOUND_CID, SMILES columns)
+2. Classifies molecules by functional groups using SMARTS patterns from funct_group.csv
    - Stores (CID, SMILES) tuples for each FG
 3. Creates separate CSV files (CID, SMILES) for each functional group
 4. Samples a fixed ratio (default 0.3%) from each functional group
-   - FGs with 0 samples after rounding are skipped
+   - Minimum samples per FG: 10 (if ratio gives < 10, sample 10 instead)
+   - Capped at available molecules
 5. Stores the final sample details in a CSV file (sorted by FG)
 
 Usage:
-    python sampling_Eb.py --input root_molecules.sdf --output_dir ./fg_samples --final_output sampled_details.csv
-    python sampling_Eb.py --input root_molecules.sdf --output_dir ./fg_samples --sample_ratio 0.003
+    python sampling_Eb.py --input molecules.csv --output_dir ./fg_samples --final_output sampled_details.csv
+    python sampling_Eb.py --input molecules.csv --output_dir ./fg_samples --sample_ratio 0.003
+    python sampling_Eb.py --input molecules.csv --min_samples 20  # Custom minimum
 """
 
 import os
@@ -32,7 +34,7 @@ def load_functional_groups(csv_path: str) -> Dict[str, Dict[str, str]]:
     Load functional group names, structure, SMILES, and SMARTS patterns from CSV file.
     
     Args:
-        csv_path: Path to funct_groups.csv
+        csv_path: Path to funct_group.csv
         
     Returns:
         Dictionary mapping functional group names to {'structure': ..., 'smiles': ..., 'smarts': ...}
@@ -86,67 +88,22 @@ def sanitize_filename(name: str) -> str:
     return result
 
 
-def count_molecules_in_sdf(sdf_path: str) -> int:
-    """Count total molecules in SDF file (for progress bar)."""
-    count = 0
-    if sdf_path.endswith('.gz'):
-        import gzip
-        with gzip.open(sdf_path, 'rt') as f:
-            for line in f:
-                if line.strip() == '$$$$':
-                    count += 1
-    else:
-        with open(sdf_path, 'r') as f:
-            for line in f:
-                if line.strip() == '$$$$':
-                    count += 1
-    return count
-
-
-def get_mol_cid_smiles(mol: Chem.Mol, mol_index: int = 0) -> Tuple[str, str]:
-    """
-    Get CID and canonical SMILES for a molecule.
-    
-    Args:
-        mol: RDKit molecule
-        mol_index: Index of molecule in file (used as fallback CID)
-    
-    Returns:
-        Tuple of (cid, smiles)
-    """
-    # Get SMILES
-    try:
-        smiles = Chem.MolToSmiles(mol, canonical=True)
-    except:
-        smiles = ""
-    
-    # Get CID from properties (try multiple common property names)
-    cid = ""
-    cid_props = ['PUBCHEM_COMPOUND_CID', '_Name', 'CID', 'ID', 'Name', 'COMPOUND_CID']
-    for prop in cid_props:
-        if mol.HasProp(prop):
-            val = mol.GetProp(prop).strip()
-            if val:
-                cid = val
-                break
-    
-    # Fallback to molecule index if no CID found
-    if not cid:
-        cid = f"MOL_{mol_index}"
-    
-    return cid, smiles
+def count_csv_rows(csv_path: str) -> int:
+    """Count total rows in CSV file (excluding header) for progress bar."""
+    with open(csv_path, 'r', encoding='utf-8') as f:
+        return sum(1 for _ in f) - 1  # Subtract 1 for header
 
 
 def classify_molecules_by_functional_group(
-    input_sdf: str,
+    input_csv: str,
     functional_groups: Dict[str, Dict[str, str]]
 ) -> Tuple[Dict[str, List[Tuple[str, str]]], Dict[str, int]]:
     """
-    Classify molecules from SDF by functional groups.
-    Stores (CID, SMILES) tuples instead of molecule objects.
+    Classify molecules from CSV by functional groups.
+    Reads (CID, SMILES) from CSV, converts SMILES to mol for SMARTS matching.
     
     Args:
-        input_sdf: Path to input SDF file
+        input_csv: Path to input CSV file with columns PUBCHEM_COMPOUND_CID, SMILES
         functional_groups: Dictionary of functional group names to {'smiles': ..., 'smarts': ...}
         
     Returns:
@@ -165,62 +122,65 @@ def classify_molecules_by_functional_group(
     molecules_by_fg = defaultdict(list)  # FG name -> list of (CID, SMILES) tuples
     count_by_fg = defaultdict(int)
     
-    # Read molecules from SDF
-    print(f"\nReading molecules from {input_sdf}...")
+    # Read molecules from CSV
+    print(f"\nReading molecules from {input_csv}...")
     
-    # Count total molecules for progress bar
-    print("Counting molecules...")
-    total_in_file = count_molecules_in_sdf(input_sdf)
-    print(f"Found {total_in_file} molecules in file")
-    
-    # Handle both .sdf and .sdf.gz files
-    if input_sdf.endswith('.gz'):
-        import gzip
-        supplier = Chem.ForwardSDMolSupplier(gzip.open(input_sdf, 'rb'))
-    else:
-        supplier = Chem.SDMolSupplier(input_sdf)
+    # Count total rows for progress bar
+    print("Counting rows...")
+    total_rows = count_csv_rows(input_csv)
+    print(f"Found {total_rows:,} rows in CSV")
     
     total_mols = 0
     classified_mols = 0
+    invalid_smiles = 0
     
-    pbar = tqdm(supplier, total=total_in_file, desc="Classifying molecules", unit="mol")
-    for mol in pbar:
-        if mol is None:
-            continue
+    with open(input_csv, 'r', newline='', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
         
-        total_mols += 1
-        mol_classified = False
+        pbar = tqdm(reader, total=total_rows, desc="Classifying molecules", unit="mol")
+        for row in pbar:
+            # Get CID and SMILES from CSV
+            cid = row.get('PUBCHEM_COMPOUND_CID', '').strip()
+            smiles = row.get('SMILES', '').strip()
+            
+            # Skip empty rows
+            if not smiles:
+                continue
+            
+            total_mols += 1
+            
+            # Convert SMILES to mol for substructure matching
+            mol = Chem.MolFromSmiles(smiles)
+            if mol is None:
+                invalid_smiles += 1
+                continue
+            
+            mol_classified = False
+            
+            # Check each functional group
+            for fg_name, pattern in patterns.items():
+                if mol.HasSubstructMatch(pattern):
+                    # Store (CID, SMILES) tuple
+                    molecules_by_fg[fg_name].append((cid, smiles))
+                    count_by_fg[fg_name] += 1
+                    mol_classified = True
+            
+            if mol_classified:
+                classified_mols += 1
+            
+            # Update progress bar postfix
+            if total_mols % 1000 == 0:
+                pbar.set_postfix({
+                    'valid': total_mols,
+                    'classified': classified_mols,
+                    'FGs': len(count_by_fg)
+                })
         
-        # Get CID and SMILES once per molecule (pass index as fallback CID)
-        cid, smiles = get_mol_cid_smiles(mol, mol_index=total_mols)
-        
-        # Skip if no valid SMILES
-        if not smiles:
-            continue
-        
-        # Check each functional group
-        for fg_name, pattern in patterns.items():
-            if mol.HasSubstructMatch(pattern):
-                # Store (CID, SMILES) tuple instead of molecule object
-                molecules_by_fg[fg_name].append((cid, smiles))
-                count_by_fg[fg_name] += 1
-                mol_classified = True
-        
-        if mol_classified:
-            classified_mols += 1
-        
-        # Update progress bar postfix
-        if total_mols % 1000 == 0:
-            pbar.set_postfix({
-                'valid': total_mols,
-                'classified': classified_mols,
-                'FGs': len(count_by_fg)
-            })
+        pbar.close()
     
-    pbar.close()
-    
-    print(f"\nTotal molecules read: {total_mols}")
-    print(f"Molecules with at least one functional group: {classified_mols}")
+    print(f"\nTotal molecules read: {total_mols:,}")
+    print(f"Invalid SMILES: {invalid_smiles:,}")
+    print(f"Molecules with at least one functional group: {classified_mols:,}")
     
     return dict(molecules_by_fg), dict(count_by_fg)
 
@@ -247,7 +207,7 @@ def save_functional_group_csvs(
     total_entries = sum(len(mols) for mols in molecules_by_fg.values())
     
     print(f"\nSaving functional group CSV files to {output_dir}...")
-    print(f"Total entries to write: {total_entries}")
+    print(f"Total entries to write: {total_entries:,}")
     
     pbar = tqdm(total=total_entries, desc="Writing CSV files", unit="entry")
     
@@ -295,12 +255,16 @@ def print_distribution(count_by_fg: Dict[str, int]):
     print("=" * 70)
 
 
+MIN_SAMPLES_PER_FG = 10  # Minimum samples per functional group
+
+
 def stratified_sample(
     molecules_by_fg: Dict[str, List[Tuple[str, str]]],
     count_by_fg: Dict[str, int],
     functional_groups: Dict[str, Dict[str, str]],
     sample_ratio: float = 0.003,
-    seed: int = 42
+    seed: int = 42,
+    min_samples: int = MIN_SAMPLES_PER_FG
 ) -> List[Dict]:
     """
     Sample molecules from each functional group at a fixed ratio.
@@ -312,6 +276,7 @@ def stratified_sample(
         functional_groups: Dictionary with FG info (smiles, smarts)
         sample_ratio: Fraction of molecules to sample from each FG (default: 0.003 = 0.3%)
         seed: Random seed
+        min_samples: Minimum samples per FG (default: 10)
         
     Returns:
         List of dicts with CID, SMILES, functional_group_name, functional_group_smarts
@@ -323,16 +288,19 @@ def stratified_sample(
         print("Error: No molecules found in any functional group!")
         return []
     
-    # Calculate samples per functional group (fixed ratio of each FG's count)
+    # Calculate samples per functional group (fixed ratio of each FG's count, with minimum)
     samples_per_fg = {}
     
     for fg_name, count in count_by_fg.items():
         # Sample ratio of each FG's count
         n_fg_samples = int(round(count * sample_ratio))
         
-        # Cap at available molecules and ensure non-negative
+        # Apply minimum samples per FG
+        n_fg_samples = max(n_fg_samples, min_samples)
+        
+        # Cap at available molecules
         available = len(molecules_by_fg.get(fg_name, []))
-        n_fg_samples = max(0, min(n_fg_samples, available))
+        n_fg_samples = min(n_fg_samples, available)
         
         # Only include FGs with samples > 0
         if n_fg_samples > 0:
@@ -340,7 +308,7 @@ def stratified_sample(
     
     # Print sampling plan (only FGs with samples > 0)
     print("\n" + "=" * 70)
-    print(f"SAMPLING PLAN (ratio: {sample_ratio*100:.2f}%)")
+    print(f"SAMPLING PLAN (ratio: {sample_ratio*100:.2f}%, min: {min_samples})")
     print("=" * 70)
     print(f"{'Functional Group':<40} {'Available':>10} {'To Sample':>12}")
     print("-" * 70)
@@ -358,7 +326,7 @@ def stratified_sample(
     seen_smiles = set()  # Track unique molecules by canonical SMILES
     total_to_sample = sum(samples_per_fg.values())
     
-    print(f"\nSampling {total_to_sample} molecules from {len(samples_per_fg)} functional groups...")
+    print(f"\nSampling {total_to_sample:,} molecules from {len(samples_per_fg)} functional groups...")
     
     pbar = tqdm(total=total_to_sample, desc="Sampling molecules", unit="mol")
     
@@ -416,7 +384,7 @@ def stratified_sample(
     
     pbar.close()
     
-    print(f"\nTotal unique molecules sampled: {len(sample_info)}")
+    print(f"\nTotal unique molecules sampled: {len(sample_info):,}")
     
     return sample_info
 
@@ -479,20 +447,20 @@ def save_sample_details_csv(sample_info: List[Dict], output_path: str):
     for info in sample_info:
         fg_counts[info['functional_group_name']] += 1
     
-    print(f"\nSample details saved: {len(sample_info)} molecules")
+    print(f"\nSample details saved: {len(sample_info):,} molecules")
     print(f"Functional groups represented: {len(fg_counts)}")
     print(f"Output file: {output_path}")
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Sample molecules by functional group from SDF file"
+        description="Sample molecules by functional group from CSV file"
     )
     parser.add_argument(
         "--input", "-i",
         type=str,
         required=True,
-        help="Path to input root SDF file (can be .sdf or .sdf.gz)"
+        help="Path to input CSV file with columns: PUBCHEM_COMPOUND_CID, SMILES"
     )
     parser.add_argument(
         "--output_dir", "-o",
@@ -510,7 +478,7 @@ def main():
         "--fg_csv",
         type=str,
         default=None,
-        help="Path to functional groups CSV (default: funct_groups.csv in same directory)"
+        help="Path to functional groups CSV (default: funct_group.csv in same directory)"
     )
     parser.add_argument(
         "--sample_ratio", "-r",
@@ -525,6 +493,12 @@ def main():
         help="Random seed for sampling (default: 42)"
     )
     parser.add_argument(
+        "--min_samples",
+        type=int,
+        default=MIN_SAMPLES_PER_FG,
+        help=f"Minimum samples per functional group (default: {MIN_SAMPLES_PER_FG})"
+    )
+    parser.add_argument(
         "--skip_fg_csvs",
         action="store_true",
         help="Skip creating individual functional group CSV files"
@@ -535,25 +509,26 @@ def main():
     # Determine functional groups CSV path
     if args.fg_csv is None:
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        args.fg_csv = os.path.join(script_dir, "funct_groups.csv")
+        args.fg_csv = os.path.join(script_dir, "funct_group.csv")
     
     if not os.path.exists(args.fg_csv):
         print(f"Error: Functional groups CSV not found: {args.fg_csv}")
         sys.exit(1)
     
     if not os.path.exists(args.input):
-        print(f"Error: Input SDF file not found: {args.input}")
+        print(f"Error: Input CSV file not found: {args.input}")
         sys.exit(1)
     
     # Load functional groups
     print("=" * 70)
     print("FUNCTIONAL GROUP MOLECULE SAMPLING")
     print("=" * 70)
-    print(f"\nInput SDF: {args.input}")
+    print(f"\nInput CSV: {args.input}")
     print(f"Functional groups CSV: {args.fg_csv}")
     print(f"Output directory: {args.output_dir}")
     print(f"Final output: {args.final_output}")
     print(f"Sample ratio: {args.sample_ratio*100:.2f}%")
+    print(f"Min samples per FG: {args.min_samples}")
     print(f"Random seed: {args.seed}")
     
     # Step 1: Load functional groups
@@ -589,10 +564,10 @@ def main():
     else:
         print("\n[Step 3] Skipping functional group CSV files (--skip_fg_csvs)")
     
-    # Step 4: Sampling (ratio-based per FG)
-    print(f"\n[Step 4] Sampling {args.sample_ratio*100:.2f}% from each functional group...")
+    # Step 4: Sampling (ratio-based per FG with minimum)
+    print(f"\n[Step 4] Sampling {args.sample_ratio*100:.2f}% (min {args.min_samples}) from each functional group...")
     sample_info = stratified_sample(
-        molecules_by_fg, count_by_fg, functional_groups, args.sample_ratio, args.seed
+        molecules_by_fg, count_by_fg, functional_groups, args.sample_ratio, args.seed, args.min_samples
     )
     
     if len(sample_info) == 0:
@@ -612,7 +587,7 @@ def main():
     print("\n" + "=" * 70)
     print("SAMPLING COMPLETE")
     print("=" * 70)
-    print(f"Total unique sampled molecules: {len(sample_info)}")
+    print(f"Total unique sampled molecules: {len(sample_info):,}")
     print(f"Sample details CSV: {args.final_output}")
     
     if not args.skip_fg_csvs:
