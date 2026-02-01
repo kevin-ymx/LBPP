@@ -1,3 +1,4 @@
+import csv
 import json
 import os
 import re
@@ -5,24 +6,24 @@ import time
 from typing import List, Optional, Dict
 from openai import OpenAI
 import requests
+from tqdm import tqdm
 
 # -----------------------
 # CONFIG
 # -----------------------
-# OpenAI API key - set via environment variable or directly here
-# Option 1: Set environment variable OPENAI_API_KEY
-# Option 2: Set directly: OPENAI_API_KEY = "sk-..."
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+# OpenAI API key - paste your key below (replace YOUR_API_KEY_HERE)
+OPENAI_API_KEY = "model_api_key"
 
-MODEL_NAME = "gpt-4.1-mini"  # or gpt-4.1 / gpt-4o / gpt-5-mini
-INPUT_FILE = "abstracts.txt"  # WOS export format (SO=journal, AB=abstract, ER=end record)
-OUTPUT_FILE = "extracted_results.json"  # JSON array sorted by impact factor (high to low)
-SLEEP_BETWEEN_CALLS = 1.0  # seconds (rate limit safety)
+MODEL_NAME = "gpt-5-mini"  # or gpt-4.1 / gpt-4o / gpt-4.1-mini / gpt-5-mini
+INPUT_FILE = "abstract.txt"  # WOS export format (SO=journal, AB=abstract, ER=end record)
+OUTPUT_JSON = "extracted_results.json"  # JSON output sorted by impact factor (high to low)
+OUTPUT_CSV = "extracted_results.csv"  # CSV table output (excludes claimed_mechanisms)
+SLEEP_BETWEEN_CALLS = 0.2  # seconds (rate limit safety)
 PUBCHEM_API_TIMEOUT = 5.0  # seconds
 
 # Initialize OpenAI client
 if not OPENAI_API_KEY:
-    raise ValueError("OPENAI_API_KEY not set. Set environment variable or configure in script.")
+    raise ValueError("OPENAI_API_KEY not set. Set environment variable or configure in script (line 16).")
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 # -----------------------
@@ -262,15 +263,15 @@ You must:
 USER_PROMPT_TEMPLATE = """Extract information from the abstract below and return it strictly in the following JSON schema.
 
 JSON SCHEMA:
-{
-  "paper_metadata": {
+{{
+  "paper_metadata": {{
     "title": null,
     "year": null,
     "journal": null,
     "impact_factor": null
-  },
+  }},
   "molecules": [
-    {
+    {{
       "name": null,
       "cid": null,
       "type": null,
@@ -278,28 +279,28 @@ JSON SCHEMA:
       "role": null,
       "interface_location": null,
       "evidence": null
-    }
+    }}
   ],
-  "device_metrics": {
-    "pce_max": { "value": null, "units": "%", "evidence": null },
-    "voc": { "value": null, "units": "V", "evidence": null },
-    "jsc": { "value": null, "units": "mA/cm2", "evidence": null },
-    "ff": { "value": null, "units": "%", "evidence": null }
-  },
+  "device_metrics": {{
+    "pce_max": {{ "value": null, "units": "%", "evidence": null }},
+    "voc": {{ "value": null, "units": "V", "evidence": null }},
+    "jsc": {{ "value": null, "units": "mA/cm2", "evidence": null }},
+    "ff": {{ "value": null, "units": "%", "evidence": null }}
+  }},
   "stability_metrics": [
-    {
+    {{
       "metric_type": null,
       "value": null,
       "units": null,
       "test_conditions": null,
       "evidence": null
-    }
+    }}
   ],
-  "perovskite_type": { "value": null, "evidence": null },
+  "perovskite_type": {{ "value": null, "evidence": null }},
   "claimed_mechanisms": [
-    { "mechanism": null, "evidence": null }
+    {{ "mechanism": null, "evidence": null }}
   ]
-}
+}}
 
 EXTRACTION RULES:
 - Only extract information explicitly stated in the abstract
@@ -381,6 +382,10 @@ def load_abstracts(path: str) -> List[Dict[str, str]]:
     Returns:
         List of dicts with 'title', 'journal', and 'abstract' keys.
     """
+    if not os.path.exists(path):
+        print(f"Error: File not found: {path}")
+        return []
+    
     with open(path, "r", encoding="utf-8") as f:
         text = f.read()
     
@@ -394,22 +399,39 @@ def load_abstracts(path: str) -> List[Dict[str, str]]:
             continue
         
         parsed = parse_wos_record(record)
-        if parsed['abstract']:  # Only include records with abstracts
+        if parsed['abstract']:
             results.append(parsed)
     
     return results
 
 
 def call_gpt(abstract: str) -> dict:
-    response = client.chat.completions.create(
+    prompt = f"{SYSTEM_PROMPT}\n\n{USER_PROMPT_TEMPLATE.format(abstract=abstract)}"
+    
+    response = client.responses.create(
         model=MODEL_NAME,
-        temperature=0.0,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": USER_PROMPT_TEMPLATE.format(abstract=abstract)}
-        ],
+        input=prompt
     )
-    return json.loads(response.choices[0].message.content)
+    
+    raw_text = response.output_text
+    
+    if not raw_text:
+        raise ValueError("Empty response from API")
+    
+    # Clean up response - remove markdown code blocks if present
+    text = raw_text.strip()
+    
+    if text.startswith("```json"):
+        text = text[7:]
+    elif text.startswith("```"):
+        text = text[3:]
+    
+    if text.endswith("```"):
+        text = text[:-3]
+    
+    text = text.strip()
+    
+    return json.loads(text)
 
 
 def enrich_with_external_data(result: dict) -> dict:
@@ -458,34 +480,119 @@ def get_impact_factor_for_sorting(result: dict) -> float:
     return 0.0
 
 
+def results_to_csv_rows(all_results: List[dict]) -> List[dict]:
+    """
+    Convert extracted results to flat CSV rows.
+    Each molecule gets its own row. Excludes claimed_mechanisms.
+    """
+    rows = []
+    
+    for result in all_results:
+        # Paper metadata
+        paper = result.get("paper_metadata", {})
+        title = paper.get("title", "")
+        year = paper.get("year", "")
+        journal = paper.get("journal", "")
+        impact_factor = paper.get("impact_factor", "")
+        
+        # Device metrics
+        device = result.get("device_metrics", {})
+        pce_max = device.get("pce_max", {}).get("value", "")
+        voc = device.get("voc", {}).get("value", "")
+        jsc = device.get("jsc", {}).get("value", "")
+        ff = device.get("ff", {}).get("value", "")
+        
+        # Perovskite type
+        perovskite = result.get("perovskite_type", {}).get("value", "")
+        
+        # Stability metrics (combine into one field)
+        stability_list = result.get("stability_metrics", [])
+        stability_str = "; ".join([
+            f"{s.get('metric_type', '')}: {s.get('value', '')} {s.get('units', '')} ({s.get('test_conditions', '')})"
+            for s in stability_list if s.get('metric_type')
+        ])
+        
+        # Molecules - one row per molecule
+        molecules = result.get("molecules", [])
+        if molecules:
+            for mol in molecules:
+                row = {
+                    "title": title,
+                    "year": year,
+                    "journal": journal,
+                    "impact_factor": impact_factor,
+                    "molecule_name": mol.get("name", ""),
+                    "molecule_cid": mol.get("cid", ""),
+                    "molecule_type": mol.get("type", ""),
+                    "functional_groups": "; ".join(mol.get("functional_groups", []) or []),
+                    "role": mol.get("role", ""),
+                    "interface_location": mol.get("interface_location", ""),
+                    "pce_max": pce_max,
+                    "voc": voc,
+                    "jsc": jsc,
+                    "ff": ff,
+                    "perovskite_type": perovskite,
+                    "stability": stability_str,
+                }
+                rows.append(row)
+        else:
+            # No molecules - still create a row for the paper
+            row = {
+                "title": title,
+                "year": year,
+                "journal": journal,
+                "impact_factor": impact_factor,
+                "molecule_name": "",
+                "molecule_cid": "",
+                "molecule_type": "",
+                "functional_groups": "",
+                "role": "",
+                "interface_location": "",
+                "pce_max": pce_max,
+                "voc": voc,
+                "jsc": jsc,
+                "ff": ff,
+                "perovskite_type": perovskite,
+                "stability": stability_str,
+            }
+            rows.append(row)
+    
+    return rows
+
+
 # -----------------------
 # MAIN
 # -----------------------
 def main():
     records = load_abstracts(INPUT_FILE)
-    print(f"Loaded {len(records)} abstracts from WOS file")
+    print(f"Loaded {len(records)} abstracts from WOS file\n")
     
     # Collect all results
     all_results = []
+    success_count = 0
+    error_count = 0
     
-    for idx, record in enumerate(records):
+    # Process abstracts with progress bar
+    pbar = tqdm(records, desc="Extracting", unit="abstract")
+    for idx, record in enumerate(pbar):
         title = record['title']
         journal = record['journal']
         abstract = record['abstract']
         
+        # Update progress bar description
+        short_title = (title[:30] + "...") if title and len(title) > 30 else (title or "No title")
+        pbar.set_postfix_str(f"{short_title}")
+        
         try:
-            # Extract with GPT (only the abstract text)
+            # Extract with GPT
             result = call_gpt(abstract)
-            print(f"[OK] Abstract {idx+1}/{len(records)} - GPT extraction complete")
             
             # Override title and journal with WOS source (more reliable)
             result.setdefault("paper_metadata", {})
             if title:
                 result["paper_metadata"]["title"] = title
-                print(f"    Title (from WOS): {title[:60]}..." if len(title) > 60 else f"    Title (from WOS): {title}")
             if journal:
                 result["paper_metadata"]["journal"] = journal
-                print(f"    Journal (from WOS): {journal}")
             
             # Enrich with external data (impact factor, CIDs)
             result = enrich_with_external_data(result)
@@ -493,13 +600,17 @@ def main():
             # Store result with original index for reference
             result["_original_index"] = idx + 1
             all_results.append(result)
-            print(f"[OK] Abstract {idx+1}/{len(records)} - Enrichment complete")
+            success_count += 1
         except Exception as e:
-            print(f"[ERROR] Abstract {idx+1}: {e}")
+            tqdm.write(f"[ERROR] Abstract {idx+1}: {e}")
+            error_count += 1
+        
         time.sleep(SLEEP_BETWEEN_CALLS)
     
+    print(f"\nExtraction complete: {success_count} success, {error_count} errors")
+    
     # Sort results by impact factor (high to low)
-    print(f"\nSorting {len(all_results)} results by impact factor (high to low)...")
+    print(f"Sorting {len(all_results)} results by impact factor (high to low)...")
     all_results.sort(key=get_impact_factor_for_sorting, reverse=True)
     
     # Remove temporary index field and print order
@@ -510,12 +621,27 @@ def main():
         journal = result.get("paper_metadata", {}).get("journal", "Unknown")
         print(f"  {i+1}. Abstract {original_idx} - {journal} (IF: {impact_factor})")
     
-    # Write sorted results to output file as JSON array
-    print(f"\nWriting sorted results to {OUTPUT_FILE}...")
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as fout:
-        json.dump(all_results, fout, ensure_ascii=False, indent=2)
+    # Write sorted results to JSON file with empty lines between abstracts
+    print(f"\nWriting JSON results to {OUTPUT_JSON}...")
+    with open(OUTPUT_JSON, "w", encoding="utf-8") as fout:
+        for i, result in enumerate(all_results):
+            fout.write(json.dumps(result, ensure_ascii=False, indent=2))
+            if i < len(all_results) - 1:
+                fout.write("\n\n")  # Empty line between abstracts
     
-    print(f"\nDone! {len(all_results)} results written to {OUTPUT_FILE}")
+    # Write CSV table (excludes claimed_mechanisms)
+    print(f"Writing CSV results to {OUTPUT_CSV}...")
+    csv_rows = results_to_csv_rows(all_results)
+    if csv_rows:
+        fieldnames = csv_rows[0].keys()
+        with open(OUTPUT_CSV, "w", encoding="utf-8", newline="") as fout:
+            writer = csv.DictWriter(fout, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(csv_rows)
+    
+    print(f"\nDone!")
+    print(f"  JSON: {len(all_results)} abstracts written to {OUTPUT_JSON}")
+    print(f"  CSV: {len(csv_rows)} rows written to {OUTPUT_CSV}")
     print("Results are sorted by impact factor (highest first)")
 
 
