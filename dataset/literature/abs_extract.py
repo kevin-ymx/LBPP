@@ -1,4 +1,6 @@
 import json
+import os
+import re
 import time
 from typing import List, Optional, Dict
 from openai import OpenAI
@@ -7,14 +9,21 @@ import requests
 # -----------------------
 # CONFIG
 # -----------------------
+# OpenAI API key - set via environment variable or directly here
+# Option 1: Set environment variable OPENAI_API_KEY
+# Option 2: Set directly: OPENAI_API_KEY = "sk-..."
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+
 MODEL_NAME = "gpt-4.1-mini"  # or gpt-4.1 / gpt-4o / gpt-5-mini
-INPUT_FILE = "abstracts.txt"
-OUTPUT_FILE = "extracted_results.jsonl"
-DELIMITER = "### PAPER"
+INPUT_FILE = "abstracts.txt"  # WOS export format (SO=journal, AB=abstract, ER=end record)
+OUTPUT_FILE = "extracted_results.json"  # JSON array sorted by impact factor (high to low)
 SLEEP_BETWEEN_CALLS = 1.0  # seconds (rate limit safety)
 PUBCHEM_API_TIMEOUT = 5.0  # seconds
 
-client = OpenAI()
+# Initialize OpenAI client
+if not OPENAI_API_KEY:
+    raise ValueError("OPENAI_API_KEY not set. Set environment variable or configure in script.")
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 # -----------------------
 # PUBCHEM CID LOOKUP
@@ -255,6 +264,7 @@ USER_PROMPT_TEMPLATE = """Extract information from the abstract below and return
 JSON SCHEMA:
 {
   "paper_metadata": {
+    "title": null,
     "year": null,
     "journal": null,
     "impact_factor": null
@@ -308,11 +318,86 @@ ABSTRACT:
 # -----------------------
 # HELPERS
 # -----------------------
-def load_abstracts(path: str) -> List[str]:
+def parse_wos_record(record: str) -> Dict[str, str]:
+    """
+    Parse a Web of Science (WOS) record and extract title (TI), journal (SO), and abstract (AB).
+    
+    Args:
+        record: Raw WOS record text.
+        
+    Returns:
+        Dict with 'title', 'journal', and 'abstract' keys.
+    """
+    title = None
+    journal = None
+    abstract = None
+    
+    lines = record.strip().split('\n')
+    current_field = None
+    current_value = []
+    
+    # Fields we care about
+    target_fields = ('TI', 'SO', 'AB')
+    
+    for line in lines:
+        # Check if line starts with a 2-letter field code
+        if len(line) >= 2 and line[:2].isupper() and (len(line) == 2 or line[2] == ' '):
+            # Save previous field if it was one we care about
+            if current_field == 'TI' and current_value:
+                title = ' '.join(current_value).strip()
+            elif current_field == 'SO' and current_value:
+                journal = ' '.join(current_value).strip()
+            elif current_field == 'AB' and current_value:
+                abstract = ' '.join(current_value).strip()
+            
+            # Start new field
+            current_field = line[:2]
+            current_value = [line[3:].strip()] if len(line) > 3 else []
+        elif current_field in target_fields:
+            # Continuation line for fields we care about
+            current_value.append(line.strip())
+    
+    # Don't forget the last field
+    if current_field == 'TI' and current_value:
+        title = ' '.join(current_value).strip()
+    elif current_field == 'SO' and current_value:
+        journal = ' '.join(current_value).strip()
+    elif current_field == 'AB' and current_value:
+        abstract = ' '.join(current_value).strip()
+    
+    return {'title': title, 'journal': journal, 'abstract': abstract}
+
+
+def load_abstracts(path: str) -> List[Dict[str, str]]:
+    """
+    Load abstracts from WOS export file.
+    
+    Each record is separated by 'ER' (end of record) line.
+    Extracts title (TI), journal name (SO), and abstract (AB) from each record.
+    
+    Args:
+        path: Path to abstracts.txt file.
+        
+    Returns:
+        List of dicts with 'title', 'journal', and 'abstract' keys.
+    """
     with open(path, "r", encoding="utf-8") as f:
         text = f.read()
-    chunks = [c.strip() for c in text.split(DELIMITER) if c.strip()]
-    return chunks
+    
+    # Split by ER (end of record) - WOS format
+    records = re.split(r'\nER\s*\n', text)
+    
+    results = []
+    for record in records:
+        record = record.strip()
+        if not record:
+            continue
+        
+        parsed = parse_wos_record(record)
+        if parsed['abstract']:  # Only include records with abstracts
+            results.append(parsed)
+    
+    return results
 
 
 def call_gpt(abstract: str) -> dict:
@@ -377,17 +462,30 @@ def get_impact_factor_for_sorting(result: dict) -> float:
 # MAIN
 # -----------------------
 def main():
-    abstracts = load_abstracts(INPUT_FILE)
-    print(f"Loaded {len(abstracts)} abstracts")
+    records = load_abstracts(INPUT_FILE)
+    print(f"Loaded {len(records)} abstracts from WOS file")
     
     # Collect all results
     all_results = []
     
-    for idx, abstract in enumerate(abstracts):
+    for idx, record in enumerate(records):
+        title = record['title']
+        journal = record['journal']
+        abstract = record['abstract']
+        
         try:
-            # Extract with GPT
+            # Extract with GPT (only the abstract text)
             result = call_gpt(abstract)
-            print(f"[OK] Abstract {idx+1}/{len(abstracts)} - GPT extraction complete")
+            print(f"[OK] Abstract {idx+1}/{len(records)} - GPT extraction complete")
+            
+            # Override title and journal with WOS source (more reliable)
+            result.setdefault("paper_metadata", {})
+            if title:
+                result["paper_metadata"]["title"] = title
+                print(f"    Title (from WOS): {title[:60]}..." if len(title) > 60 else f"    Title (from WOS): {title}")
+            if journal:
+                result["paper_metadata"]["journal"] = journal
+                print(f"    Journal (from WOS): {journal}")
             
             # Enrich with external data (impact factor, CIDs)
             result = enrich_with_external_data(result)
@@ -395,7 +493,7 @@ def main():
             # Store result with original index for reference
             result["_original_index"] = idx + 1
             all_results.append(result)
-            print(f"[OK] Abstract {idx+1}/{len(abstracts)} - Enrichment complete")
+            print(f"[OK] Abstract {idx+1}/{len(records)} - Enrichment complete")
         except Exception as e:
             print(f"[ERROR] Abstract {idx+1}: {e}")
         time.sleep(SLEEP_BETWEEN_CALLS)
@@ -404,16 +502,18 @@ def main():
     print(f"\nSorting {len(all_results)} results by impact factor (high to low)...")
     all_results.sort(key=get_impact_factor_for_sorting, reverse=True)
     
-    # Write sorted results to output file
-    print(f"Writing sorted results to {OUTPUT_FILE}...")
+    # Remove temporary index field and print order
+    print("\nSorted order:")
+    for i, result in enumerate(all_results):
+        original_idx = result.pop("_original_index", None)
+        impact_factor = result.get("paper_metadata", {}).get("impact_factor", "N/A")
+        journal = result.get("paper_metadata", {}).get("journal", "Unknown")
+        print(f"  {i+1}. Abstract {original_idx} - {journal} (IF: {impact_factor})")
+    
+    # Write sorted results to output file as JSON array
+    print(f"\nWriting sorted results to {OUTPUT_FILE}...")
     with open(OUTPUT_FILE, "w", encoding="utf-8") as fout:
-        for result in all_results:
-            # Remove temporary index field before writing
-            original_idx = result.pop("_original_index", None)
-            impact_factor = result.get("paper_metadata", {}).get("impact_factor", "N/A")
-            journal = result.get("paper_metadata", {}).get("journal", "Unknown")
-            fout.write(json.dumps(result, ensure_ascii=False) + "\n")
-            print(f"  Written: Abstract {original_idx} - {journal} (IF: {impact_factor})")
+        json.dump(all_results, fout, ensure_ascii=False, indent=2)
     
     print(f"\nDone! {len(all_results)} results written to {OUTPUT_FILE}")
     print("Results are sorted by impact factor (highest first)")
