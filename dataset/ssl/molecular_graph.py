@@ -1,7 +1,10 @@
 """
-Molecular graph dataset for extracting molecules from SDF files and constructing molecular graphs.
-Supports both .sdf and .sdf.gz (gzipped) files.
+Molecular graph dataset for extracting molecules and constructing molecular graphs.
+Supports:
+- SDF files (.sdf and .sdf.gz)
+- CSV files with SMILES column
 """
+import csv
 import gzip
 import os
 from typing import List, Optional
@@ -152,6 +155,91 @@ class MolecularGraphDataset:
                         break
         
         print(f"Loaded {len(self.molecules):,} molecules")
+
+    def mol_to_graph(self, mol: Chem.Mol) -> Data:
+        """Convert a molecule to a PyTorch Geometric graph."""
+        return self._converter.convert(mol)
+
+    def get_all_graphs(self) -> List[Data]:
+        """
+        Convert all molecules to graphs.
+        
+        Returns:
+            List of Data objects.
+        """
+        graphs = []
+        for mol in tqdm(self.molecules, desc="Converting to graphs"):
+            try:
+                graph = self.mol_to_graph(mol)
+                graphs.append(graph)
+            except Exception as e:
+                # Skip molecules that fail conversion
+                continue
+        return graphs
+    
+    def __len__(self) -> int:
+        return len(self.molecules)
+    
+    def __getitem__(self, idx: int) -> Data:
+        return self.mol_to_graph(self.molecules[idx])
+
+
+class MolecularGraphDatasetCSV:
+    """
+    Dataset for constructing molecular graphs from CSV files with SMILES.
+    Extracts node features: atomic number, local atom chirality, partial charges,
+    hybridization, coordination number, valence electrons, electronegativity and zero-padded binding tag.
+    Extracts edge features: bond type, bond direction.
+    """
+
+    def __init__(self, csv_file: str, max_molecules: Optional[int] = None):
+        """
+        Initialize the dataset.
+        
+        Args:
+            csv_file: Path to the CSV file containing SMILES (must have 'SMILES' column).
+            max_molecules: Maximum number of molecules to load (None = all).
+        """
+        self.csv_file = csv_file
+        self.max_molecules = max_molecules
+        self.molecules = []
+        self._converter = MolToGraphConverter()
+        self._load_molecules(max_molecules)
+
+    def _load_molecules(self, max_molecules: Optional[int] = None) -> None:
+        """Load molecules from CSV file with SMILES column."""
+        if not os.path.exists(self.csv_file):
+            raise FileNotFoundError(f"CSV file not found: {self.csv_file}")
+        
+        print(f"Loading molecules from {self.csv_file}...")
+        if max_molecules:
+            print(f"  (Limited to {max_molecules:,} molecules)")
+        
+        count = 0
+        invalid_smiles = 0
+        
+        with open(self.csv_file, 'r', newline='', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in tqdm(reader, desc="Loading molecules"):
+                smiles = row.get('SMILES', '').strip()
+                if not smiles:
+                    invalid_smiles += 1
+                    continue
+                
+                mol = Chem.MolFromSmiles(smiles)
+                if mol is not None:
+                    self.molecules.append(mol)
+                    count += 1
+                    
+                    if max_molecules and count >= max_molecules:
+                        print(f"  Reached limit of {max_molecules:,} molecules")
+                        break
+                else:
+                    invalid_smiles += 1
+        
+        print(f"Loaded {len(self.molecules):,} molecules")
+        if invalid_smiles > 0:
+            print(f"  Skipped {invalid_smiles:,} invalid/empty SMILES")
 
     def mol_to_graph(self, mol: Chem.Mol) -> Data:
         """Convert a molecule to a PyTorch Geometric graph."""
