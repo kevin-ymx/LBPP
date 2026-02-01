@@ -6,15 +6,13 @@ This script:
 2. Classifies molecules by functional groups using SMARTS patterns from funct_group.csv
    - Stores (CID, SMILES) tuples for each FG
 3. Creates separate CSV files (CID, SMILES) for each functional group
-4. Samples a fixed ratio (default 0.3%) from each functional group
-   - Minimum samples per FG: 10 (if ratio gives < 10, sample 10 instead)
-   - Capped at available molecules
+4. Samples a fixed number (default 2000) from each functional group
+   - For FGs with fewer molecules, samples all available
 5. Stores the final sample details in a CSV file (sorted by FG)
 
 Usage:
     python sampling_Eb.py --input molecules.csv --output_dir ./fg_samples --final_output sampled_details.csv
-    python sampling_Eb.py --input molecules.csv --output_dir ./fg_samples --sample_ratio 0.003
-    python sampling_Eb.py --input molecules.csv --min_samples 20  # Custom minimum
+    python sampling_Eb.py --input molecules.csv --sample_count 1000  # Sample 1000 per FG
 """
 
 import os
@@ -255,28 +253,27 @@ def print_distribution(count_by_fg: Dict[str, int]):
     print("=" * 70)
 
 
-MIN_SAMPLES_PER_FG = 10  # Minimum samples per functional group
+DEFAULT_SAMPLES_PER_FG = 2000  # Default samples per functional group
 
 
 def stratified_sample(
     molecules_by_fg: Dict[str, List[Tuple[str, str]]],
     count_by_fg: Dict[str, int],
     functional_groups: Dict[str, Dict[str, str]],
-    sample_ratio: float = 0.003,
-    seed: int = 42,
-    min_samples: int = MIN_SAMPLES_PER_FG
+    sample_count: int = DEFAULT_SAMPLES_PER_FG,
+    seed: int = 42
 ) -> List[Dict]:
     """
-    Sample molecules from each functional group at a fixed ratio.
+    Sample a fixed number of molecules from each functional group.
+    For FGs with fewer molecules than sample_count, samples all available.
     Uses random.sample() for sampling.
     
     Args:
         molecules_by_fg: Dictionary mapping FG names to (CID, SMILES) lists
         count_by_fg: Dictionary mapping FG names to counts
         functional_groups: Dictionary with FG info (smiles, smarts)
-        sample_ratio: Fraction of molecules to sample from each FG (default: 0.003 = 0.3%)
+        sample_count: Number of molecules to sample from each FG (default: 2000)
         seed: Random seed
-        min_samples: Minimum samples per FG (default: 10)
         
     Returns:
         List of dicts with CID, SMILES, functional_group_name, functional_group_smarts
@@ -288,19 +285,13 @@ def stratified_sample(
         print("Error: No molecules found in any functional group!")
         return []
     
-    # Calculate samples per functional group (fixed ratio of each FG's count, with minimum)
+    # Calculate samples per functional group (fixed count, capped at available)
     samples_per_fg = {}
     
     for fg_name, count in count_by_fg.items():
-        # Sample ratio of each FG's count
-        n_fg_samples = int(round(count * sample_ratio))
-        
-        # Apply minimum samples per FG
-        n_fg_samples = max(n_fg_samples, min_samples)
-        
         # Cap at available molecules
         available = len(molecules_by_fg.get(fg_name, []))
-        n_fg_samples = min(n_fg_samples, available)
+        n_fg_samples = min(sample_count, available)
         
         # Only include FGs with samples > 0
         if n_fg_samples > 0:
@@ -308,7 +299,7 @@ def stratified_sample(
     
     # Print sampling plan (only FGs with samples > 0)
     print("\n" + "=" * 70)
-    print(f"SAMPLING PLAN (ratio: {sample_ratio*100:.2f}%, min: {min_samples})")
+    print(f"SAMPLING PLAN (target: {sample_count} per FG)")
     print("=" * 70)
     print(f"{'Functional Group':<40} {'Available':>10} {'To Sample':>12}")
     print("-" * 70)
@@ -481,22 +472,16 @@ def main():
         help="Path to functional groups CSV (default: funct_group.csv in same directory)"
     )
     parser.add_argument(
-        "--sample_ratio", "-r",
-        type=float,
-        default=0.003,
-        help="Fraction of molecules to sample from each FG (default: 0.003 = 0.3%%)"
+        "--sample_count", "-n",
+        type=int,
+        default=DEFAULT_SAMPLES_PER_FG,
+        help=f"Number of molecules to sample from each FG (default: {DEFAULT_SAMPLES_PER_FG})"
     )
     parser.add_argument(
         "--seed",
         type=int,
         default=42,
         help="Random seed for sampling (default: 42)"
-    )
-    parser.add_argument(
-        "--min_samples",
-        type=int,
-        default=MIN_SAMPLES_PER_FG,
-        help=f"Minimum samples per functional group (default: {MIN_SAMPLES_PER_FG})"
     )
     parser.add_argument(
         "--skip_fg_csvs",
@@ -527,8 +512,7 @@ def main():
     print(f"Functional groups CSV: {args.fg_csv}")
     print(f"Output directory: {args.output_dir}")
     print(f"Final output: {args.final_output}")
-    print(f"Sample ratio: {args.sample_ratio*100:.2f}%")
-    print(f"Min samples per FG: {args.min_samples}")
+    print(f"Samples per FG: {args.sample_count}")
     print(f"Random seed: {args.seed}")
     
     # Step 1: Load functional groups
@@ -564,10 +548,10 @@ def main():
     else:
         print("\n[Step 3] Skipping functional group CSV files (--skip_fg_csvs)")
     
-    # Step 4: Sampling (ratio-based per FG with minimum)
-    print(f"\n[Step 4] Sampling {args.sample_ratio*100:.2f}% (min {args.min_samples}) from each functional group...")
+    # Step 4: Sampling (fixed count per FG)
+    print(f"\n[Step 4] Sampling {args.sample_count} from each functional group...")
     sample_info = stratified_sample(
-        molecules_by_fg, count_by_fg, functional_groups, args.sample_ratio, args.seed, args.min_samples
+        molecules_by_fg, count_by_fg, functional_groups, args.sample_count, args.seed
     )
     
     if len(sample_info) == 0:
