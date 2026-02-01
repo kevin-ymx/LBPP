@@ -1,4 +1,4 @@
-# Lewis Base Binding Energy Prediction (LBPP)
+# Lewis Base-Perovskite Binding Energy Prediction (LBP-Bind)
 
 A deep learning framework for predicting binding energies of Lewis base molecules on perovskite surfaces.
 
