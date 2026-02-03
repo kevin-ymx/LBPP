@@ -1,0 +1,1663 @@
+﻿FN Clarivate Analytics Web of Science
+VR 1.0
+PT J
+TI Perovskite-polymer composite cross-linker approach for highly-stable and
+   efficient perovskite solar cells
+SO NATURE COMMUNICATIONS
+AB Manipulation of grain boundaries in polycrystalline perovskite is an essential consideration for both the optoelectronic properties and environmental stability of solar cells as the solution-processing of perovskite films inevitably introduces many defects at grain boundaries. Though small molecule-based additives have proven to be effective defect passivating agents, their high volatility and diffusivity cannot render perovskite films robust enough against harsh environments. Here we suggest design rules for effective molecules by considering their molecular structure. From these, we introduce a strategy to form macromolecular intermediate phases using long chain polymers, which leads to the formation of a polymer-perovskite composite cross-linker. The cross-linker functions to bridge the perovskite grains, minimizing grain-to-grain electrical decoupling and yielding excellent environmental stability against moisture, light, and heat, which has not been attainable with small molecule defect passivating agents. Consequently, all photovoltaic parameters are significantly enhanced in the solar cells and the devices also show excellent stability.
+PD JAN 31
+PY 2019
+VL 10
+AR 520
+DI 10.1038/s41467-019-08455-z
+UT WOS:000457291300008
+ER
+
+PT J
+TI Diffusion engineering of ions and charge carriers for stable efficient
+   perovskite solar cells
+SO NATURE COMMUNICATIONS
+AB Long-term stability is crucial for the future application of perovskite solar cells, a promising low-cost photovoltaic technology that has rapidly advanced in the recent years. Here, we designed a nanostructured carbon layer to suppress the diffusion of ions/molecules within perovskite solar cells, an important degradation process in the device. Furthermore, this nanocarbon layer benefited the diffusion of electron charge carriers to enable a high-energy conversion efficiency. Finally, the efficiency on a perovskite solar cell with an aperture area of 1.02 cm(2), after a thermal aging test at 85 degrees C for over 500 h, or light soaking for 1,000 h, was stable of over 15% during the entire test. The present diffusion engineering of ions/molecules and photo generated charges paves a way to realizing long-term stable and highly efficient perovskite solar cells.
+PD JUN 12
+PY 2017
+VL 8
+AR 15330
+DI 10.1038/ncomms15330
+UT WOS:000403063500001
+ER
+
+PT J
+TI Multifunctional sulfonium-based treatment for perovskite solar cells
+   with less than 1% efficiency loss over 4,500-h operational stability
+   tests
+SO NATURE ENERGY
+AB The stabilization of grain boundaries and surfaces of the perovskite layer is critical to extend the durability of perovskite solar cells. Here we introduced a sulfonium-based molecule, dimethylphenethylsulfonium iodide (DMPESI), for the post-deposition treatment of formamidinium lead iodide perovskite films. The treated films show improved stability upon light soaking and remains in the black alpha phase after two years ageing under ambient condition without encapsulation. The DMPESI-treated perovskite solar cells show less than 1% performance loss after more than 4,500 h at maximum power point tracking, yielding a theoretical T80 of over nine years under continuous 1-sun illumination. The solar cells also display less than 5% power conversion efficiency drops under various ageing conditions, including 100 thermal cycles between 25 degrees C and 85 degrees C and an 1,050-h damp heat test.
+   Suo et al. show that sulfonium-based molecules afford formamidinium lead iodide perovskites protection against environmental stress factors, improved phase stability and solar cells retaining efficiency over 4,500-h operational stability tests.
+PD FEB
+PY 2024
+VL 9
+IS 2
+BP 143
+EP 153
+DI 10.1038/s41560-023-01421-6
+EA JAN 2024
+UT WOS:001136714500001
+ER
+
+PT J
+TI Constructing Stable Perovskite with Small Molecule Bridge Interface
+   Passivation
+SO ADVANCED ENERGY MATERIALS
+AB The interfaces of each layer in perovskite solar cells (PSCs) have a significant impact on the charge transfer and recombination. Especially, the interface between perovskite and the hole transport layer (HTL) in p-i-n type PSCs significantly affects the contact characteristics between the HTL and perovskite, hindering further improvements in performance and stability. Herein, a small molecule 9-Fluorenylmethoxycarbonyl chloride (9-YT) is introduced as a molecule bridge for p-i-n PSCs, which enhances the interaction between self-assembly molecules (SAMs) and perovskite. The conjugated backbone of 9-YT can interact with the SAM molecule (MeO-2PACz) by pi-pi stacking reaction. Moreover, 9-YT also improves the interfacial contact through strong interactions with the perovskite, where the carbonyl groups and Cl atoms in 9-YT interact with uncoordinated Pb2+ in perovskite layer. The incorporation of a molecule bridge is demonstrated to markedly enhance hole extraction at the perovskite/hole transport layer interface, optimize energy level alignment, mitigate interface charge recombination, and passivate the uncoordinated Pb2+ and defects in the perovskite. Finally, the device treated with 9-YT achieves a power conversion efficiency (PCE) of 24.82%. At the same time, PSCs can still maintain 92.6% of the original PCE after a long-term stability test of 1200 h.
+PD MAY
+PY 2025
+VL 15
+IS 19
+DI 10.1002/aenm.202405571
+EA JAN 2025
+UT WOS:001389845500001
+ER
+
+PT J
+TI Harmonizing the bilateral bond strength of the interfacial molecule in
+   perovskite solar cells
+SO NATURE ENERGY
+AB Interfacial molecules have been demonstrated to improve the photovoltaic performance of perovskite solar cells (PSCs). However, the effect is influenced by the targeted substrate and, in particular, by its bond with the interfacial molecule. A weaker bonding of the interfacial molecule with the substrate usually implies a stronger bonding with the perovskite that could lead to uncontrollable insertion of the interfacial molecule into the perovskite bulk, resulting in device degradation. Here we select bis(2-aminoethyl) ether (BAE) as the interfacial molecule between the perovskite and the electron transport layer (ETL) in n-i-p PSCs and develop a strategy to harmonize the strength of the bilateral bonds of BAE. In particular, we manipulate the electronic structure of the ETL with doping to increase the strength of the BAE-ETL bond. This thereby results in a weakening of the BAE-perovskite bond. The harmonization in bilateral bonds of the interfacial molecule leads to PSCs with an efficiency surpassing 26.5% (certified as 26.31%) and improved stability.
+   The interfaces in perovskite solar cells are critical to the device performance. Li et al. tune the bond strength of the interfacial molecule with the perovskite and the electron transport layer, increasing the power conversion efficiency of the cells.
+PD DEC
+PY 2024
+VL 9
+IS 12
+DI 10.1038/s41560-024-01642-3
+EA SEP 2024
+UT WOS:001313535300003
+ER
+
+PT J
+TI Eutectic molecule ligand stabilizes photoactive black phase perovskite
+SO NATURE PHOTONICS
+AB Formamidinium-rich triiodide perovskites show great promise as light-absorption layers for next photovoltaic technology. However, the intricate process of phase transformation during the crystallization of this perovskite typically results in the presence of undesired hexagonal phases, leading to a degradation in solar cell efficiency and stability. Here we report the use of a hydrogen-bonded eutectic molecule (EM) as a [PbI6](4-) octahedra ligand to promote the dominant formation of corner-sharing octahedra. Our results demonstrate that the increased ratio of corner-sharing octahedra to face-sharing octahedra can prompt a complete phase transformation and facilitate the formation of pure cubic structure perovskite. Perovskite solar cells based on EM-fabricated films provide a power conversion efficiency of 25.8% (certified 25.7%) and excellent stability with a T-95 lifetime of similar to 2,000 h.
+PD MAR
+PY 2025
+VL 19
+IS 3
+BP 258
+EP 263
+DI 10.1038/s41566-024-01596-8
+EA JAN 2025
+UT WOS:001393075100001
+ER
+
+PT J
+TI Interface Dipole Management of D-A-Type Molecules for Efficient
+   Perovskite Solar Cells
+SO ANGEWANDTE CHEMIE-INTERNATIONAL EDITION
+AB Interfacial engineering of perovskite films has been the main strategies in improving the efficiency and stability of perovskite solar cells (PSCs). In this study, three new donor-acceptor (D-A)-type interfacial dipole (DAID) molecules with hole-transporting and different anchoring units are designed and employed in PSCs. The formation of interface dipoles by the DAID molecules on the perovskite film can efficiently modulate the energy level alignment, improve charge extraction, and reduce non-radiative recombination. Among the three DAID molecules, TPA-BAM with amide group exhibits the best chemical and optoelectrical properties, achieving a champion PCE of 25.29 % with the enhanced open-circuit voltage of 1.174 V and fill factor of 84.34 %, due to the reduced defect density and improved interfacial hole extraction. Meanwhile, the operational stability of the unencapsulated device has been significantly improved. Our study provides a prospect for rationalized screening of interfacial dipole materials for efficient and stable PSCs.
+   Three new donor-acceptor-type interfacial dipole molecules are designed by incorporating hole transporting and different anchoring groups, which contributing to energy-level alignment, improved charge extraction and suppressed non-radiative recombination at the perovskite interface. TPA-BAM-treated PSCs achieve a champion efficiency of 25.29 % with the enhanced voltage of 1.174 V and fill factor of 84.34 %, while also demonstrating improved stability. image
+PD JUL 22
+PY 2024
+VL 63
+IS 30
+DI 10.1002/anie.202404289
+EA JUN 2024
+UT WOS:001248081200001
+ER
+
+PT J
+TI Inorganic wide-bandgap perovskite subcells with dipole bridge for
+   all-perovskite tandems
+SO NATURE ENERGY
+AB Operating stability has become a priority issue for all-perovskite tandem solar cells. Inorganic CsPbI3-xBrx perovskites, which have good photostability against halide segregation, are promising alternatives for all-perovskite tandem solar cells. However, the interface between organic transport layers and inorganic perovskite suffers from a large energetic mismatch and inhibits charge extraction compared with hybrid analogues, resulting in low open-circuit voltages and fill factors. Here we show that inserting at this interface a passivating dipole layer having high molecular polarity-a molecule that interacts strongly with both inorganic perovskite and C-60-reduces the energetic mismatch and accelerates the charge extraction. This strategy resulted in a power conversion efficiency (PCE) of 18.5% in wide-bandgap (WBG) devices. We report all-perovskite tandems using an inorganic WBG subcell, achieving a PCE of 25.6% (steady state 25.2%). Encapsulated tandems retain 96% of their initial performance after 1,000 h of simulated 1-sun operation at the maximum power point.
+   Energy-level mismatches and defects at the inorganic perovskite/fullerene interface limit the performance of solar cells. Now Li et al. address these issues with a dipolar molecule, enabling the use of wide-bandgap inorganic perovskites in all-perovskite tandem cells.
+PD JUN
+PY 2023
+VL 8
+IS 6
+BP 610
+EP 620
+DI 10.1038/s41560-023-01250-7
+EA APR 2023
+UT WOS:000968306600001
+ER
+
+PT J
+TI All-perovskite tandem solar cells with 24.2% certified efficiency and
+   area over 1 cm2using surface-anchoring zwitterionic
+   antioxidant
+SO NATURE ENERGY
+AB Monolithic all-perovskite tandem solar cells offer an avenue to increase power conversion efficiency beyond the limits of single-junction cells. It is an important priority to unite efficiency, uniformity and stability, yet this has proven challenging because of high trap density and ready oxidation in narrow-bandgap mixed lead-tin perovskite subcells. Here we report simultaneous enhancements in the efficiency, uniformity and stability of narrow-bandgap subcells using strongly reductive surface-anchoring zwitterionic molecules. The zwitterionic antioxidant inhibits Sn(2+)oxidation and passivates defects at the grain surfaces in mixed lead-tin perovskite films, enabling an efficiency of 21.7% (certified 20.7%) for single-junction solar cells. We further obtain a certified efficiency of 24.2% in 1-cm(2)-area all-perovskite tandem cells and in-lab power conversion efficiencies of 25.6% and 21.4% for 0.049 cm(2)and 12 cm(2)devices, respectively. The encapsulated tandem devices retain 88% of their initial performance following 500 hours of operation at a device temperature of 54-60 degrees C under one-sun illumination in ambient conditions.
+   Ensuring both stability and efficiency in mixed lead-tin perovskite solar cells is crucial to the development of all-perovskite tandems. Xiao et al. use an antioxidant zwitterionic molecule to suppress tin oxidation thus enabling large-area tandem cells with 24.2% efficiency and operational stability over 500 hours.
+PD NOV
+PY 2020
+VL 5
+IS 11
+BP 870
+EP 880
+DI 10.1038/s41560-020-00705-5
+EA OCT 2020
+UT WOS:000575346600001
+ER
+
+PT J
+TI Electron-withdrawing organic ligand for high-efficiency all-perovskite
+   tandem solar cells
+SO NATURE ENERGY
+AB Tin-lead mixed perovskite-based tandem solar cells show promise. However, the inherent oxidation of tin remains a challenge for achieving high power conversion efficiency and device stability. In this study, we present an approach to address this challenge by developing an electron-withdrawing chloromethyl phosphonic acid ligand based on the substituent effect, designed to mitigate tin oxidation in tin-lead mixed perovskite materials. The introduction of this electron-withdrawing ligand improves the redox potential of the tin adduct. Furthermore, it leads to a substantial increase in the ionization potential of the perovskite structure. Through comparative analysis with conventional coordinating molecules, we reveal that the electron-withdrawing ligand is more effective in suppressing tin oxidation and reducing the defect density within the tin-based perovskite film. Using our approach, we demonstrate certified efficiency of 26.96% for all-perovskite tandem solar cells.
+   Tin oxidation limits the efficiency of low bandgap perovskite solar cells. Yu et al. synthesize electron-withdrawing chloromethyl phosphonic acid ligand that suppresses tin oxidation, enabling 27%-efficiency perovskite tandem solar cells.
+PD MAR
+PY 2024
+VL 9
+IS 3
+DI 10.1038/s41560-023-01441-2
+EA JAN 2024
+UT WOS:001141996400001
+ER
+
+PT J
+TI Inhibiting perovskite decomposition by a creeper-inspired strategy
+   enables efficient and stable perovskite solar cells
+SO NATURE COMMUNICATIONS
+AB The commercialization of perovskite solar cells is badly limited by stability, an issue determined mainly by perovskite. Herein, inspired by a natural creeper that can cover the walls through suckers, we adopt poly-hexamethyleneguanidine hydrochloride as a molecular creeper on perovskite to inhibit its decomposition starting from the annealing process. The molecule possesses a long-line molecular structure where the guanidinium groups can serve as suckers that strongly anchor cations through multiple hydrogen bonds. These features make the molecular creeper can cover perovskite grains and inhibit perovskite decomposition by suppressing cations' escape. The resulting planar perovskite solar cells achieve an efficiency of 25.42% (certificated 25.36%). Moreover, the perovskite film and device exhibit enhanced stability even under harsh damp-heat conditions. The devices can maintain >96% of their initial efficiency after 1300 hours of operation under 1-sun illumination and 1000 hours of storage under 85% RH, respectively.
+PD JUN 18
+PY 2024
+VL 15
+IS 1
+AR 5223
+DI 10.1038/s41467-024-49617-y
+UT WOS:001250811400038
+ER
+
+PT J
+TI Trap State Passivation by Rational Ligand Molecule Engineering toward
+   Efficient and Stable Perovskite Solar Cells Exceeding 23% Efficiency
+SO ADVANCED ENERGY MATERIALS
+AB The nonradiative recombination losses resulting from the trap states at the surface and grain boundaries directly hinder the further enhancement of power conversion efficiency (PCE) and stability of perovskite solar cells. Consequently, it is highly desirable to suppress nonradiative recombination through modulating perovskite crystallization and passivating the defects of perovskite films. Here, a simple and effective multifunctional additive engineering strategy is reported where 11 Maleimidoundecanoic acid (11MA) units with carbonyls (carboxyl and amide) and long hydrophobic alkyl chain are incorporated into a perovskite precursor solution. It is revealed that improved crystallinity, reduced trap state density, and inhibited ion migration are achieved, which is ascribed to the strong coordination interaction between the carbonyl groups at both sides of 11MA molecules and Pb2+. As a result, improved efficiency and stability are achieved simultaneously after introducing 11MA additive. The device with 11MA additive delivers a champion PCE of 23.34% with negligible hysteresis, which is significantly higher than the 18.24% of the control device. The modified device maintains around 91% of its initial PCE after aging under ambient conditions for 3000 h. This work provides a guide for developing multifunctional additive molecules for the purpose of simultaneous improvement of efficiency and stability.
+PD MAY
+PY 2021
+VL 11
+IS 20
+AR 2100529
+DI 10.1002/aenm.202100529
+EA APR 2021
+UT WOS:000640236100001
+ER
+
+PT J
+TI Interfacial defect passivation and stress release by multifunctional
+   KPF6 modification for planar perovskite solar cells with enhanced
+   efficiency and stability
+SO CHEMICAL ENGINEERING JOURNAL
+AB Interfacial defect and residual stress hinder the further enhancement of power conversion efficiency (PCE) and stability of perovskite solar cells (PSCs). Here, we report a multifunctional interface modification strategy where KPF6 molecule is employed to modify SnO2/perovskite interface. It is revealed that PF6? is still located at interface whereas most of K+ ions diffuse into perovskite layer. PF6? can chemically link SnO2 layer and perovskite layer via the hydrogen bond with perovskites and coordination bond with SnO2, resulting in improved interfacial contact. KPF6 interface modification leads to improved perovskite film quality, interfacial defect passivation, and interfacial stress release. As a result, the KPF6-modified device achieves an efficiency enhancement from 19.66% to 21.39% as compared to the control device. Meanwhile, moisture, thermal and light stability are ameliorated after interface modification. The unencapsulated KPF6-modified device maintains 80.1% of its initial PCE after aging for 960 h at 60 ?C and 57.2% after aging for 960 h under one sun illumination, respectively. This work provides an idea for developing multifunctional interface molecules toward simultaneously enhancing efficiency and stability of PSCs.
+PD AUG 15
+PY 2021
+VL 418
+AR 129375
+DI 10.1016/j.cej.2021.129375
+EA MAR 2021
+UT WOS:000661317400006
+ER
+
+PT J
+TI Buried interface molecular hybrid for inverted perovskite solar cells
+SO NATURE
+AB Perovskite solar cells with an inverted architecture provide a key pathway for commercializing this emerging photovoltaic technology because of the better power conversion efficiency and operational stability compared with the normal device structure. Specifically, power conversion efficiencies of the inverted perovskite solar cells have exceeded 25% owing to the development of improved self-assembled molecules(1-5) and passivation strategies(6-8). However, poor wettability and agglomeration of self-assembled molecules(9-12) cause interfacial losses, impeding further improvement in the power conversion efficiency and stability. Here we report a molecular hybrid at the buried interface in inverted perovskite solar cells that co-assembled the popular self-assembled molecule [4-(3,6-dimethyl-9H-carbazol-9-yl)butyl]phosphonic acid (Me-4PACz) with the multiple aromatic carboxylic acid 4,4,4 ''-nitrilotribenzoic acid (NA) to improve the heterojunction interface. The molecular hybrid of Me-4PACz with NA could substantially improve the interfacial characteristics. The resulting inverted perovskite solar cells demonstrated a record certified steady-state efficiency of 26.54%. Crucially, this strategy aligns seamlessly with large-scale manufacturing, achieving one of the highest certified power conversion efficiencies for inverted mini-modules at 22.74% (aperture area 11.1cm(2)). Our device also maintained 96.1% of its initial power conversion efficiency after more than 2,400h of 1-sun operation in ambient air.
+PD AUG 15
+PY 2024
+VL 632
+IS 8025
+BP 536
+EP +
+DI 10.1038/s41586-024-07723-3
+EA JUN 2024
+UT WOS:001281521800001
+ER
+
+PT J
+TI Double-side 2D/3D heterojunctions for inverted perovskite solar cells
+SO NATURE
+AB Defects at the top and bottom interfaces of three-dimensional (3D) perovskite photoabsorbers diminish the performance and operational stability of perovskite solar cells owing to charge recombination, ion migration and electric-field inhomogeneities1-5. Here we demonstrate that long alkyl amine ligands can generate near-phase-pure 2D perovskites at the top and bottom 3D perovskite interfaces and effectively resolve these issues. At the rear-contact side, we find that the alkyl amine ligand strengthens the interactions with the substrate through acid-base reactions with the phosphonic acid group from the organic hole-transporting self-assembled monolayer molecule, thus regulating the 2D perovskite formation. With this, inverted perovskite solar cells with double-side 2D/3D heterojunctions achieved a power conversion efficiency of 25.6% (certified 25.0%), retaining 95% of their initial power conversion efficiency after 1,000 h of 1-sun illumination at 85 degrees C in air.
+   A study presents a technique to sandwich 3D perovskite with 2D perovskites at the top and bottom, improving the performance and stability of perovskite solar cells.
+PD APR 4
+PY 2024
+VL 628
+IS 8006
+DI 10.1038/s41586-024-07189-3
+EA FEB 2024
+UT WOS:001194911500001
+ER
+
+PT J
+TI Multifunctional Enhancement for Highly Stable and Efficient Perovskite
+   Solar Cells
+SO ADVANCED FUNCTIONAL MATERIALS
+AB With a certified efficiency as high as 25.2%, perovskite has taken the crown as the highest efficiency thin film solar cell material. Unfortunately, serious instability issues must be resolved before perovskite solar cells (PSCs) are commercialized. Aided by theoretical calculation, an appropriate multifunctional molecule, 2,2-difluoropropanediamide (DFPDA), is selected to ameliorate all the instability issues. Specifically, the carbonyl groups in DFPDA form chemical bonds with Pb2+ and passivate under-coordinated Pb2+ defects. Consequently, the perovskite crystallization rate is reduced and high-quality films are produced with fewer defects. The amino groups not only bind with iodide to suppress ion migration but also increase the electron density on the carbonyl groups to further enhance their passivation effect. Furthermore, the fluorine groups in DFPDA form both an effective barrier on the perovskite to improve its moisture stability and a bridge between the perovskite and HTL for effective charge transport. In addition, they show an effective doping effect in the HTL to improve its carrier mobility. With the help of the combined effects of these groups in DFPDA, the PSCs with DFPDA additive achieve a champion efficiency of 22.21% and a substantially improved stability against moisture, heat, and light.
+PD FEB
+PY 2021
+VL 31
+IS 7
+AR 2005776
+DI 10.1002/adfm.202005776
+EA NOV 2020
+UT WOS:000585965700001
+ER
+
+PT J
+TI Enhancing the efficiency and longevity of inverted perovskite solar
+   cells with antimony-doped tin oxides
+SO NATURE ENERGY
+AB Inverted perovskite solar cells possess great potential for single or multi-junction photovoltaics. However, energy and charge losses at the interfaces limit their performance. Here we introduce p-type antimony-doped tin oxides (ATOx) combined with a self-assembled monolayer molecule as an interlayer between the perovskite and hole-transporting layers (HTL) in inverted solar cells. ATOx increases the chemical stability of the interface; we show that the redox reaction that commonly took place at the NiOx/perovskite interface is negligible at the ATOx/perovskite interface. We demonstrate that ATOx suppresses non-radiative recombination in the perovskite layer and enhances the depletion at the perovskite/HTL interface for efficient charge extraction. Owing to these combined improvements, we achieve inverted perovskite solar cells with a maximum efficiency of 25.7% (certified steady-state efficiency of 24.8%) for an area of 0.05 cm2, retained under maximum power point tracking over 500 h and 24.6% (certified steady-state efficiency of 24.0%) for an area of 1 cm2.
+   Chemical reactions at the interface between the perovskite and hole transport layer limit the performance of inverted solar cells. Li et al. insert a p-type antimony-doped tin oxide layer that suppresses the reactions, enabling 24.8% efficiency and 500-h operational stability.
+PD MAR
+PY 2024
+VL 9
+IS 3
+DI 10.1038/s41560-023-01442-1
+EA JAN 2024
+UT WOS:001141996400003
+ER
+
+PT J
+TI Regulating phase homogeneity by self-assembled molecules for enhanced
+   efficiency and stability of inverted perovskite solar cells
+SO NATURE PHOTONICS
+AB Heterogeneity in transporting interfaces and perovskites poses a substantial challenge in improving the efficiency of perovskite solar cells from small to large scales, a key barrier to their commercial use. Here we find that the amorphous phases of self-assembling molecules (SAMs) can realize a more homogeneous perovskite growth. Hyperspectral analysis confirms a narrower and blueshifted photoluminescence peak distribution in perovskite/amorphous SAMs. Additionally, fluence-dependent time-resolved photoluminescence reveals a reduced trap-assisted recombination rate of 0.5 x 10(6) s(-1) in amorphous-SAM-based perovskite films. This improvement translates to p-i-n structured perovskite solar cells achieving an efficiency of 25.20% (certified at 24.35%) over a one-square-centimetre area. These cells maintain nearly 100% efficiency after 600 h of 1-sun maximum power point tracking under the ISOS-L-1 protocol, and retain 90% of their initial efficiency after 1,000 h, as evaluated by the ISOS-T-2 protocol.
+PD DEC
+PY 2024
+VL 18
+IS 12
+DI 10.1038/s41566-024-01531-x
+EA SEP 2024
+UT WOS:001315657000001
+ER
+
+PT J
+TI Enhancing Photovoltaically Preferred Orientation in Wide-Bandgap
+   Perovskite for Efficient All-Perovskite Tandem Solar Cells
+SO ADVANCED MATERIALS
+AB Wide-bandgap perovskite solar cells (WBG PSCs) have promising applications in tandem devices yet suffer from low open-circuit voltages (VOCs) and less stability. To address these issues, the study introduces multifunctional nicotinamide derivatives into WBG PSCs, leveraging the regulation on photovoltaically preferential orientation and optoelectronic properties via diverse functional groups, e.g., carbonyl, amino. Isonicotinamide (IA) molecule emerges as the most effective agent, enhancing crystallization kinetics and defect passivation due to its unique planar spatial configuration. Incorporating IA into WBG perovskites improves the (100) preferred crystal orientation, reduces trap density, and enables well-matched energy band alignment. High-performance 1.77 eV WBG PSCs are achieved with a champion power conversion efficiency of 19.34% and a VOC of 1.342 V, leading to the fabrication of the best-performing all-perovskite tandem solar cell with a PCE of 28.53% (certified 28.27%) and excellent operational stability, maintaining over 90% of the initial efficiency under 1 sun illumination for 600 h.
+PD FEB
+PY 2025
+VL 37
+IS 8
+DI 10.1002/adma.202412943
+EA JAN 2025
+UT WOS:001390519800001
+ER
+
+PT J
+TI Stable and uniform self-assembled organic diradical molecules for
+   perovskite photovoltaics
+SO SCIENCE
+AB Organic self-assembled molecules (SAMs), which are widely used in perovskite solar cells (PSCs), should exhibit enhanced performance to support the ongoing advancement of perovskite photovoltaics. We designed diradical SAMs through a coplanar conjugation of a donor-acceptor strategy to facilitate hole transport across the SAMs. The diradical SAMs exhibited high photothermal and electrochemical stability as well as improved assembly uniformity and large-area solution processability attributed to molecular steric hindrance design. We used an advanced scanning electrochemical cell microscopy-thin-layer cyclic voltammetry technique to accurately determine the carrier transfer rate, stability, and assembly properties of the SAMs. Ultimately, the efficiencies of the PSCs exceeded 26.3%, minimodules (10.05 cm(2)) reached 23.6%, and perovskite-silicon tandem devices (1 cm(2)) surpassed 34.2%. The PSCs maintained >97% after 2000 hours tracking at 45 degrees C.
+PD JUL 10
+PY 2025
+VL 389
+IS 6756
+BP 195
+EP 199
+DI 10.1126/science.adv4551
+UT WOS:001527156400014
+ER
+
+PT J
+TI Tailored Lattice-Matched Carbazole Self-Assembled Molecule for Efficient
+   and Stable Perovskite Solar Cells
+SO JOURNAL OF THE AMERICAN CHEMICAL SOCIETY
+AB Self-assembled monolayer molecules have been widely employed as interfacial transport materials in inverted perovskite solar cells (PSCs), demonstrating high efficiency and improved device stability. However, self-assembling monolayer (SAM) molecules often suffer from aggregation and weak interactions with the perovskite layer, resulting in inefficient charge transfer and significant energy losses, ultimately limiting the power conversion efficiency and long-term stability of perovskite solar cells. In this work, we developed a series of novel skeleton-matching carbazole isomer SAMs based on the following key design principles: (1) introducing a benzene ring structure to distort the molecular skeleton of the SAM, thereby preventing aggregation and achieving a uniform distribution on fluorine-doped tin oxide (FTO) substrates; (2) strategically incorporating methoxy groups onto the benzene ring at different positions (ortho, meta, and para). These functional groups not only increase anchoring points with the perovskite layer but also fine-tune the molecular dipole moment. Among the SAMs, m-PhPACz exhibits the most favorable properties, with a maximum dipole moment of 2.4 D and an O-O distance that aligns excellently with the diagonal lead ions in the adjacent perovskite lattice, thereby enhancing SAM-perovskite interactions, facilitating efficient charge extraction, and improving interfacial stability. As a result, the new SAM-based PSCs achieved an impressive power conversion efficiency of 26.2%, with 12.9% improvement. Moreover, the devices demonstrated outstanding photothermal stability, retaining 96% of their initial PCE after 1000 h at 85 degrees C and maintaining 90% of their initial PCE after 300 h of UV-light exposure.
+PD FEB 18
+PY 2025
+VL 147
+IS 9
+BP 8004
+EP 8011
+DI 10.1021/jacs.5c00629
+EA FEB 2025
+UT WOS:001425878800001
+ER
+
+PT J
+TI Decoupling the effects of defects on efficiency and stability through
+   phosphonates in stable halide perovskite solar cells
+SO JOULE
+AB Understanding defects is of paramount importance for the development of stable halide perovskite solar cells (PSCs). However, isolating their distinctive effects on device efficiency and stability is currently a challenge. We report that adding the organic molecule 3-phosphonopropionic acid (H3pp) to the halide perovskite results in unchanged overall optoelectronic performance while having a tremendous effect on device stability. We obtained PSCs with similar to 21% efficiency that retain similar to 100% of the initial efficiency after 1,000 h at the maximum power point under simulated AM1.5G illumination. The strong interaction between the perovskite and the H3pp molecule through two types of hydrogen bonds (H center dot center dot center dot I and O center dot center dot center dot H) leads to shallow point defect passivation that has a significant effect on device stability but not on the non-radiative recombination and device efficiency. We expect that our work will have important implications for the current understanding and advancement of operational PSCs.
+PD MAY 19
+PY 2021
+VL 5
+IS 5
+BP 1246
+EP 1266
+DI 10.1016/j.joule.2021.04.003
+UT WOS:000654225600018
+ER
+
+PT J
+TI Molecular contacts with an orthogonal π-skeleton induce
+   amorphization to enhance perovskite solar cell performance
+SO NATURE CHEMISTRY
+AB Perovskite solar cells represent a promising class of photovoltaics that have achieved exceptional levels of performance within a short time. Such high efficiencies often depend on the use of molecule-based selective contacts that form highly ordered molecular assemblies. Although this high degree of ordering usually benefits charge-carrier transport, it is disrupted by structure deformation and phase transformation when subjected to external stresses, which limits the long-term operational stability of perovskite solar cells. Here we demonstrate a molecular contact with an orthogonal pi-skeleton that shows better resilience to external stimuli than commonly used conjugated cores. This molecular design yields a disordered, amorphous structure that is not only highly stable but also demonstrates exceptional charge selectivity and transport capability. The perovskite solar cells fabricated with this orthogonal pi-skeleton molecule exhibited enhanced long-term durability in accelerated-ageing tests. This orthogonal pi-skeleton functionality opens new opportunities in molecular design for applications in organic electronics.
+PD APR
+PY 2025
+VL 17
+IS 4
+DI 10.1038/s41557-025-01732-z
+EA FEB 2025
+UT WOS:001414759100001
+ER
+
+PT J
+TI Modulating buried interface with multi-fluorine containing organic
+   molecule toward efficient NiOx-based inverted perovskite solar cell
+SO NANO ENERGY
+AB Inverted perovskite solar cells (p-i-n PSCs) with nickel oxide (NiOx) as hole transport layer (HTL) have attracted tremendous attention due to the stable performance and ease of preparation. However, the NiOx/perovskite interface in the inverted perovskite solar cells (p-i-n PSCs) usually suffers from energy level mismatch, low conductivity, lattice mismatch, existence of surface defects etc., limiting the improvement of power conversion efficiency (PCE) and durability. Fluorine-containing materials have desired interface modification effect and are popular in the bulk and upper interface of perovskite, but rarely appear at NiOx/perovskite interface to address above issues. Herein, an interfacial modification strategy with a multi-fluorine organic molecule 6FPPY, is proposed to manage the buried interface of NiOx-based p-i-n PSC. Theoretical calculation and experimental results show that 6FPPY bridges the NiOx/perovskite interface through moieties with F atoms, producing a NiOx film with higher hole transport efficiency, releasing the residual strain of perovskite film, passivating the NiOx/ perovskite interface defects, and suppressing the detrimental reaction between NiOx and perovskite. Consequently, p-i-n PSCs with 6FPPY-modified NiOx achieve a champion PCE of 24.0%, which is superior to the reference device. After 6FPPY modification, PSC can retain above 90% of the initial PCE after 200 h illumination at maximum power point in N2 atmosphere and exhibit better stability than the reference device during 1080 h storage under 60% humidity and 30-35 celcius.
+PD JUN 15
+PY 2023
+VL 111
+AR 108363
+DI 10.1016/j.nanoen.2023.108363
+EA MAR 2023
+UT WOS:000971162900001
+ER
+
+PT J
+TI High-Efficiency Perovskite Solar Cells with Improved Interfacial Charge
+   Extraction by Bridging Molecules
+SO ADVANCED MATERIALS
+AB The interface between the perovskite layer and electron transporting layer is a critical determinate for the performance and stability of perovskite solar cells (PSCs). The heterogeneity of the interface critically affects the carrier dynamics at the buried interface. To address this, a bridging molecule, (2-aminoethyl)phosphonic acid (AEP), is introduced for the modification of SnO2/perovskite buried interface in n-i-p structure PSCs. The phosphonic acid group strongly bonds to the SnO2 surface, effectively suppressing the surface carrier traps and leakage current, and uniforming the surface potential. Meanwhile, the amino group influences the growth of perovskite film, resulting in higher crystallinity, phase purity, and fewer defects. Furthermore, the bridging molecules facilitate the charge extraction at the interface, as indicated by the femtosecond transient reflection (fs-TR) spectroscopy, leading to champion power conversion efficiency (PCE) of 26.40% (certified 25.98%) for PSCs. Additionally, the strengthened interface enables improved operational durability of approximate to 1400 h for the unencapsulated PSCs under ISOS-L-1I protocol.
+   A bridging molecule, (2-aminoethyl)phosphonic acid (AEP), is utilized to modify the buried SnO2/perovskite interface in PSCs. The dual functionality of AEP with adjacent interface leads to significant benefits such as defects suppression, increased film quality, and interfacial charge extraction improvement. A power conversion efficiency (PCE) of 26.40% (certified at 25.98%) is achieved with approximate to 1400 h operational durability. image
+PD SEP
+PY 2024
+VL 36
+IS 38
+DI 10.1002/adma.202406532
+EA JUL 2024
+UT WOS:001276083300001
+ER
+
+PT J
+TI Efficient and stable Ruddlesden-Popper perovskite solar cell with
+   tailored interlayer molecular interaction
+SO NATURE PHOTONICS
+AB Two-dimensional perovskite solar cells have been engineered to be robust against moisture, high temperatures and light stress.
+   Two-dimensional Ruddlesden-Popper phase (2DRP) perovskites are known to exhibit improved photostability and environmental stability compared with their three-dimensional (3D) counterparts. However, fundamental questions remain over the interaction between the bulky alkylammoniums and the 2DRP perovskite framework. Here, we unambiguously demonstrate that a sulfur-sulfur interaction is present for a new bulky alkylammonium, 2-(methylthio)ethylamine hydrochloride (MTEACl). In addition to a weaker van der Waals interaction, the interaction between sulfur atoms in two MTEA molecules enables a (MTEA)(2)(MA)(4)Pb5I16 (n = 5) perovskite framework with enhanced charge transport and stabilization. The result is 2DRP perovskite solar cells with significantly improved efficiency and stability. Cells with a power conversion efficiency as high as 18.06% (17.8% certified) are achieved, along with moisture tolerance for up to 1,512 h (under 70% humidity conditions), thermal stability for 375 h (at 85 degrees C) and stability under continuous light stress (85% of the initial efficiency retained over 1,000 h of operation at the maximum power point).
+PD MAR
+PY 2020
+VL 14
+IS 3
+BP 154
+EP +
+DI 10.1038/s41566-019-0572-6
+EA JAN 2020
+UT WOS:000508155600001
+ER
+
+PT J
+TI Enhanced solar cell stability by hygroscopic polymer passivation of
+   metal halide perovskite thin film
+SO ENERGY & ENVIRONMENTAL SCIENCE
+AB Long-term device stability is one of the most critical issues that impede perovskite solar cell commercialization. Here we show that a thin layer of a functional hygroscopic polymer, poly(ethylene oxide), PEO, on top of the perovskite thin film, can make perovskite-based solar cells highly stable during operation and in a humid atmosphere. We prove that PEO chemically interacts with lead ions on the perovskite surface, and thus passivates undercoordinated defect sites. Importantly, defect healing by PEO not only results in an improvement of the photo-voltage but also makes the perovskite thin film stable. We demonstrate that the hygroscopic PEO thin film can prevent water inclusion into the perovskite film by screening water molecules, thus having a multi-functional role. Overall, such interface engineering leads to highly durable perovskite solar cells, which, in the presence of PEO passivation, retained more than 95% of their initial power conversion efficiency over 15 h illumination, under load, in ambient atmosphere without encapsulation. Our findings experimentally reveal the role of interface engineering in mastering the instability of perovskite materials and propose a general approach for improving the reliability of perovskite-based optoelectronic devices.
+PD SEP 1
+PY 2018
+VL 11
+IS 9
+BP 2609
+EP 2619
+DI 10.1039/c8ee01101j
+UT WOS:000445215400027
+ER
+
+PT J
+TI Stable High-Performance Perovskite Solar Cells via Grain Boundary
+   Passivation
+SO ADVANCED MATERIALS
+AB The trap states at grain boundaries (GBs) within polycrystalline perovskite films deteriorate their optoelectronic properties, making GB engineering particularly important for stable high-performance optoelectronic devices. It is demonstrated that trap states within bulk films can be effectively passivated by semiconducting molecules with Lewis acid or base functional groups. The perovskite crystallization kinetics are studied using in situ synchrotron-based grazing-incidence X-ray scattering to explore the film formation mechanism. A model of the passivation mechanism is proposed to understand how the molecules simultaneously passivate the Pb-I antisite defects and vacancies created by under-coordinated Pb atoms. In addition, it also explains how the energy offset between the semiconducting molecules and the perovskite influences trap states and intergrain carrier transport. The superior optoelectronic properties are attained by optimizing the molecular passivation treatments. These benefits are translated into significant enhancements of the power conversion efficiencies to 19.3%, as well as improved environmental and thermal stability of solar cells. The passivated devices without encapsulation degrade only by approximate to 13% after 40 d of exposure in 50% relative humidity at room temperature, and only approximate to 10% after 24 h at 80 degrees C in controlled environment.
+PD APR 19
+PY 2018
+VL 30
+IS 16
+AR 1706576
+DI 10.1002/adma.201706576
+UT WOS:000430460100016
+ER
+
+PT J
+TI Concurrent cationic and anionic perovskite defect passivation enables
+   27.4% perovskite/silicon tandems with suppression of halide segregation
+SO JOULE
+AB Stable and efficient perovskite/silicon tandem solar cells require defect passivation and suppression of light-induced phase segregation of the wide-band-gap perovskite. Here, we report how molecules containing both electron-rich and electron-poor moieties, such as phenformin hydrochloride (PhenHCl), can satisfy both requirements, independent of the perovskite's surface chemical composition and its grain boundaries and interfaces. PhenHCl-passivated wide-band-gap (similar to 1.68 eV) perovskite p-i-n single-junction solar cells deliver an open-circuit voltage (V-OC) similar to 100 mV higher than control devices, resulting in power conversion efficiencies (PCEs) up to 20.5%. These devices do not show any V-OC losses after more than 3,000 h of thermal stress at 85 degrees C in a nitrogen ambient Moreover, PhenHCl passivation improves the PCE of textured perovskite/silicon tandem solar cells from 25.4% to 27.4%. Our findings provide critical insights for improved passivation of metal halide perovskite surfaces and the fabrication of highly efficient and stable perovskite-based single-junction and tandem solar cells.
+PD JUN 16
+PY 2021
+VL 5
+IS 6
+BP 1566
+EP 1586
+DI 10.1016/j.joule.2021.05.013
+UT WOS:000663028600020
+ER
+
+PT J
+TI Multifunctional Small Molecule as Buried Interface Passivator for
+   Efficient Planar Perovskite Solar Cells
+SO ADVANCED FUNCTIONAL MATERIALS
+AB The improvement of power conversion efficiency (PCE) and stability of the perovskite solar cell (PSC) is hindered by carrier recombination originating from the defects at the buried interface of the PSC. It is crucial to suppress the nonradiative recombination and facilitate carrier transfer in PSC via interface engineering. Herein, P-biguanylbenzoic acid hydrochloride (PBGH) is developed to modify the tin oxide (SnO2)/perovskite interface. The effects of PBGH on carrier transportation, perovskite growth, defect passivation, and PSC performance are systematically investigated. On the one hand, the PBGH can effectively passivate the trap states of Sn dangling bonds and O vacancies on the SnO2 surface via Lewis acid/base coordination, which is conducive to improving the conductivity of SnO2 film and accelerating the electron extraction. On the other hand, PBGH modification assists the formation of high-quality perovskite film with low defect density due to its strong interaction with PbI2. Consequently, the PBGH-modified PSC exhibits a champion power conversion efficiency (PCE) of 24.79%, which is one of the highest PCEs among all the FACsPbI(3)-based PSCs reported to date. In addition, the stabilities of perovskite films and devices under high temperature/humidity and light illumination conditions are also systematically studied.
+PD MAY
+PY 2023
+VL 33
+IS 22
+DI 10.1002/adfm.202300128
+EA MAR 2023
+UT WOS:000942633000001
+ER
+
+PT J
+TI Molecule-triggered strain regulation and interfacial passivation for
+   efficient inverted perovskite solar cells
+SO JOULE
+AB Residual tensile strain impedes the improvement of efficiency and intrinsic stability of perovskite solar cells (PSCs), resulting from the perovskite lattice distortion and different thermal expansion coefficients. Herein, we propose a molecule-triggered strain regulation and interfacial passivation strategy to enhance the efficiency and stability (especially photostability) of PSCs, which utilizes the [2 + 2] cycloaddition reaction of 6-bromocoumarin-3-carboxylic acid ethyl ester (BAEE), consuming the incident UV light to suppress the tensile strain evolution. Meanwhile, the BAEE can form a strong bond with NiOx, assisting the perovskite growth and the interface defect passivation. We obtain the efficiency of 26.32% (certified 26.08%), the open-circuit voltage (V-oc) up to 1.201 V with low V-oc loss (0.342 V), as well as the long-term stability (continuous 365 nm UV illumination: T-90 > 110 h in N-2, T-90 > 6 h in ambient air, and continuous LED white light irradiation at 100 mWcm(-2): T-90 > 1,000 h).
+PD NOV 20
+PY 2024
+VL 8
+IS 11
+DI 10.1016/j.joule.2024.08.003
+EA NOV 2024
+UT WOS:001363052500001
+ER
+
+PT J
+TI Dopant-Free Small-Molecule Hole-Transporting Material for Inverted
+   Perovskite Solar Cells with Efficiency Exceeding 21%
+SO ADVANCED MATERIALS
+AB Hole-transporting materials (HTMs) play a critical role in realizing efficient and stable perovskite solar cells (PVSCs). Considering their capability of enabling PVSCs with good device reproducibility and long-term stability, high-performance dopant-free small-molecule HTMs (SM-HTMs) are greatly desired. However, such dopant-free SM-HTMs are highly elusive, limiting the current record efficiencies of inverted PVSCs to around 19%. Here, two novel donor-acceptor-type SM-HTMs (MPA-BTI and MPA-BTTI) are devised, which synergistically integrate several design principles for high-performance HTMs, and exhibit comparable optoelectronic properties but distinct molecular configuration and film properties. Consequently, the dopant-free MPA-BTTI-based inverted PVSCs achieve a remarkable efficiency of 21.17% with negligible hysteresis and superior thermal stability and long-term stability under illumination, which breaks the long-time standing bottleneck in the development of dopant-free SM-HTMs for highly efficient inverted PVSCs. Such a breakthrough is attributed to the well-aligned energy levels, appropriate hole mobility, and most importantly, the excellent film morphology of the MPA-BTTI. The results underscore the effectiveness of the design tactics, providing a new avenue for developing high-performance dopant-free SM-HTMs in PVSCs.
+PD AUG
+PY 2019
+VL 31
+IS 35
+AR 1902781
+DI 10.1002/adma.201902781
+EA JUL 2019
+UT WOS:000477150100001
+ER
+
+PT J
+TI Elimination of Interfacial Lattice Mismatch and Detrimental Reaction by
+   Self-Assembled Layer Dual-Passivation for Efficient and Stable Inverted
+   Perovskite Solar Cells
+SO ADVANCED ENERGY MATERIALS
+AB Interfacial lattice mismatch and adverse reaction are the key issues hindering the development of nickel oxide (NiOx)-based inverted perovskite solar cells (PVSCs). Herein, a p-chlorobenzenesulfonic acid (CBSA) self-assembled small-molecule (SASM) is adopted to anchor NiOx and perovskite crystals to endow dual-passivation. The chlorine terminal of SASMs can provide growth sites for perovskite, leading to interfacial strain release. Meanwhile, the sulfonic acid group from SASMs can passivate surface defects of NiOx, conducive to charge carrier extraction. In addition, the self-assembled layer inhibits the adverse interfacial reaction by preventing NiOx contact with perovskite. Therefore, the NiOx/CBSA-based PVSCs obtain a champion power conversion efficiency (PCE) of 21.8%. Of particular note, the unencapsulated devices can retain above 80% of their initial PCE values after storage in a nitrogen atmosphere for 3000 h, in air with a relative humidity of 50-70% for 1000 h, and heating at 85 degrees C for 800 h, respectively.
+PD MAY
+PY 2022
+VL 12
+IS 18
+AR 2103674
+DI 10.1002/aenm.202103674
+EA MAR 2022
+UT WOS:000771869200001
+ER
+
+PT J
+TI Bifunctional ligand-induced preferred crystal orientation enables highly
+   efficient perovskite solar cells
+SO JOULE
+AB Crystallization orientation and the buried interface have been proven to be key factors determining the efficiency of perovskite solar cells (PSCs). Here, we report a facile strategy to concomitantly induce (100)-oriented perovskite and improve buried interface by incorporating a bifunctional ligand 2-(methylthio) ethylamine hydrochloride (METEAM) into perovskite precursor solution. METEAM molecules preferentially adsorb on (100) facets of perovskite via strong interactions with perovskite lattice to induce oriented perovskite crystallization. Meanwhile, METEAM molecules spontaneously aggregate at the buried interface and operate as a bridge between the perovskite and tin oxide (SnO2) electron transport layer to bidirectionally passivate their defects. As-prepared perovskite films exhibit suitable energy level and high mobility for interfacial charge transfer, low trap state density, and long carrier lifetime. The resultant conventional-structure PSC devices deliver a power conversion efficiency (PCE) of 26.1% (certified 25.8%) with improved operational and ambient stabilities, which is among the highest PCE of conventional PSCs.
+PD NOV 20
+PY 2024
+VL 8
+IS 11
+DI 10.1016/j.joule.2024.07.009
+EA NOV 2024
+UT WOS:001364268600001
+ER
+
+PT J
+TI Damp heat-stable perovskite solar cells with tailored-dimensionality
+   2D/3D heterojunctions
+SO SCIENCE
+AB If perovskite solar cells (PSCs) with high power conversion efficiencies (PCEs) are to be commercialized, they must achieve long-term stability, which is usually assessed with accelerated degradation tests. One of the persistent obstacles for PSCs has been successfully passing the damp-heat test (85 degrees C and 85% relative humidity), which is the standard for verifying the stability of commercial photovoltaic (PV) modules. We fabricated damp heat-stable PSCs by tailoring the dimensional fragments of two-dimensional perovskite layers formed at room temperature with oleylammonium iodide molecules; these layers passivate the perovskite surface at the electron-selective contact. The resulting inverted PSCs deliver a 24.3% PCE and retain >95% of their initial value after >1000 hours at damp-heat test conditions, thereby meeting one of the critical industrial stability standards for PV modules.
+PD APR 1
+PY 2022
+VL 376
+IS 6588
+SI SI
+BP 73
+EP +
+DI 10.1126/science.abm5784
+UT WOS:000780195200029
+ER
+
+PT J
+TI A donor-acceptor-type hole-selective contact reducing non-radiative
+   recombination losses in both subcells towards efficient all-perovskite
+   tandems
+SO NATURE ENERGY
+AB The efficiency of all-perovskite tandem solar cells has surpassed that of single-junction perovskite solar cells, yet they still suffer from interfacial non-radiative recombination losses. Charge-selective materials that can reduce such losses and fabrication cost and be applied to both subcells should be developed. Here we design a donor-acceptor-type molecule, MPA2FPh-BT-BA (2F), as a hole-selective contact suitable to both wide-bandgap (WBG) and low-bandgap (LBG) subcells for high-performance all-perovskite tandem solar cells. In the WBG cell, 2F enables efficient hole extraction and minimizes interfacial non-radiative recombination losses by passivating interfacial defects. In the LBG cell, 2F suppresses interfacial losses, regulates the crystal growth and enhances Sn-Pb perovskite film quality. As a result, 2F-treated WBG and LBG devices yield efficiencies of 19.33% (certified 19.09%) and 23.24%, respectively, enabling monolithic all-perovskite tandem solar cells with an efficiency of 27.22% (certified 26.3%) and improved operational stability.
+   Zhu et al. develop a low-cost donor-acceptor-type hole-selective layer that minimizes interfacial non-radiative charge recombination losses in single-junction and tandem solar cells based on metal halide perovskites with different bandgaps.
+PD JUL
+PY 2023
+VL 8
+IS 7
+BP 714
+EP 724
+DI 10.1038/s41560-023-01274-z
+EA JUN 2023
+UT WOS:001005874200003
+ER
+
+PT J
+TI In situ energetics modulation enables high-efficiency and stable
+   inverted perovskite solar cells
+SO NATURE PHOTONICS
+AB In contrast to conventional (n-i-p) perovskite solar cells (PSCs), inverted (p-i-n) PSCs offer enhanced stability and integrability with tandem solar cell architectures, which have garnered increasing interest. However, p-i-n cells suffer from energy level misalignment with transport layers, imbalanced transport of photo-generated electrons and holes, and significant defects with the perovskite films. Here we introduce tris(2,4,6-trimethyl-3-(pyridin-3-yl)phenyl)borane (3TPYMB), a nonionic n-type molecule that, through hydrogen bonding and Lewis acid-base reactions with perovskite surfaces or grain boundaries, enables in situ modulation of perovskite energetics, effectively mitigating the key challenges of p-i-n PSCs. The p-i-n PSCs incorporating 3TPYMB achieve a certified quasi-steady-state power conversion efficiency of 24.550.33%, with a reverse scan efficiency of 25.58%. They also exhibit exceptional stability, with unencapsulated devices retaining 97.8% of their initial efficiency after 1,800h of continuous operation at maximum power point under N-2 atmosphere, 1 sun illumination and 60 degrees C conditions.
+PD JAN
+PY 2025
+VL 19
+IS 1
+BP 28
+EP +
+DI 10.1038/s41566-024-01542-8
+EA OCT 2024
+UT WOS:001324513900001
+ER
+
+PT J
+TI Enhancing stability and efficiency of perovskite solar cells with
+   crosslinkable silane-functionalized and doped fullerene
+SO NATURE COMMUNICATIONS
+AB The instability of hybrid perovskite materials due to water and moisture arises as one major challenge to be addressed before any practical application of the demonstrated high efficiency perovskite solar cells. Here we report a facile strategy that can simultaneously enhance the stability and efficiency of p-i-n planar heterojunction-structure perovskite devices. Crosslinkable silane molecules with hydrophobic functional groups are bonded onto fullerene to make the fullerene layer highly water-resistant. Methylammonium iodide is introduced in the fullerene layer for n-doping via anion-induced electron transfer, resulting in dramatically increased conductivity over 100-fold. With crosslinkable silane-functionalized and doped fullerene electron transport layer, the perovskite devices deliver an efficiency of 19.5% with a high fill factor of 80.6%. A crosslinked silane-modified fullerene layer also enhances the water and moisture stability of the non-sealed perovskite devices by retaining nearly 90% of their original efficiencies after 30 days' exposure in an ambient environment.
+PD OCT 5
+PY 2016
+VL 7
+AR 12806
+DI 10.1038/ncomms12806
+UT WOS:000385542000001
+ER
+
+PT J
+TI Interfacial Modification of NiOx for Highly Efficient and
+   Stable Inverted Perovskite Solar Cells
+SO ADVANCED ENERGY MATERIALS
+AB Nickel oxide is one of the most promising hole-transporting materials in inverted perovskite solar cells (PSCs) but suffers from undesired reactions with perovskite which leads to limited device performance and stability. Self-assembled monolayers (SAMs) are demonstrated to effectively optimize the NiOx/perovskite interface, but the significance of the compactness of the SAM at the interface is less investigated. Here, a series of methoxy-substituted triphenylamine functionalized benzothiadiazole (TBT) based SAM molecules, TBT-BA, TBT-FBA, and TBT-DBA, with benzoic acid, 2-fluorobenzoic acid and isophthalic acids as anchoring groups are used to modify NiOx. TBT-BA with the simplest structure is demonstrated to form the densest SAM on NiOx, thus optimized NiOx/SAM/perovskite interface is achieved with enhanced charge collection and suppressed interfacial reaction and recombination. TBT-BA can also passivate the perovskite most effectively due to the highest binding energy toward perovskite, thus the corresponding inverted PSCs show the highest PCE of 24.8% and maintain 88.7% of the initial PCE after storage at 60 degrees C for 2635 h in the glovebox. The work provides important insights into designing SAM molecules for modification transporting layers for efficient and stable PSCs.
+PD JUL
+PY 2024
+VL 14
+IS 25
+DI 10.1002/aenm.202400616
+EA APR 2024
+UT WOS:001201413800001
+ER
+
+PT J
+TI Highly efficient all-inorganic perovskite solar cells with suppressed
+   non-radiative recombination by a Lewis base
+SO NATURE COMMUNICATIONS
+AB All-inorganic perovskite solar cells (PVSCs) have drawn increasing attention because of their outstanding thermal stability. However, their performance is still inferior than the typical organic-inorganic counterparts, especially for the devices with p-i-n configuration. Herein, we successfully employ a Lewis base small molecule to passivate the inorganic perovskite film, and its derived PVSCs achieved a champion efficiency of 16.1% and a certificated efficiency of 15.6% with improved photostability, representing the most efficient inverted all-inorganic PVSCs to date. Our studies reveal that the nitrile (C-N) groups on the small molecule effectively reduce the trap density of the perovskite film and thus significantly suppresses the non-radiative recombination in the derived PVSC by passivating the Pb-exposed surface, resulting in an improved open-circuit voltage from 1.10 V to 1.16 V after passivation. This work provides an insight in the design of functional interlayers for improving efficiencies and stability of all-inorganic PVSCs.
+PD JAN 10
+PY 2020
+VL 11
+IS 1
+AR 177
+DI 10.1038/s41467-019-13909-5
+UT WOS:000551458600006
+ER
+
+PT J
+TI Multifunctional entinostat enhances the mechanical robustness and
+   efficiency of flexible perovskite solar cells and minimodules
+SO NATURE PHOTONICS
+AB Flexible perovskite solar cells have attracted substantial attention owing to their promises for soft and high power-weight compatibility. However, the inferior quality of the buried perovskite-substrate interface due to low interfacial adhesion and large deformation of flexible substrates have greatly limited the performance of flexible perovskite solar cells. Here we add the organic molecule entinostat into the hole extraction material poly(bis(4-phenyl)(2,4,6-trimethylphenyl)amine) to enhance adhesion at the perovskite-substrate interface using the interaction of entinostat with perovskites, poly(bis(4-phenyl)(2,4,6-trimethylphenyl)amine) and indium tin oxide through its multiple functional groups. In addition, entinostat reduces the density of voids at the bottom of the perovskite film owing to its capability to tune the crystallization of perovskites. We demonstrate inverted small-area flexible perovskite solar cells with a power conversion efficiency of 23.4%. Flexible perovskite minimodules with an area of 9 cm(2) achieve a certified aperture efficiency of similar to 19.0%. The optimized unencapsulated flexible minimodule retains 84% of its initial efficiency after 5,000 bending cycles and 90% of the initial power conversion efficiency after light soaking for >750 h.
+PD APR
+PY 2024
+VL 18
+IS 4
+DI 10.1038/s41566-023-01373-z
+EA JAN 2024
+UT WOS:001145338600001
+ER
+
+PT J
+TI Suppressing Halide Segregation via Pyridine-Derivative Isomers Enables
+   Efficient 1.68 eV Bandgap Perovskite Solar Cells
+SO ADVANCED MATERIALS
+AB Light-induced phase segregation is one of the main issues restricting the efficiency and stability of wide-bandgap perovskite solar cells (WBG PSCs). Small organic molecules with abundant functional groups can passivate various defects, and therefore suppress the ionic migration channels for phase segregation. Herein, a series of pyridine-derivative isomers containing amino and carboxyl are applied to modify the perovskite surface. The amino, carboxyl, and N-terminal of pyridine in all of these molecules can interact with undercoordinated Pb2+ through coordination bonds and suppress halide ions migration via hydrogen bonding. Among them, the 5-amino-3-pyridine carboxyl acid (APA-3) treated devices win the champion performance, enabling an efficiency of 22.35% (certified 22.17%) using the 1.68 eV perovskite, which represents one of the highest values for WBG-PSCs. This is believed to be due to the more symmetric spatial distribution of the three functional groups of APA-3, which provides a better passivation effect independent of the molecular arrangement orientation. Therefore, the APA-3 passivated perovskite shows the slightest halide segregation, the lowest defect density, and the least nonradiative recombination. Moreover, the APA-3 passivated device retains 90% of the initial efficiency after 985 h of operation at the maximum power point, representing the robust durability of WBG-PSCs under working conditions.
+   The effects of a series of pyridine-derivative isomers containing both amino and carboxyl on the quality and stability of wide-bandgap perovskite are studied. The isomer with uniform functional group distribution delivers the best performance. A certified cell efficiency of 22.17% is obtained using the 1.68 eV perovskite, which is one of the highest values in wide-bandgap perovskite solar cells. image
+PD MAY
+PY 2024
+VL 36
+IS 21
+DI 10.1002/adma.202311923
+EA MAR 2024
+UT WOS:001177092500001
+ER
+
+PT J
+TI Efficient rigid and flexible perovskite solar cells using strongly
+   adsorbed molecules for lattice repair and grain boundary mitigation
+SO ENERGY & ENVIRONMENTAL SCIENCE
+AB Additives with strong adsorption energies coordinate with lead ions and reduce halogen vacancy defects, leading to a highly ordered atomic arrangement of the lattices and grain boundary mitigation of the perovskite for efficient perovskite solar cells (PSCs). Herein, we demonstrate efficient rigid and flexible PSCs via 1,3,5-triazine-2,4-diamine hydrochloride (TDH) passivation. This molecular passivation improves the perovskite crystallinity by reducing the lattice point vacancy defects, dislocations and distortions of the lattices. It also restrains the formation of small grain crystals by mitigating the grain boundaries. The rigid PSCs yield a PCE of 26.15% with a fill factor (FF) of 85.94%. The flexible PSCs yield a PCE of 24.68% with a FF of 86.07%. Both devices exhibit superior operational stability. This work provides a passivation strategy and valuable insights for crystalline perovskite materials and high-performance PSCs.
+PD MAR 18
+PY 2025
+VL 18
+IS 6
+BP 2905
+EP 2917
+DI 10.1039/d4ee05232c
+EA JAN 2025
+UT WOS:001419287200001
+ER
+
+PT J
+TI Highly Efficient Flexible Perovskite Solar Cells through Pentylammonium
+   Acetate Modification with Certified Efficiency of 23.35%
+SO ADVANCED MATERIALS
+AB Among the emerging photovoltaic technologies, rigid perovskite solar cells (PSCs) have made tremendous development owing to their exceptional power conversion efficiency (PCE) of up to 25.7%. However, the record PCE of flexible PSCs (approximate to 22.4%) still lags far behind their rigid counterparts and their mechanical stabilities are also not satisfactory. Herein, through modifying the interface between perovskite and hole transport layer via pentylammonium acetate (PenAAc) molecule a highly efficient and stable flexible inverted PSC is reported. Through synthetic manipulation of anion and cation, it is shown that the PenA(+) and Ac- have strong chemical binding with both acceptor and donor defects of surface-terminating ends on perovskite films. The PenAAc-modified flexible PSCs achieve a record PCE of 23.68% (0.08 cm(2), certified: 23.35%) with a high open-circuit voltage (V-OC) of 1.17 V. Large-area devices (1.0 cm(2)) also realized an exceptional PCE of 21.52%. Moreover, the fabricated devices show excellent stability under mechanical bending, with PCE remaining above 91% of the original PCE even after 5000 bends.
+PD JAN
+PY 2023
+VL 35
+IS 3
+DI 10.1002/adma.202206387
+EA DEC 2022
+UT WOS:000898302000001
+ER
+
+PT J
+TI Enhanced cation interaction in perovskites for efficient tandem solar
+   cells with silicon
+SO SCIENCE
+AB To achieve the full potential of monolithic perovskite/silicon tandem solar cells, crystal defects and film inhomogeneities in the perovskite top cell must be minimized. We discuss the use of methylenediammonium dichloride as an additive to the perovskite precursor solution, resulting in the incorporation of in situ-formed tetrahydrotriazinium (THTZ-H+) into the perovskite lattice upon film crystallization. The cyclic nature of the THTZ-H+ cation enables a strong interaction with the lead octahedra of the perovskite lattice through the formation of hydrogen bonds with iodide in multiple directions. This structure improves the device power conversion efficiency (PCE) and phase stability of 1.68 electron volts perovskites under prolonged light and heat exposure under 1-sun illumination at 85 degrees C. Monolithic perovskite/silicon tandems incorporating THTZ-H+ in the perovskite photo absorber reached a 33.7% independently certified PCE for a device area of 1 square centimeter.
+PD AUG 2
+PY 2024
+VL 385
+IS 6708
+BP 533
+EP 538
+DI 10.1126/science.adp1621
+UT WOS:001285367900007
+ER
+
+PT J
+TI Suppressing phase segregation and nonradiative losses by a
+   multifunctional cross-linker for high-performance all-perovskite tandem
+   solar cells
+SO ENERGY & ENVIRONMENTAL SCIENCE
+AB The tunable bandgaps and facile fabrication of metal halide perovskites make them attractive for tandem solar cells. One of the main bottlenecks to achieve high-performance and stable perovskite-based tandem solar cells is the notorious light-induced phase segregation of wide bandgap (WBG) I/Br mixed perovskites in the front subcells. Herein, we find that cross-linked network polymers are effective at suppressing the light-induced phase segregation by passivating the defects and alleviating strain within the perovskite films, compared to the counterparts of small molecules and regular chain polymers. A co-polymerization strategy is employed to construct functional groups on the cross-linked polymers, which further reduces defects and increases the light/thermal stability of WBG perovskites. The as-fabricated WBG perovskite solar cells (PSCs) deliver a certified open-circuit voltage (VOC) of 1.37 V with a 1.77 eV perovskite absorber. The VOC deficit is only 0.40 V, which is among the lowest values for certified WBG PSCs. Furthermore, this strategy enables the fabrication of efficient 2-terminal all-perovskite tandem solar cells with an efficiency of 28.3% and a VOC of 2.17 V. The tandem device retains 80% of its initial efficiency after 520 hours of operation at maximum power point.
+PD MAR 18
+PY 2025
+VL 18
+IS 6
+BP 2995
+EP 3004
+DI 10.1039/d4ee02898h
+EA FEB 2025
+UT WOS:001424641300001
+ER
+
+PT J
+TI Managing Multiple Halide-Related Defects for Efficient and Stable
+   Inorganic Perovskite Solar Cells
+SO ANGEWANDTE CHEMIE-INTERNATIONAL EDITION
+AB Halide-related surface defects on inorganic halide perovskite not only induce charge recombination but also severely limit the long-term stability of perovskite solar cells. Herein, adopting density functional theory calculation, we verify that iodine interstitials (I-i) has a low formation energy similar to that of the iodine vacancy (V-I) and is also readily formed on the surface of all-inorganic perovskite, and it is regarded to function as an electron trap. We screen a specific 2,6-diaminopyridine (2,6-DAPy) passivator, which, with the aid of the combined effects from halogen-N-pyridine and coordination bonds, not only successfully eliminates the I-i and dissociative I-2 but also passivates the abundant V-I. Furthermore, the two symmetric neighboring -NH2 groups interact with adjacent halides of the octahedral cluster by forming hydrogen bonds, which further promotes the adsorption of 2,6-DAPy molecules onto the perovskite surface. Such synergetic effects can significantly passivate harmful iodine-related defects and undercoordinated Pb2+, prolong carrier lifetimes and facilitate the interfacial hole transfer. Consequently, these merits enhance the power-conversion efficiency (PCE) from 19.6 % to 21.8 %, the highest value for this type of solar cells, just as importantly, the 2,6-DAPy-treated CsPbI3-xBrx films show better environmental stability.
+PD JUL 24
+PY 2023
+VL 62
+IS 30
+DI 10.1002/anie.202305815
+EA JUN 2023
+UT WOS:001008954000001
+ER
+
+PT J
+TI Fluorinated isopropanol for improved defect passivation and
+   reproducibility in perovskite solar cells
+SO NATURE ENERGY
+AB Surface defect passivation is crucial for improving the efficiency and stability of perovskite solar cells. However, its reproducibility and universal applicability have not been fully explored, limiting large-scale production. Here we introduce a passivation strategy based on fluorinated isopropanol for full passivation of surface defects with only a thin layer of low-dimensional perovskite, which does not interfere with charge transport. Fluorinated isopropanol reduces the reactivity of passivator molecules with the perovskite and allows the use of high passivator concentrations, ensuring complete defect passivation. A subsequent rinse with a solvent mixture of fluorinated isopropanol and isopropanol removes the excess passivator molecule. We demonstrate that the strategy has a broad processing window with high tolerance for deviations to the passivator concentration and is applicable to various device architectures, perovskite compositions and device areas. This method results in high power conversion efficiencies and has the potential to improve scalability and production yields in industrial manufacturing.
+PD SEP
+PY 2025
+VL 10
+IS 9
+BP 1074
+EP 1083
+DI 10.1038/s41560-025-01791-z
+EA JUN 2025
+UT WOS:001504396400001
+ER
+
+PT J
+TI Efficient and Stable Chemical Passivation on Perovskite Surface via
+   Bidentate Anchoring
+SO ADVANCED ENERGY MATERIALS
+AB Chemical passivation is an effective approach to suppress the grain surface dominated charge recombination in perovskite solar cells (PSCs). However, the passivation effect is usually labile on perovskite crystal surface since most passivating agents are weakly anchored. Here, the use of a bidentate molecule, 2-mercaptopyridine (2-MP), to increase anchoring strength for improving the passivation efficacy and stability synchronously is demonstrated. Compared to monodentate counterparts of pyridine and p-toluenethiol, 2-MP passivation on CH3NH3PbI3 film results in twofold improvement of photoluminescence lifetime and remarkably enhanced tolerance to chlorobenzene washing and vacuum heating, which improve the power conversion efficiency of n-i-p planar structured PSCs from 18.35% to 20.28%, with open-circuit voltage approaching 1.18 V. Moreover, the CH3NH3PbI3 films passivated with 2-MP exhibit unprecedented humid-stability that they can be exposed to saturated humidity for at least 5 h, mainly due to the passivation induced surface deactivation, which renders the unencapsulated devices retaining 93% of the initial efficiency after 60 days aging in air with relative humidity of 60-70%.
+PD APR 4
+PY 2019
+VL 9
+IS 13
+AR 1803573
+DI 10.1002/aenm.201803573
+UT WOS:000467131300006
+ER
+
+PT J
+TI A chemically inert bismuth interlayer enhances long-term stability of
+   inverted perovskite solar cells
+SO NATURE COMMUNICATIONS
+AB Long-term stability remains a key issue impeding the commercialization of halide perovskite solar cells (HPVKSCs). The diffusion of molecules and ions causes irreversible degradation to photovoltaic device performance. Here, we demonstrate a facile strategy for producing highly stable HPVKSCs by using a thin but compact semimetal Bismuth interlayer. The Bismuth film acts as a robust permeation barrier that both insulates the perovskite from intrusion by undesirable external moisture and protects the metal electrode from iodine corrosion. The Bismuth-interlayer-based devices exhibit greatly improved stability when subjected to humidity, thermal and light stresses. The unencapsulated device retains 88% of its initial efficiency in ambient air in the dark for over 6000 h; the devices maintain 95% and 97% of their initial efficiencies after 85 degrees C thermal aging and light soaking in nitrogen atmosphere for 500 h, respectively. These sound stability parameters are among the best for planar structured HPVKSCs reported to date.
+PD MAR 11
+PY 2019
+VL 10
+AR 1161
+DI 10.1038/s41467-019-09167-0
+UT WOS:000460759800011
+ER
+
+PT J
+TI Suppression of atomic vacancies via incorporation of isovalent small
+   ions to increase the stability of halide perovskite solar cells in
+   ambient air
+SO NATURE ENERGY
+AB The degradation of perovskite solar cells in the presence of trace water and oxygen poses a challenge for their commercial impact given the appreciable permeability of cost-effective encapsulants. Point defects were recently shown to be a major source of decomposition due to their high affinity for water and oxygen molecules. Here, we report that, in single-cation/halide perovskites, local lattice strain facilitates the formation of vacancies and that cation/halide mixing suppresses their formation via strain relaxation. We then show that judiciously selected dopants can maximize the formation energy of defects responsible for degradation. Cd-containing cells show an order of magnitude enhanced unencapsulated stability compared to state-of-art mixed perovskite solar cells, for both shelf storage and maximum power point operation in ambient air at a relative humidity of 50%. We conclude by testing the generalizability of the defect engineering concept, demonstrating both vacancy-formation suppressors (such as Zn) and promoters (such as Hg).
+PD AUG
+PY 2018
+VL 3
+IS 8
+BP 648
+EP +
+DI 10.1038/s41560-018-0192-2
+UT WOS:000441098100013
+ER
+
+PT J
+TI Lead-chelating hole-transport layers for efficient and stable perovskite
+   minimodules
+SO SCIENCE
+AB The defective bottom interfaces of perovskites and hole-transport layers (HTLs) limit the performance of p-i-n structure perovskite solar cells. We report that the addition of lead chelation molecules into HTLs can strongly interact with lead(II) ion (Pb2+), resulting in a reduced amorphous region in perovskites near HTLs and a passivated perovskite bottom surface. The minimodule with an aperture area of 26.9 square centimeters has a power conversion efficiency (PCE) of 21.8% (stabilized at 21.1%) that is certified by the National Renewable Energy Laboratory (NREL), which corresponds to a minimal small-cell efficiency of 24.6% (stabilized 24.1%) throughout the module area. Small-area cells and large-area minimodules with lead chelation molecules in HTLs had a light soaking stability of 3010 and 2130 hours, respectively, at an efficiency loss of 10% from the initial value under 1-sun illumination and open-circuit voltage conditions.
+PD MAY 26
+PY 2023
+VL 380
+IS 6647
+BP 823
+EP 829
+DI 10.1126/science.ade9463
+UT WOS:001001476900004
+ER
+
+PT J
+TI Co-adsorbed self-assembled monolayer enables high-performance perovskite
+   and organic solar cells
+SO NATURE COMMUNICATIONS
+AB Self-assembled monolayers (SAMs) have become pivotal in achieving high-performance perovskite solar cells (PSCs) and organic solar cells (OSCs) by significantly minimizing interfacial energy losses. In this study, we propose a co-adsorb (CA) strategy employing a novel small molecule, 2-chloro-5-(trifluoromethyl)isonicotinic acid (PyCA-3F), introducing at the buried interface between 2PACz and the perovskite/organic layers. This approach effectively diminishes 2PACz's aggregation, enhancing surface smoothness and increasing work function for the modified SAM layer, thereby providing a flattened buried interface with a favorable heterointerface for perovskite. The resultant improvements in crystallinity, minimized trap states, and augmented hole extraction and transfer capabilities have propelled power conversion efficiencies (PCEs) beyond 25% in PSCs with a p-i-n structure (certified at 24.68%). OSCs employing the CA strategy achieve remarkable PCEs of 19.51% based on PM1:PTQ10:m-BTP-PhC6 photoactive system. Notably, universal improvements have also been achieved for the other two popular OSC systems. After a 1000-hour maximal power point tracking, the encapsulated PSCs and OSCs retain approximately 90% and 80% of their initial PCEs, respectively. This work introduces a facile, rational, and effective method to enhance the performance of SAMs, realizing efficiency breakthroughs in both PSCs and OSCs with a favorable p-i-n device structure, along with improved operational stability.
+   Self-assembled monolayers are essential for achieving high performance solar cells by minimizing interfacial energy losses. Here, authors the develop a co-adsorb strategy with a small molecule to provide a favorable heterointerface, realizing high efficiency in p-i-n perovskite and organic devices.
+PD SEP 1
+PY 2024
+VL 15
+IS 1
+AR 7605
+DI 10.1038/s41467-024-51760-5
+UT WOS:001302620200005
+ER
+
+PT J
+TI Co-Self-Assembled Monolayers Modified NiOx for Stable
+   Inverted Perovskite Solar Cells
+SO ADVANCED MATERIALS
+AB [4-(3,6-dimethyl-9H-carbazol-9yl)butyl]phosphonic acid (Me-4PACz) self-assembled molecules (SAM) are an effective method to solve the problem of the buried interface of NiOx in inverted perovskite solar cells (PSCs). However, the Me-4PACz end group (carbazole core) cannot forcefully passivate defects at the bottom of the perovskite film. Here, a Co-SAM strategy is employed to modify the buried interface of PSCs. Me-4PACz is doped with phosphorylcholine chloride (PC) to form a Co-SAM to improve the monolayer coverage and reduce leakage current. The phosphate group and chloride ions (Cl-) in PC can inhibit NiOx surface defects. Meantime, the quaternary ammonium ions and Cl- in PC can fill organic cations and halogen vacancies in the perovskite film to enable defects passivation. Moreover, Co-SAM can promote the growth of perovskite crystals, collaboratively solve the problem of buried defects, suppress nonradiative recombination, accelerate carrier transmission, and relieve the residual stress of the perovskite film. Consequently, the Co-SAM modified devices show power conversion efficiencies as high as 25.09% as well as excellent device stability with 93% initial efficiency after 1000 h of operation under one-sun illumination. This work demonstrates the novel approach for enhancing the performance and stability of PSCs by modifying Co-SAM on NiOx.
+PD APR
+PY 2024
+VL 36
+IS 16
+AR 2311970
+DI 10.1002/adma.202311970
+EA JAN 2024
+UT WOS:001143286600001
+ER
+
+PT J
+TI Regulating Surface Termination for Efficient Inverted Perovskite Solar
+   Cells with Greater Than 23% Efficiency
+SO JOURNAL OF THE AMERICAN CHEMICAL SOCIETY
+AB Passivating surface and bulk defects of perovskite films has been proven to be an effective way to minimize nonradiative recombination losses in perovskite solar cells (PVSCs). The lattice interference and perturbation of atomic periodicity at the perovskite surfaces often significantly affect the material properties and device efficiencies. By tailoring the terminal groups on the perovskite surface and modifying the surface chemical environment, the defects can be reduced to enhance the photovoltaic performance and stability of derived PVSCs. Here, we report a rationally designed bifunctional molecule, piperazinium iodide (PI), containing both R2NH and R2NH2+ groups on the same six-membered ring, behaving both as an electron donor and an electron acceptor to react with different surface-terminating ends on perovskite films. The resulting perovskite films after defect passivation show released surface residual stress, suppressed nonradiative recombination loss, and more n-type characteristics for sufficient energy transfer. Consequently, charge recombination is significantly suppressed to result in a high open-circuit voltage (V-OC) of 1.17 V and a reduced V-OC loss of 0.33 V. A very high power conversion efficiency (PCE) of 23.37% (with 22.75% certified) could be achieved, which is the highest value reported for inverted PVSCs. Our work reveals a very effective way of using rationally designed bifunctional molecules to simultaneously enhance the device performance and stability.
+PD NOV 25
+PY 2020
+VL 142
+IS 47
+BP 20134
+EP 20142
+DI 10.1021/jacs.0c09845
+UT WOS:000595544800046
+ER
+
+PT J
+TI Polymer-modified halide perovskite films for efficient and stable planar
+   heterojunction solar cells
+SO SCIENCE ADVANCES
+AB The solution processing of polycrystalline perovskite films introduces trap states that can adversely affect their optoelectronic properties. Motivated by the use of small-molecule surfactants to improve the optoelectronic performance of perovskites, we demonstrate the use of polymers with coordinating groups to improve the performance of solution-processed semiconductor films. The use of these polymer modifiers results in a marked change in the electronic properties of the films, as measured by both carrier dynamics and overall device performance. The devices grown with the polymer poly(4-vinylpyridine) (PVP) show significantly enhanced power conversion efficiency from 16.9 +/- 0.7% to 18.8 +/- 0.8% (champion efficiency, 20.2%) from a reverse scan and stabilized champion efficiency from 17.5 to 19.1% [under a bias of 0.94 V and AM (air mass) 1.5-G, 1-sun illumination over 30 min] compared to controls without any passivation. Treating the perovskite film with PVP enables a VOC of up to 1.16 V, which is among the best reported for a CH3NH3PbI3 perovskite solar cell and one of the lowest voltage deficits reported for any perovskite to date. In addition, perovskite solar cells treated with PVP show a long shelf lifetime of up to 90 days (retaining 85% of the initial efficiency) and increased by a factor of more than 20 compared to those without any polymer (degrading to 85% after similar to 4 days). Our work opens up a new class of chemical additives for improving perovskite performance and should pave the way toward improving perovskite solar cells for high efficiency and stability.
+PD AUG
+PY 2017
+VL 3
+IS 8
+AR e1700106
+DI 10.1126/sciadv.1700106
+UT WOS:000411589900058
+ER
+
+PT J
+TI Bisphosphonate-Anchored Self-Assembled Molecules with Larger Dipole
+   Moments for Efficient Inverted Perovskite Solar Cells with Excellent
+   Stability
+SO ADVANCED MATERIALS
+AB In the fabrication of inverted perovskite solar cells (PSCs), the wettability, adsorbability, and compactness of self-assembled monolayers (SAMs) on conductive substrates have critical impacts on the quality of the perovskite films and the defects at the buried perovskite-substrate interface, which control the efficiency and stability of the devices. Herein, three bisphosphonate-anchored indolocarbazole (IDCz)-derived SAMs, IDCz-1, IDCz-2, and IDCz-3, are designed and synthesized by modulating the position of the two nitrogen atoms of the IDCz unit to improve the molecular dipole moments and strengthen the pi-pi interactions. Regulating the work functions (WF) of FTO electrodes through molecular dipole moments and energy levels, the perovskite band bends upwards with a small offset for ITO/IDCz-3/perovskite, thereby promoting hole extraction and blocking electrons. As a result, the inverted PSC employing IDCz-3 as hole-collecting layer exhibits a champion PCE of 25.15%, which is a record efficiency for the multipodal SAMs-based PSCs. Moreover, the unencapsulated device with IDCz-3 can be stored for at least 1800 h with little degradation in performance.
+   In order to obtain self-assembled monolayers (SAMs) with good wettability, adsorbability, and compactness, three bisphosphonate-anchored indolocarbazole (IDCz)-derived SAMs are designed and synthesized with different dipole moments, namely IDCz-1, IDCz-2, and IDCz-3. The inverted perovskite solar cells (PSCs) employing IDCz-3 as hole-collecting layer exhibited a champion PCE of 25.15%, which is a record efficiency for PSCs based on multipodal SAMs. image
+PD JUL
+PY 2024
+VL 36
+IS 28
+DI 10.1002/adma.202401537
+EA MAY 2024
+UT WOS:001231174200001
+ER
+
+PT J
+TI Phenylalkylamine Passivation of Organolead Halide Perovskites Enabling
+   High-Efficiency and Air-Stable Photovoltaic Cells
+SO ADVANCED MATERIALS
+AB Benzylamine is introduced as a surface passivation molecule that improves the moisture-resistance of the perovskites while simultaneously enhancing their electronic properties. Solar cells based on benzylamine-modified formamidinium lead iodide perovskite films exhibit a champion efficiency of 19.2% and an open-circuit voltage of 1.12 V. The modified FAPbI(3) films exhibit no degradation after >2800 h air exposure.
+PD DEC 7
+PY 2016
+VL 28
+IS 45
+BP 9986
+EP 9992
+DI 10.1002/adma.201603062
+UT WOS:000392725200009
+ER
+
+PT J
+TI Work function tuning of a weak adhesion homojunction for stable
+   perovskite solar cells
+SO JOULE
+AB Perovskite solar cells (PSCs) have demonstrated a comparable efficiency to Si -based cells. However, the buried interface with weak adhesion remains a critical issue since the ion migration enhanced by the built-in electric field at this interface might lead to instability. We report here that adjusting the energy -level alignment at the weak adhesion homojunction interface can mitigate ion migration and thereby enhance the stability and photovoltaic performance of PSCs. Functional molecules with self -assembled monolayer characteristics were introduced to the surface of the SnO 2 layer using silane derivatives, which tuned the work function of the homojunction depending on the functional groups in the molecules and thereby significantly reduced the built-in electric field. The PSC exhibited a power conversion efficiency (PCE) of 25.3%. The maximum power point (MPP) tracking under continuous illumination confirmed that the device retained more than 97% of its initial PCE, even after 1,000 h.
+PD MAY 15
+PY 2024
+VL 8
+IS 5
+DI 10.1016/j.joule.2024.02.015
+EA MAY 2024
+UT WOS:001243788400001
+ER
+
+PT J
+TI Fabrication of perovskite solar cells in ambient air by blocking
+   perovskite hydration with guanabenz acetate salt
+SO NATURE ENERGY
+AB The fabrication of perovskite solar cells (PSCs) in ambient air can accelerate their industrialization. However, moisture induces severe decomposition of the perovskite layer, limiting the device efficiency. Here we show that sites near vacancy defects absorb water molecules and trigger the hydration of the perovskite, eventually leading to the degradation of the material. We demonstrate that guanabenz acetate salt eliminates both cation and anion vacancies, blocking the perovskite hydration and allowing the crystallization of a high-quality film in ambient air. With guanabenz acetate salt, we prepare PSCs in ambient air with a certified efficiency of 25.08%. The PSCs without encapsulation maintain around 96% of their initial efficiency after 2,000 hours of ageing in ambient air and after 500 hours of operating at the maximum power point under simulated air mass (AM) 1.5 G solar light in a N2 atmosphere. The encapsulated devices retained 85% of their initial efficiency after 300 hours under damp heat conditions (85 degrees C and 85% relative humidity).
+   The fabrication of perovskite solar cells in ambient air is of interest, but the materials are unstable in the presence of moisture. Yan et al. show that guanabenz acetate salt eliminates vacancy defects that trigger perovskite degradation, enabling 25% efficiency devices to be fabricated in air.
+PD OCT
+PY 2023
+VL 8
+IS 10
+BP 1158
+EP 1167
+DI 10.1038/s41560-023-01358-w
+EA SEP 2023
+UT WOS:001074834300003
+ER
+
+PT J
+TI Multifunctional ytterbium oxide buffer for perovskite solar cells
+SO NATURE
+AB Perovskite solar cells (PSCs) comprise a solid perovskite absorber sandwiched between several layers of different charge-selective materials, ensuring unidirectional current flow and high voltage output of the devices1,2. A 'buffer material' between the electron-selective layer and the metal electrode in p-type/intrinsic/n-type (p-i-n) PSCs (also known as inverted PSCs) enables electrons to flow from the electron-selective layer to the electrode3-5. Furthermore, it acts as a barrier inhibiting the inter-diffusion of harmful species into or degradation products out of the perovskite absorber6-8. Thus far, evaporable organic molecules9,10 and atomic-layer-deposited metal oxides11,12 have been successful, but each has specific imperfections. Here we report a chemically stable and multifunctional buffer material, ytterbium oxide (YbOx), for p-i-n PSCs by scalable thermal evaporation deposition. We used this YbOx buffer in the p-i-n PSCs with a narrow-bandgap perovskite absorber, yielding a certified power conversion efficiency of more than 25%. We also demonstrate the broad applicability of YbOx in enabling highly efficient PSCs from various types of perovskite absorber layer, delivering state-of-the-art efficiencies of 20.1% for the wide-bandgap perovskite absorber and 22.1% for the mid-bandgap perovskite absorber, respectively. Moreover, when subjected to ISOS-L-3 accelerated ageing, encapsulated devices with YbOx exhibit markedly enhanced device stability.
+   Ytterbium oxide buffer layer for use in perovskite solar cells yields a certified power conversion efficiency of more than 25%, which enhances stability across a wide variety of perovskite compositions.
+PD JAN 18
+PY 2024
+VL 625
+IS 7995
+DI 10.1038/s41586-023-06892-x
+UT WOS:001157281900015
+ER
+
+PT J
+TI Conformal monolayer contacts with lossless interfaces for perovskite
+   single junction and monolithic tandem solar cells
+SO ENERGY & ENVIRONMENTAL SCIENCE
+AB The rapid rise of perovskite solar cells (PSCs) is increasingly limited by the available charge-selective contacts. This work introduces two new hole-selective contacts for p-i-n PSCs that outperform all typical p-contacts in versatility, scalability and PSC power-conversion efficiency (PCE). The molecules are based on carbazole bodies with phosphonic acid anchoring groups and can form self-assembled monolayers (SAMs) on various oxides. Besides minimal material consumption and parasitic absorption, the self-assembly process enables conformal coverage of arbitrarily formed oxide surfaces with simple process control. The SAMs are designed to create an energetically aligned interface to the perovskite absorber without non-radiative losses. For three different perovskite compositions, one of which is prepared by co-evaporation, we show dopant-, additive- and interlayer-free PSCs with stabilized PCEs of up to 21.1%. Further, the conformal coverage allows to realize a monolithic CIGSe/perovskite tandem solar cell with as-deposited, rough CIGSe surface and certified efficiency of 23.26% on an active area of 1 cm(2). The simplicity and diverse substrate compatibility of the SAMs might help to further progress perovskite photovoltaics towards a low-cost, widely adopted solar technology.
+PD NOV 1
+PY 2019
+VL 12
+IS 11
+BP 3356
+EP 3369
+DI 10.1039/c9ee02268f
+UT WOS:000494816300007
+ER
+
+PT J
+TI Can Pb-Free Halide Perovskites be Realized by Incorporating the Neutral
+   or Anionic Molecule?
+SO ADVANCED THEORY AND SIMULATIONS
+AB Exploring Pb-free perovskite alternatives is a major challenge in the current photovoltaic field. Direct substitution of Pb with a non-toxic cation usually lowers the structural or electronic dimension, thereby impacting the excellent photovoltaic properties of halide perovskites. In this work, Pb-free halide perovskites by incorporating the anionic or neutral molecules on the A-site of the perovskite lattice and assess the photovoltaic potential by first-principles calculations is constructed. The Pb-free perovskite CH4BiCl3 is predicted to have a direct bandgap within the optimal range for photovoltaic application. Due to the same electronic configuration of B-site Bi3+ and Pb2+ cations, the CH4BiCl3 exhibits a similar electronic band structure with Pb-based halide perovskites. The calculated effective masses and exciton binding energy of electron and hole indicate the high mobility of photogenerated carriers of CH4BiCl3. The excellent photovoltaic performance is demonstrated by calculating the spectroscopic limited maximum efficiency, which shows an efficiency of 30.9% for a typical thickness of 0.5 mu m. The structural stability of cubic perovskite CH4BiCl3 is further evaluated by computing the decomposition energy and ab initio molecular dynamics simulation, demonstrating the thermodynamic stability of CH4BiCl3 at room temperature. These results can be a useful guide for exploring novel Pb-free perovskite materials.
+PD AUG
+PY 2025
+VL 8
+IS 8
+DI 10.1002/adts.202401546
+EA APR 2025
+UT WOS:001467797300001
+ER
+
+PT J
+TI Doping strategies for small molecule organic hole-transport materials:
+   impacts on perovskite solar cell performance and stability
+SO CHEMICAL SCIENCE
+AB Hybrid organic/inorganic perovskite solar cells (PSCs) have dramatically changed the landscape of the solar research community over the past decade, but > 25 year stability is likely required if they are to make the same impact in commercial photovoltaics and power generation more broadly. While every layer of a PSC has been shown to impact its durability in power output, the hole-transport layer (HTL) is critical for several reasons: (1) it is in direct contact with the perovskite layer, (2) it often contains mobile ions, like Li+-which in this case are hygroscopic, and (3) it usually has the lowest thermal stability of all layers in the stack. Therefore, HTL engineering is one method with a high return on investment for PSC stability and lifetime. Research has progressed in understanding design rules for small organic molecule hole-transport materials, yet, when implemented into devices, the same dopants, bis(trifluoromethane) sulfonimide lithium salt (LiTFSI) and tris(2-(1Hpyrazol- 1-yl)-4-tert-butylpyridine) cobalt(III) tri[ bis(trifluoromethane) sulfonimide] (FK209), are nearly always required for improved charge-transport properties (e. g., increased hole mobility and conductivity). The dopants are notable because they too have been shown to negatively impact PSC stability and lifetime. In response, new research has targeted alternative dopants to bypass these negative effects and provide greater functionality. In this review, we focus on dopant fundamentals, alternative doping strategies for organic small molecule HTL in PSC, and imminent research needs with regard to dopant development for the realization of reliable, long-lasting electricity generation via PSCs.
+PD FEB 21
+PY 2019
+VL 10
+IS 7
+BP 1904
+EP 1935
+DI 10.1039/c8sc05284k
+UT WOS:000458907300002
+ER
+
+PT J
+TI Multifunctional organic ammonium salt-modified SnO2
+   nanoparticles toward efficient and stable planar perovskite solar cells
+SO JOURNAL OF MATERIALS CHEMISTRY A
+AB Bulk and interfacial nonradiative recombination hinder the further enhancement of the power conversion efficiency (PCE) and stability of SnO2-based planar perovskite solar cells (PSCs). To date, it is still a huge challenge to minimize the bulk and interfacial nonradiative recombination losses, and thus maximize the potentials of PCE and stability. Herein, a novel and effective multifunctional modification strategy through incorporating Girard's Reagent T (GRT) molecules with multiple functional groups to modify SnO2 nanoparticles (NPs), which significantly reduces the bulk and interfacial nonradiative recombination losses through the simultaneous achievement of suppressing nanoparticle agglomeration, improving the electronic property of SnO2 films, facilitating the vertical growth and enlarging the grain size of perovskite crystals, and passivating interfacial defects is reported. As a result, the device based on GRT modification delivers a much higher PCE of 21.63%, along with significantly suppressed hysteresis, as compared to the control device (19.77%). The device stability is ameliorated after GRT modification. The unencapsulated device with GRT maintains 99.5% of its initial PCE after aging at 60 degrees C for 720 h and 58.5% after illumination for 672 h under one sun, respectively. The present work provides guidance for the design of multifunctional modification molecules toward efficient and stable PSCs.
+PD FEB 21
+PY 2021
+VL 9
+IS 7
+BP 3940
+EP 3951
+DI 10.1039/d0ta12612h
+UT WOS:000621407000011
+ER
+
+PT J
+TI Defect passivation in methylammonium/bromine free inverted perovskite
+   solar cells using charge-modulated molecular bonding
+SO NATURE COMMUNICATIONS
+AB Molecular passivation is a prominent approach for improving the performance and operation stability of halide perovskite solar cells (HPSCs). Herein, we reveal discernible effects of diammonium molecules with either an aryl or alkyl core onto Methylammonium-free perovskites. Piperazine dihydriodide (PZDI), characterized by an alkyl core-electron cloud-rich-NH terminal, proves effective in mitigating surface and bulk defects and modifying surface chemistry or interfacial energy band, ultimately leading to improved carrier extraction. Benefiting from superior PZDI passivation, the device achieves an impressive efficiency of 23.17% (area similar to 1 cm(2)) (low open circuit voltage deficit similar to 0.327 V) along with superior operational stability. We achieve a certified efficiency of similar to 21.47% (area similar to 1.024 cm(2)) for inverted HPSC. PZDI strengthens adhesion to the perovskite via -NH2I and Mulliken charge distribution. Device analysis corroborates that stronger bonding interaction attenuates the defect densities and suppresses ion migration. This work underscores the crucial role of bifunctional molecules with stronger surface adsorption in defect mitigation, setting the stage for the design of charge-regulated molecular passivation to enhance the performance and stability of HPSC.
+PD JAN 29
+PY 2024
+VL 15
+IS 1
+AR 882
+DI 10.1038/s41467-024-45228-9
+UT WOS:001153927700003
+ER
+
+PT J
+TI Ab Initio Molecular Dynamics Simulations of Methylammonium Lead
+   Iodide Perovskite Degradation by Water
+SO CHEMISTRY OF MATERIALS
+AB Protecting organohalide perovskite thin films from water and ambient humidity represents a paramount challenge for the commercial uptake of perovskite solar cells and, in general, of related optoelectronic devices. Therefore, understanding the perovskite/water interface is of crucial importance. As a step in this direction, here we present ab initio molecular dynamics simulations aimed at unraveling the atomistic details of the interaction between the methylammonium lead iodide (MAPbI(3)) perovskite surfaces and a liquid water environment. According to our calculations, MAI-terminated surfaces undergo a rapid solvation process, driven by the interaction of water molecules with Pb atoms, which prompts the release of I atoms. PbI2-terminated surfaces, instead, seem to be more robust to degradation, by virtue of the stronger (shorter) Pb I bonds formed on these facets. We also observe the incorporation of a water molecule into the PbI2-terminated slab, which could represent the first step in the formation of an intermediate hydrated phase. Interestingly, PbI2 defects on the PbI2-terminated surface promote the rapid dissolution of the exposed facet. Surface hydration, which is spontaneous for both MAI- and PbI2-terminated slabs, does not modify the electronic landscape of the former, while the local band gap of the PbI2-exposing model widens by similar to 0.3 eV in the interfacial region. Finally, we show that water incorporation into bulk MAPbI(3) produces almost no changes in the tetragonal structure of the perovskite crystal (similar to 4% volume expansion) but slightly opens the band gap. We believe that this work, unraveling some of the atomistic details of the perovskite/water interface, may inspire new interfacial modifications and device architectures with increased stabilities, which could in turn assist the commercial uptake of perovskite solar cells and optoelectronic devices.
+PD JUL 14
+PY 2015
+VL 27
+IS 13
+BP 4885
+EP 4892
+DI 10.1021/acs.chemmater.5b01991
+UT WOS:000358104700046
+ER
+
+PT J
+TI Rational design of Lewis base molecules for stable and efficient
+   inverted perovskite solar cells
+SO SCIENCE
+AB Lewis base molecules that bind undercoordinated lead atoms at interfaces and grain boundaries (GBs) are known to enhance the durability of metal halide perovskite solar cells (PSCs). Using density functional theory calculations, we found that phosphine-containing molecules have the strongest binding energy among members of a library of Lewis base molecules studied herein. Experimentally, we found that the best inverted PSC treated with 1,3-bis(diphenylphosphino)propane (DPPP), a diphosphine Lewis base that passivates, binds, and bridges interfaces and GBs, retained a power conversion efficiency (PCE) slightly higher than its initial PCE of similar to 23% after continuous operation under simulated AM1.5 illumination at the maximum power point and at similar to 40 degrees C for >3500 hours. DPPP-treated devices showed a similar increase in PCE after being kept under open-circuit conditions at 85 degrees C for >1500 hours.
+PD FEB 17
+PY 2023
+VL 379
+IS 6633
+BP 690
+EP 694
+DI 10.1126/science.ade3970
+UT WOS:001016371000012
+ER
+
+PT J
+TI Tailoring pyridine bridged chalcogen-concave molecules for defects
+   passivation enables efficient and stable perovskite solar cells
+SO NATURE COMMUNICATIONS
+AB Suppressing deep-level defects at the perovskite bulk and surface is indispensable for reducing the non-radiative recombination losses and improving efficiency and stability of perovskite solar cells (PSCs). In this study, two Lewis bases based on chalcogen-thiophene (n-Bu4S) and selenophene (n-Bu4Se) having tetra-pyridine as bridge are developed to passivate defects in perovskite film. The uncoordinated Pb2+ and iodine vacancy defects can interact with chalcogen-concave group and pyridine group through the formation of the Lewis acid-base adduct, particularly both the defects can be surrounded by concave molecules, resulting in effective suppression charge recombination. This approach enables a power conversion efficiency (PCE) as high as 25.37% (25.18% certified) for n-i-p PSCs with stable operation at 65 degrees C and 1-sun illumination for 1300 hours in N2 (ISOS-L-2 protocol), retaining 94% of the initial efficiency. Our work provides insight into the bowl-shaped Lewis base in defects passivation by coordinated strategy for high-performance photovoltaic devices.
+PD JAN 11
+PY 2025
+VL 16
+IS 1
+AR 602
+DI 10.1038/s41467-025-55815-z
+UT WOS:001396245300019
+ER
+
+PT J
+TI Tripodal Triazatruxene Derivative as a Face-On Oriented Hole-Collecting
+   Monolayer for Efficient and Stable Inverted Perovskite Solar Cells
+SO JOURNAL OF THE AMERICAN CHEMICAL SOCIETY
+AB Hole-collecting monolayers have drawn attention in perovskite solar cell research due to their ease of processing, high performance, and good durability. Since molecules in the hole-collecting monolayer are typically composed of functionalized pi-conjugated structures, hole extraction is expected to be more efficient when the pi-cores are oriented face-on with respect to the adjacent surfaces. However, strategies for reliably controlling the molecular orientation in monolayers remain elusive. In this work, multiple phosphonic acid anchoring groups were used to control the molecular orientation of a series of triazatruxene derivatives chemisorbed on a transparent conducting oxide electrode surface. Using infrared reflection absorption spectroscopy and metastable atom electron spectroscopy, we found that multipodal derivatives align face-on to the electrode surface, while the monopodal counterpart adopts a more tilted configuration. The face-on orientation was found to facilitate hole extraction, leading to inverted perovskite solar cells with enhanced stability and high-power conversion efficiencies up to 23.0%.
+PD MAR 22
+PY 2023
+VL 145
+IS 13
+BP 7528
+EP 7539
+DI 10.1021/jacs.3c00805
+EA MAR 2023
+UT WOS:000956449300001
+ER
+
+PT J
+TI De-doping engineering for efficient and heat-stable perovskite solar
+   cells
+SO JOULE
+AB In conventional n-i-p perovskite solar cells, unsolved issues persist, particularly concerning notorious performance degradation under prolonged heat exposure at 85 degrees C. By reducing the concentration of 4-tert-butylpyridine (tBP) and lithium bis(trifluoromethanesulfonyl)imide and adjusting their molar ratio to one, we achieved a dramatic increase in the heat stability of the PSC while boosting its power conversion efficiency (PCE). The formation of a 1:1 Li+-tBP complex was crucial for preventing free tBP molecules in the hole-transporting layer (HTL), suppressing the de-doping of the p-type HTL by tBP and the release of tBP vapor under heat stress. Consequently, the PSCs accomplished a PCE of 26.18% (certified 26.00%) while demonstrating remarkable resilience to heat exposure at 85 degrees C due to the raised glass transition temperature of the HTL. Furthermore, a perovskite solar mini-module with an aperture area of 25 cm2 achieved a PCE of 23.29%, highlighting their potential for commercial PSC deployment.
+PD JAN 15
+PY 2025
+VL 9
+IS 1
+AR 101779
+DI 10.1016/j.joule.2024.10.011
+EA JAN 2025
+UT WOS:001401638800001
+ER
+
+PT J
+TI Determining the bonding-degradation trade-off at heterointerfaces for
+   increased efficiency and stability of perovskite solar cells
+SO NATURE ENERGY
+AB The heterointerfaces between perovskite and charge-transporting layers pose a major limitation to the durability of perovskite solar cells (PSCs), largely due to complex and conflicting chemical and mechanical interactions. Here we introduce an effective debonding technique to thoroughly analyse heterointerface behaviour during both crystal growth and ageing phases of PSCs. Our analysis reveals a strong correlation between interface bonding (fracture energy ranging from similar to 2.49 J m(-2) to similar to 0.38 J m(-2)), proton transfer interactions and degradation, highlighting a critical trade-off between mechanical and chemical stability in PSCs. To address these stability challenges, we mixed Me-4PACz and DCZ-4P molecules, which introduced additional phosphonic acid anchoring groups to enhance bonding at both the metal oxide and the perovskite interfaces. With a high efficiency of 25.6%, the devices retained 90% of their initial performance after 1,000 h of testing under ISOS-L-1I and ISOS-D-2I standard protocols. Under thermal cycling conditions, our PSCs sustained 95% of their efficiency over 500 cycles, exceeding the IEC 61215 and ISOS-T-3I standards.
+PD FEB
+PY 2025
+VL 10
+IS 2
+DI 10.1038/s41560-024-01680-x
+EA DEC 2024
+UT WOS:001373880900001
+ER
+
+PT J
+TI Molecular Design of Hole-Collecting Materials for Co-Deposition
+   Processed Perovskite Solar Cells: A Tripodal Triazatruxene Derivative
+   with Carboxylic Acid Groups
+SO JOURNAL OF THE AMERICAN CHEMICAL SOCIETY
+AB High-performance and cost-effective hole-collecting materials (HCMs) are indispensable for commercially viable perovskite solar cells (PSCs). Here, we report an anchorable HCM composed of a triazatruxene core connected with three alkyl carboxylic acid groups (3CATAT-C3). In contrast to the phosphonic acid-containing tripodal analog (3PATAT-C3), 3CATAT-C3 molecules can form a hydrophilic monolayer on a transparent conducting oxide surface, which is beneficial for subsequent perovskite film deposition in the traditional layer-by-layer fabrication process. More importantly, the larger diffusion coefficient and higher surface energy make 3CATAT-C3 suitable for the simplified, cost-effective one-step co-deposition process in which 3CATAT-C3 was directly added as part of the perovskite precursor solution. 3CATAT-C3 is predominantly located at the perovskite bottom surface after spin-coating the mixed precursor solution, facilitating charge extraction. Devices with 3CATAT-C3 fabricated by this co-deposition method exhibit superior performance with a champion power conversion efficiency of over 23%. The unencapsulated devices showed good operational stability (retaining 90% of the initial output after 100 h), thermal durability (retaining 95% of the initial value after heating at 105 degrees C under air), and excellent storage stability (showing no drop in performance over 8000 h). Based on the results of time-of-flight secondary-ion mass spectroscopy (ToF-SIMS) and diffusion order nuclear magnetic resonance spectroscopy (DOSY), we elucidated the effect of anchoring groups on the performance of the tripodal HCMs in PSCs as well as the mechanism of the co-deposition fabrication process. Our findings provide valuable insights for the molecular design of multifunctional hole-collecting materials, further advancing the performance of perovskite solar cells.
+PD JAN 10
+PY 2025
+VL 147
+IS 3
+BP 2797
+EP 2808
+DI 10.1021/jacs.4c15857
+EA JAN 2025
+UT WOS:001395240800001
+ER
+
+PT J
+TI peri-Fused polyaromatic molecular contacts for perovskite solar
+   cells
+SO NATURE
+AB Molecule-based selective contacts have become a crucial component to ensure high-efficiency inverted perovskite solar cells1-5. These molecules always consist of a conjugated core with heteroatom substitution to render the desirable carrier-transport capability6-9. So far, the design of successful conjugation cores has been limited to two N-substituted pi-conjugated structures, carbazole and triphenylamine, with molecular optimization evolving around their derivatives2,5,10-12. However, further improvement of the device longevity has been hampered by the concomitant limitations of the molecular stability induced by such heteroatom-substituted structures13,14. A more robust molecular contact without sacrificing the electronic properties is in urgent demand, but remains a challenge. Here we report a peri-fused polyaromatic core structure without heteroatom substitution that yields superior carrier transport and selectivity over conventional heteroatom-substituted core structures. This core structure produced a relatively chemically inert and structurally rigid molecular contact, which considerably improved the performance of perovskite solar cells in terms of both efficiency and durability. The champion device showed an efficiency up to 26.1% with greatly improved longevity under different accelerated-ageing tests.
+PD AUG 8
+PY 2024
+VL 632
+IS 8024
+DI 10.1038/s41586-024-07712-6
+EA JUL 2024
+UT WOS:001276265800020
+ER
+
+PT J
+TI Conjugated linker-boosted self-assembled monolayer molecule for inverted
+   solar cells
+SO JOULE
+AB This study improves on commercial self-assembled monolayers (SAMs) like Me4PACz by replacing its linker with a conjugated phenylene, creating Me-PhpPACz for inverted perovskite solar cells (PSCs). The resulting PSCs displayed a record power conversion efficiency (PCE) of 26.17%, along with a fill factor (FF) of 86.79% and exceptional stability. Ultrafast spectroscopy showed that Me-PhpPACz not only regulates the electrode's work function (WF) but also aids carrier extraction and transport. Our in-depth analysis enhances our understanding of the intricate
+PD JUL 17
+PY 2024
+VL 8
+IS 7
+DI 10.1016/j.joule.2024.05.005
+EA JUL 2024
+UT WOS:001274541400001
+ER
+
+PT J
+TI Minimizing the buried interfacial energy loss using a
+   fluorine-substituted small molecule for 25.92%-efficiency and stable
+   inverted perovskite solar cells
+SO ENERGY & ENVIRONMENTAL SCIENCE
+AB Achieving optimal interfacial contact and band alignment at the buried interface of perovskites is crucial for minimizing the energy loss in perovskite solar cells (PSCs). Herein, a series of fluorine-substituted succinic acid derivatives are rationally introduced into the bottom interface of a perovskite. Tetrafluorosuccinic acid (TFSA), with its symmetric molecular structure and strong electronegativity, has been proven to be the best interfacial regulator among the selected functional molecules. TFSA not only effectively stabilizes FA cations via multi-site hydrogen-bonding, but also passivates under-coordinated Pb2+ defects through coordination effects. Moreover, TFSA finely regulates the morphological arrangement and homogenizes the surface contact potential of MeO-2PACz, resulting in the formation of high-quality perovskite films with reduced interfacial charge transport barriers and suppressed non-radiative recombination. Consequently, an exceptional efficiency of 25.92% (certified 25.77%) was achieved for a 0.09 cm2 inverted device, along with a voltage loss of 0.36 V and excellent long-term operational stability, representing the highest value reported for inverted PSCs based on RbCsFAMA-based perovskites to date. Additionally, a 12.96 cm2 (active area) minimodule delivers an impressive efficiency of 22.78%, demonstrating great upscaling potential. This study opens an effective strategy to rationally regulate the buried interfacial energy loss towards highly efficient and stable inverted PSCs.
+   Tetrafluorosuccinic acid was introduced into the buried interface to stabilize FA cations, mediate crystal growth of perovskite and reduce the hole-transport barrier, delivering a record efficiency of 25.92% for RbCsFAMA-based perovskite solar cells.
+PD OCT 1
+PY 2024
+VL 17
+IS 19
+BP 7342
+EP 7354
+DI 10.1039/d4ee02964j
+EA AUG 2024
+UT WOS:001306396900001
+ER
+
+PT J
+TI Metastable Dion-Jacobson 2D structure enables efficient and stable
+   perovskite solar cells
+SO SCIENCE
+AB The performance of three-dimensional (3D) organic-inorganic halide perovskite solar cells (PSCs) can be enhanced through surface treatment with 2D layered perovskites that have efficient charge transport. We maximized hole transport across the layers of a metastable Dion-Jacobson (DJ) 2D perovskite that tuned the orientational arrangements of asymmetric bulky organic molecules. The reduced energy barrier for hole transport increased out-of-plane transport rates by a factor of 4 to 5, and the power conversion efficiency (PCE) for the 2D PSC was 4.9%. With the metastable DJ 2D surface layer, the PCE of three common 3D PSCs was enhanced by approximately 12 to 16% and could reach approximately 24.7%. For a triple-cation-mixed-halide PSC, 90% of the initial PCE was retained after 1000 hours of 1-sun operation at similar to 40 degrees C in nitrogen.
+PD JAN 7
+PY 2022
+VL 375
+IS 6576
+BP 71
+EP +
+AR eabj2637
+DI 10.1126/science.abj2637
+UT WOS:000740261400042
+ER
+
+PT J
+TI Methylammonium-free, high-performance, and stable perovskite solar cells
+   on a planar architecture
+SO SCIENCE
+AB Currently, perovskite solar cells (PSCs) with high performances greater than 20% contain bromine (Br), causing a suboptimal bandgap, and the thermally unstable methylammonium (MA) molecule. Avoiding Br and especially MA can therefore result in more optimal bandgaps and stable perovskites. We show that inorganic cation tuning, using rubidium and cesium, enables highly crystalline formamidinium-based perovskites without Br or MA. On a conventional, planar device architecture, using polymeric interlayers at the electron- and hole-transporting interface, we demonstrate an efficiency of 20.35% (stabilized), one of the highest for MA-free perovskites, with a drastically improved stability reached without the stabilizing influence of mesoporous interlayers. The perovskite is not heated beyond 100 degrees C. Going MA-free is a new direction for perovskites that are inherently stable and compatible with tandems or flexible substrates, which are the main routes commercializing PSCs.
+PD OCT 26
+PY 2018
+VL 362
+IS 6413
+BP 449
+EP +
+DI 10.1126/science.aat3583
+UT WOS:000450441900048
+ER
+
+PT J
+TI Self-assembled materials with an ordered hydrophilic bilayer for high
+   performance inverted Perovskite solar cells
+SO NATURE COMMUNICATIONS
+AB While self-assembled material based inverted perovskite solar cells have surpassed power conversion efficiencies of 26%, enhancing their performance in large-area configurations remains a significant challenge. In this work, we report a self-assembled material based hole-selective layer 4-(7H-dibenzo[c,g]carbazol-7-yl)phenyl)phosphonic acid, with a pi-expanded conjugation. The enhanced intermolecular pi-pi interactions facilitate the self-assembly of 4-(7H-dibenzo[c,g]carbazol-7-yl)phenyl)phosphonic acid molecules to form an ordered bilayer with a hydrophilic surface, which passivates the buried perovskite interface defect and enables high-quality and large-area perovskite preparation, while simultaneously enhancing interfacial charge extraction and transport. The certified efficiency of 4-(7H-dibenzo[c,g]carbazol-7-yl)phenyl)phosphonic acid based small-area (0.0715 cm2) device is 26.39% with high stability. Furthermore, a certified efficiency of 25.21% is achieved for a 99.12 mm2 large area device.
+PD JAN 2
+PY 2025
+VL 16
+IS 1
+AR 86
+DI 10.1038/s41467-024-55523-0
+UT WOS:001390087300023
+ER
+
+PT J
+TI Rigid molecules anchoring on NiOx enable >26% efficiency perovskite
+   solar cells
+SO JOULE
+AB The surface defects of nickel oxide (NiOx) and its interfacial redox reactions with perovskites often impede the efficiency improvement of inverted perovskite solar cells (PSCs). To address these issues, we designed ((9Hfluoren-9-ylidene)methyl) cyanophosphonic acid (FY-CPA) with a rigid backbone as an optimal multi-dentate anchoring (MDA) molecule to enhance the anchorage with bottom NiOx by forming tetradentate binding and parallel orientation. Dense and uniform coverage of FY-CPA at the NiOx/perovskite interface was achieved through in situ deposition, which can minimize interfacial redox reactions and suppress non-radiative recombination. The champion device demonstrated a power conversion efficiency (PCE) of 26.21% with a certified value of 25.99%. In addition, the larger area device (1.02 cm(2)) also showed a PCE of 25.31% with a certified value of 24.90%, which is among the highest PCEs reported so far for greater than 1 cm(2) sized PSCs. Moreover, the as-prepared device exhibited enhanced thermal and operational stability during long-term storage.
+PD MAR 19
+PY 2025
+VL 9
+IS 3
+AR 101815
+DI 10.1016/j.joule.2024.101815
+EA MAR 2025
+UT WOS:001450696900001
+ER
+
+PT J
+TI Electrophilic molecule-induced π-π interactions reduce energy disorder
+   of the hole transport layer for highly efficient perovskite solar
+   modules
+SO ENERGY & ENVIRONMENTAL SCIENCE
+AB Poly[bis(4-phenyl)(2,4,6-trimethylphenyl)amine] (PTAA) is commonly used as a co-hole transport layer in inverted perovskite solar cells (PSCs). It can effectively improve the hole transport capability of NiOx and obstruct the interfacial reaction between NiOx and the perovskite. However, energy disorder and high hydrophobicity of PTAA will affect charge transport and superior perovskite film formation, further limiting the enhancement in efficiency and stability of PSCs. To address these issues, co-assembled electrophilic molecules with PTAA are explored to reduce the energy disorder and enhance the quality of heterojunction interface. Among the electrophilic molecules, 2,6-difluoro-3-nitrobenzonitrile (FCNO2), showing the maximal electrophilic capability as evidenced by first principles calculations, effectively promotes molecular stacking by establishing the strongest pi-pi interactions with PTAA. The interactions promote charge transfer between PTAA and FCNO2, further improving the hole mobility and energy level, and reordering the molecular chains, thus reducing the energy disorder of PTAA. Additionally, FCNO2-incorporated PTAA also reduces the free energy barrier for nucleation, contributing to obtaining a pinhole-free bottom surface of the perovskite layer. Consequently, the best perovskite solar module (PSM) achieves a power conversion efficiency of 20.6% (certified 20.1%, 57.3 cm2), which is record-high for inverted PSMs with an active area exceeding 50 cm2. Moreover, the resulting PSM can maintain 94% of its original efficiency after continuous operation for 1500 h under 1-sun illumination. Our results demonstrate that the reduction of energy disorder in organic charge transport layers through the co-assembling strategic application of highly electrophilic molecules is an effective approach to enhancing the performance of PSMs.
+   Co-assembled the highly electrophilic FCNO2 with PTAA can effectively reduce the energy disorder of NiOx/PTAA through pi-pi interactions and charge transfer, thereby achieving an efficiency of 20.6% and excellent stability in 100 cm2 inverted PSM.
+PD OCT 29
+PY 2024
+VL 17
+IS 21
+BP 8337
+EP 8348
+DI 10.1039/d4ee03173c
+EA SEP 2024
+UT WOS:001327960500001
+ER
+
+PT J
+TI Passivating buried interface via self-assembled novel sulfonium salt
+   toward stable and efficient perovskite solar cells
+SO CHEMICAL ENGINEERING JOURNAL
+AB The interfacial carrier nonradiative recombination resulting from defects and energy barrier at buried interface hinders further enhancement of power conversion efficiency (PCE) and stability of perovskite solar cells. Herein, we report a simple and effective buried interface passivation strategy based on cation engineering through employing a new type of sulfonium salt ((2-carboxyethyl) dimethyl sulfonium chloride, CDSC) together with reference molecule (3-dimethylamino propionic acid hydrochloride, DPAH) to modify the interface between perovskite and electron transport layers. It is theoretically and experimentally revealed at the atomic scale that CDSC and DPAH chemically interact with both SnO2 and perovskite layer and accordingly well bridge both layers. Both modifiers can not only passivate the defects from the surface of perovskite and SnO2 films, but also reduce interfacial energy barrier via improving energy band alignment. CDSC are certified to be more effective in defect passivation and energy band modulation than DPAH, for the first time revealing that sulfonium cations are superior to commonly adopted ammonium cations. Finally, the DPAH and CDSC-modified devices achieve a PCE of 21.44% and 22.22%, respectively, far outperforming the control device (20.72%). The unsealed devices with CDSC maintain 92.5% of their initial efficiency after thermal aging for 1272 h.
+PD MAR 1
+PY 2022
+VL 431
+AR 133209
+DI 10.1016/j.cej.2021.133209
+EA JAN 2022
+PN 3
+UT WOS:000777761300003
+ER
+
+PT J
+TI Phosphonate Diacid Molecule Induced Crystallization Manipulation and
+   Defect Passivation for High-Performance Inverted MA-Free Perovskite
+   Solar Cells
+SO ADVANCED ENERGY MATERIALS
+AB Inverted perovskite solar cells (PSCs) comprising formamidinium-cesium (FA-Cs) lead triiodide have garnered considerable attention due to their impressive efficiency and remarkable stability. Nevertheless, synthesizing high-quality FA-Cs alloyed perovskite films presents challenges, primarily attributable to the intricate interphase process involved and the absence of methylammonium (MA+) and mixed halogens. Here, the additive 3-phosphonopropanoic acid (3-PPA) is introduced, with bifunctional phosphonic acid groups, into the perovskite precursor to modulate the crystal growth and provide passivation at grain boundaries. In situ characterization reveals that the 3-PPA can form a "rapid nucleation, slow growth" mechanism, resulting in perovskite films with enlarged grains and enhanced crystallinity. In addition, 3-PPA serves to passivate grain boundary defects and release residual strain by forming molecular bridging, leading to the passivated films achieving a fluorescence lifetime of 5.79 microseconds with a favorable n-type contact interface. As a result, the resulting devices incorporating 3-PPA achieve a champion power conversion efficiency (PCE) of 24.05% and an ultra-high fill factor (FF) of 84.22%. More importantly, the optimized devices exhibit satisfactory stability under various testing conditions. The findings underscore the pivotal role of multifunctional additives in crystallization control and defect passivation for high-performance MA-free and pure iodine PSCs.
+   A facile strategy is reported to systematically manipulate the crystallization and passivate defects by incorporating robust dual-functional additives. The additive not only regulates crystallization kinetics but acts as a passivator, effectively passivating defects, releasing residual strain, and achieving a favorable n-type contact interface. The resultant devices accomplish a power conversion efficiency (PCE) of 24.05% and an ultra-high fill factor (FF) of 84.22% with improved stability. image
+PD SEP
+PY 2024
+VL 14
+IS 36
+AR 2402249
+DI 10.1002/aenm.202402249
+EA JUN 2024
+UT WOS:001250253900001
+ER
+
+PT J
+TI Enhancing the efficiency and stability of perovskite solar cells via a
+   polymer heterointerface bridge
+SO NATURE PHOTONICS
+AB Defective and mechanically weak interfaces substantially undermine both the efficiency and stability of perovskite solar cells (PSCs). Here we introduce a linear polymer, heparin sodium, as a multifunctional interface bridge layer in n-i-p PSCs. Unlike commonly employed small-molecule interface modification/passivation materials, heparin sodium features functional groups and ions including COO-, SO3- and Na+ distributed along the top and bottom sides of its backbone. It thus serves as a bridge connecting the SnO2 electron transport layer and the perovskite film through robust chemical bonding, mitigating defects and enhancing heterointerface bonding in PSCs. The power conversion efficiency (PCE) of the resulting rigid devices is 26.61% (certified 26.54%), positioning it among the highest-efficiency PSCs. We also fabricate flexible SnO2/heparin sodium-based PSCs that achieve a PCE of 25.23%. The heparin sodium-based devices demonstrate excellent operational and thermal stability. After 1,800 h under maximum power point tracking under simulated 1-Sun conditions, 94.9% of the initial PCE is retained. The devices also maintain 95.2% of their initial PCE after ageing at 85 degrees C for 1,800 h.
+PD JUL
+PY 2025
+VL 19
+IS 7
+BP 701
+EP 708
+DI 10.1038/s41566-025-01676-3
+EA JUN 2025
+UT WOS:001503279400001
+ER
+
+PT J
+TI Anchoring Charge Selective Self-Assembled Monolayers for Tin-Lead
+   Perovskite Solar Cells
+SO ADVANCED MATERIALS
+AB Self-assembled monolayers (SAMs) have displayed great potential for improving efficiency and stability in p-i-n perovskite solar cells (PSCs). The anchoring of SAMs at the conductiv metal oxide substrates and their interaction with perovskite materials must be rationally tailored to ensure efficient charge carrier extraction and improved quality of the perovskite films. Herein, SAMs molecules with different anchoring groups and spacers to control the interaction with perovskite in the p-i-n mixed Sn-Pb PSCs are selected. It is found that the monolayer with the carboxylate group exhibits appropriate interaction and has a more favorable orientation and arrangement than that of the phosphate group. This results in reduced nonradiative recombination and enhanced crystallinity. In addition, the short chain length leads to an improved energy level alignment of SAMs with perovskite, improving hole extraction. As a result, the narrow bandgap (approximate to 1.25 eV) Sn-Pb PSCs show efficiencies of up to 23.1% with an open-circuit voltage of up to 0.89 V. Unencapsulated devices retain 93% of their initial efficiency after storage in N2 atmosphere for over 2500 h. Overall, this work highlights the underexplored potential of SAMs for perovskite photovoltaics and provides essential findings on the influence of their structural modification.
+   The application of self-assembled monolayer (SAMs) in perovskite solar cells has made the performance of p-i-n structure devices develop rapidly, while the relationship of function group, anchor groups, and spacers often is neglected. It is found that anchoring groups and spacers can affect the coordination between SAMs and perovskite. This work demonstrates different components of perovskites are selective to SAMs. image
+PD MAY
+PY 2024
+VL 36
+IS 18
+DI 10.1002/adma.202312264
+EA FEB 2024
+UT WOS:001155423000001
+ER
+
+PT J
+TI Rational molecular design of multifunctional self-assembled monolayers
+   for efficient hole selection and buried interface passivation in
+   inverted perovskite solar cells
+SO CHEMICAL SCIENCE
+AB Self-assembled monolayers (SAMs) have been widely employed as the bottom-contact hole-selective layer (HSL) in inverted perovskite solar cells (PSCs). Besides manipulating the electrical properties, molecularly engineering the SAM provides an opportunity to modulate the perovskite buried interface. Here, we successfully introduced Lewis-basic oxygen and sulfur heteroatoms through rational molecular design of asymmetric SAMs to obtain two novel multifunctional SAMs, CbzBF and CbzBT. Detailed characterization of single-crystal structures and device interfaces shows that enhanced packing, more effective ITO work function adjustment, and buried interface passivation were successfully achieved. Consequently, the champion PSC employing CbzBT showed an excellent power conversion efficiency (PCE) of 24.0% with a high fill factor of 84.41% and improved stability. This work demonstrates the feasibility of introducing defect-passivating heterocyclic groups into SAM molecules to help passivate the interfacial defects in PSCs. The insights gained from this molecular design strategy will accelerate the development of new multifunctional SAM HSLs for efficient PSCs.
+   Lewis-basic oxygen and sulfur heteroatoms are introduced to novel asymmetric self-assembled monolayers, realizing enhanced packing, effectively adjusting ITO work function, and passivating buried interface in inverted perovskite solar cells.
+PD FEB 22
+PY 2024
+VL 15
+IS 8
+BP 2778
+EP 2785
+DI 10.1039/d3sc05485c
+EA JAN 2024
+UT WOS:001146632100001
+ER
+
+PT J
+TI Passivation of the grain boundaries of
+   CH3NH3PbI3 using carbon quantum dots
+   for highly efficient perovskite solar cells with excellent environmental
+   stability
+SO NANOSCALE
+AB Organic-inorganic hybrid perovskites are prone to defect formation due to iodine and methylamine ion/defect migration, leading to the formation of lots of defects at the perovskite surface and grain boundaries. Passivation of the defects is an effective method to improve the power conversion efficiency (PCE) and stability of perovskite solar cells (PSCs). To achieve stable passivation, the interaction between the perovskite and additive materials should be taken into consideration. In this work, we for the first time introduced carbon quantum dots (CQDs) as an additive for the stabilization of MAPbI(3)via passivation of the grain boundaries of the perovskite. Because the carboxylic groups, hydroxyl groups and amino-groups on the edge of CQDs can bond with the uncoordinated Pb in MAPbI(3), strong and stable interactions between the perovskite and CQDs can be generated, inducing a lower trap-state density and better optoelectronic properties. The typical PCE of the PSCs based on CQD modified MAPbI(3) films increases from 17.59% to 18.81% and the PCE of the optimized champion PSCs reaches 19.38%. Furthermore, the hydrophobic CQD molecules can block the contact between water and MAPbI(3), and even if the CQD modified perovskite is kept under ambient atmosphere without controlling the humidity for 4 months, the MAPbI(3) film still retained its original black color.
+PD JAN 7
+PY 2019
+VL 11
+IS 1
+BP 115
+EP 124
+DI 10.1039/c8nr08295b
+UT WOS:000454327500007
+ER
+
+PT J
+TI Oriented Molecular Dipole-Enabled Modulation of
+   NiOx/Perovskite Interface for Pb-Sn Mixed Inorganic
+   Perovskite Solar Cells
+SO ADVANCED MATERIALS
+AB Nickel oxide (NiOx) is considered as a potential hole transport material in the fabrication of lead-tin (Pb-Sn) perovskite solar cells (PSCs) for tandem applications. However, the energy level mismatch and unfavorable redox reactions between Ni >= 3+ species and Sn2+ at the NiOx/perovskite interface pose challenges. Herein, high-performance Pb-Sn-based inorganic PSCs are demonstrated by modulating the NiOx/perovskite interface with a multifunctional 4-aminobenzenesulfonic acid (4-ABSA) interlayer. The 4-ABSA interlayer induces the formation of an oriented dipole moment directed from NiOx to perovskite, effectively elevating the valance band maximum of the NiOx film, thus balancing the energy level difference and promoting charge carrier extraction of the device. Moreover, the 4-ABSA molecules interact with both NiOx and perovskite, suppressing the reaction of highly active Ni >= 3+ species with perovskites while regulating perovskite crystallization. This results in perovskite films with reduced defect density and enlarged grains. Consequently, a remarkable device efficiency of 17.4% is obtained, representing the highest reported value for Pb-Sn-based inorganic PSCs thus far. Furthermore, the 4-ABSA interlayer enhances the UV-radiation and operational stability of the resulting devices, maintaining over 80% and 90% of the initial efficiency after 240 h of UV-light exposure and 480 h of 1 sun illumination, respectively.
+PD FEB
+PY 2025
+VL 37
+IS 8
+DI 10.1002/adma.202414125
+EA JAN 2025
+UT WOS:001398723500001
+ER
+
+PT J
+TI Reinforcing self-assembly of hole transport molecules for stable
+   inverted perovskite solar cells
+SO SCIENCE
+AB Power conversion efficiencies (PCEs) of inverted perovskite solar cells (PSCs) have been improved by the use of a self-assembled monolayer (SAM) hole transport layer. Long-term stability of PSCs requires keeping the SAM compact under the perovskite layer during operation. We found that strong polar solvents in the perovskite precursor desorb the SAM if it is anchored on substrates by hydrogen-bonded, rather than covalently bonded, hydroxyl groups. We used atomic-layer deposition to create an indium tin oxide substrate with a fully covalent hydroxyl-covered surface for SAM anchoring, as well as a SAM with a trimethoxysilane group that exhibited strong tridentate anchoring to the substrate. The resulting PSCs achieved PCEs of 24.8 (certified 24.6) and 23.2% with aperture areas of 0.08 and 1.01 square centimeters, respectively. The devices retained 98.9 and 98.2% of the initial PCE after 1000 hours damp-heat test and operation in maximum power point tracking at 85 degrees C for 1200 hours under standard illumination, respectively.
+PD MAR 15
+PY 2024
+VL 383
+IS 6688
+BP 1236
+EP 1240
+DI 10.1126/science.adj9602
+UT WOS:001273082800009
+ER
+
+PT J
+TI Interfacial Defect Passivation and Stress Release via Multi-Active-Site
+   Ligand Anchoring Enables Efficient and Stable Methylammonium-Free
+   Perovskite Solar Cells
+SO ACS ENERGY LETTERS
+AB Interfacial trap-assisted non-radiative recombination and residual stress impede the further increase of power conversion efficiency (PCE) and stability of the methylammonium-free (MA-free) perovskite solar cells (PSCs). Here, we report an interfacial defect passivation and stress release strategy through employing the multi-active-site Lewis base ligand (i.e., (5-mercapto-1,3,4-thiadiazol-2-ylthio)acetic acid (MTDAA)) to modify the surface and grain boundaries (GBs) of MA-free perovskite films. Both experimental and theoretical results confirm strong chemical interactions between multiple active sites in the MTDAA molecule and undercoordinated Pb2+ at the surface or GBs of perovskite films. It is demonstrated theoretically that multi-active-site adsorption is more favorable thermodynamically as compared to single-active-site adsorption, regardless of PbI(2)( )termination and formamidinium iodide (FM) termination types. MTDAA modification results in much reduced defect density, increased carrier lifetime, and almost thoroughly released interfacial residual stress. Upon MTDAA passivation, the PCE is boosted from 20.26% to 21.92%. The unencapsulated device modified by MTDAA maintains 99% of its initial PCE after aging under the relative humidity range of 10-20% for 1776 h, and 91% after aging at 60 degrees C for 1032 h.
+PD JUL 9
+PY 2021
+VL 6
+IS 7
+BP 2526
+EP 2538
+DI 10.1021/acsenergylett.1c00794
+EA JUN 2021
+UT WOS:000672746800021
+ER
+
+PT J
+TI Constructive molecular configurations for surface-defect passivation of
+   perovskite photovoltaics
+SO SCIENCE
+AB Surface trap-mediated nonradiative charge recombination is a major limit to achieving high-efficiency metal-halide perovskite photovoltaics. The ionic character of perovskite lattice has enabled molecular defect passivation approaches through interaction between functional groups and defects. However, a lack of in-depth understanding of how the molecular configuration influences the passivation effectiveness is a challenge to rational molecule design. Here, the chemical environment of a functional group that is activated for defect passivation was systematically investigated with theophylline, caffeine, and theobromine. When N-H and C=O were in an optimal configuration in the molecule, hydrogen-bond formation between N-H and I (iodine) assisted the primary C=O binding with the antisite Pb (lead) defect to maximize surface-defect binding. A stabilized power conversion efficiency of 22.6% of photovoltaic device was demonstrated with theophylline treatment.
+PD DEC 20
+PY 2019
+VL 366
+IS 6472
+SI SI
+BP 1509
+EP +
+DI 10.1126/science.aay9698
+UT WOS:000503861000054
+ER
+
+PT J
+TI Self-Assembled Hole Transporting Monolayer for Highly Efficient
+   Perovskite Solar Cells
+SO ADVANCED ENERGY MATERIALS
+AB The unprecedented emergence of perovskite-based solar cells (PSCs) has been accompanied by an intensive search of suitable materials for charge-selective contacts. For the first time a hole-transporting self-assembled monolayer (SAM) as the dopant-free hole-selective contact in p-i-n PSCs is used and a power conversion efficiency of up to 17.8% with average fill factor close to 80% and undetectable parasitic absorption is demonstrated. SAM formation is achieved by simply immersing the substrate into a solution of a novel molecule V1036 that binds to the indium tin oxide surface due to its phosphonic anchoring group. The SAM and its modifications are further characterized by Fourier-transform infrared and vibrational sum-frequency generation spectroscopy. In addition, photoelectron spectroscopy in air is used for measuring the ionization potential of the studied SAMs. This novel approach is also suitable for achieving a conformal coverage of large-area and/or textured substrates with minimal material consumption and can potentially be extended to serve as a model system for substrate-based perovskite nucleation and passivation control. Further gains in efficiency can be expected upon SAM optimization by means of molecular and compositional engineering.
+PD NOV 15
+PY 2018
+VL 8
+IS 32
+AR 1801892
+DI 10.1002/aenm.201801892
+UT WOS:000450269900020
+ER
+
+PT J
+TI Face-on oriented self-assembled molecules with enhanced π-π stacking for
+   highly efficient inverted perovskite solar cells on rough FTO substrates
+SO ENERGY & ENVIRONMENTAL SCIENCE
+AB Self-assembled molecules (SAMs) as hole transport layers (HTLs) on light-managing textured substrates promise great commercial potential for high-efficiency inverted perovskite solar cells (PSCs). However, the inhomogeneous distribution and disordered packing of SAMs on rough substrates aggravate interfacial energy loss, impeding further improvement in the efficiency and stability of PSCs. Herein, we report an asymmetric SAM, 4PABCz, developed by introducing additional conjugated groups into the carbazole unit of 4PACz. The 4PABCz molecules exhibited strong intermolecular pi-pi interactions and an out-of-plane dipole, enabling the formation of tightly assembled and face-on oriented HTLs to achieve dense coverage and facilitated hole extraction on substrates. Moreover, the unique configuration of the 4PABCz-covered substrates effectively regulated the crystallization of perovskite films and released residual stress. As a result, the inverted PSCs on FTO substrates achieved a champion power conversion efficiency (PCE) of 26.90% (certified 26.81% for reverse-scan and 25.96% for steady-state), retaining 93.98% of their initial efficiency after 1000 h of maximum power point tracking under the ISOS-L-2 protocol. Furthermore, by incorporating 4PABCz into small-area and large-area (1.028 cm2) PET/ITO-based flexible PSCs, we obtained impressive PCEs of 24.42% (certified 24.00%) and 22.52% (certified 22.42%), respectively, demonstrating the universal applicability of our strategy.
+PD APR 1
+PY 2025
+VL 18
+IS 7
+BP 3196
+EP 3210
+DI 10.1039/d4ee05849f
+EA FEB 2025
+UT WOS:001433028100001
+ER
+
+PT J
+TI Polydentate Ligand Reinforced Chelating to Stabilize Buried Interface
+   toward High-Performance Perovskite Solar Cells
+SO ANGEWANDTE CHEMIE-INTERNATIONAL EDITION
+AB The instability of the buried interface poses a serious challenge for commercializing perovskite photovoltaic technology. Herein, we report a polydentate ligand reinforced chelating strategy to strengthen the stability of buried interface by managing interfacial defects and stress. The bis(2,2,2-trifluoroethyl) (methoxycarbonylmethyl)phosphonate (BTP) is employed to manipulate the buried interface. The C=O, P=O and two -CF3 functional groups in BTP synergistically passivate the defects from the surface of SnO2 and the bottom surface of the perovskite layer. Moreover, The BTP modification contributes to mitigated interfacial residual tensile stress, promoted perovskite crystallization, and reduced interfacial energy barrier. The multidentate ligand modulation strategy is appropriate for different perovskite compositions. Due to much reduced nonradiative recombination and heightened interface contact, the device with BTP yields a promising power conversion efficiency (PCE) of 24.63 %, which is one of the highest efficiencies ever reported for devices fabricated in the air environment. The unencapsulated BTP-modified devices degrade to 98.6 % and 84.2 % of their initial PCE values after over 3000 h of aging in the ambient environment and after 1728 h of thermal stress, respectively. This work provides insights into strengthening the stability of the buried interface by engineering multidentate chelating ligand molecules.
+   A polydentate ligand reinforced chelating strategy is proposed to strengthen the stability of buried interface by managing interfacial defects and stress. The BTP-modified device achieves a promising power conversion efficiency (PCE) of 24.63 %. The unencapsulated BTP-modified devices degrade to 98.6 % and 84.2 % of their initial PCE values after over 3000 h of aging in the ambient environment and after 1728 h of thermal stress, respectively.+image
+PD FEB 19
+PY 2024
+VL 63
+IS 8
+AR e202317185
+DI 10.1002/anie.202317185
+EA JAN 2024
+UT WOS:001144169400001
+ER
+
+PT J
+TI Surface reaction for efficient and stable inverted perovskite solar
+   cells
+SO NATURE
+AB Perovskite solar cells (PSCs) with an inverted structure (often referred to as the p-i-n architecture) are attractive for future commercialization owing to their easily scalable fabrication, reliable operation and compatibility with a wide range of perovskite-based tandem device architectures(1,2). However, the power conversion efficiency (PCE) of p-i-n PSCs falls behind that of n-i-p (or normal) structure counterparts(3-6). This large performance gap could undermine efforts to adopt p-i-n architectures, despite their other advantages. Given the remarkable advances in perovskite bulk materials optimization over the past decade, interface engineering has become the most important strategy to push PSC performance to its limit(7,8). Here we report a reactive surface engineering approach based on a simple post-growth treatment of 3-(aminomethyl)pyridine (3-APy) on top of a perovskite thin film. First, the 3-APy molecule selectively reacts with surface formamidinium ions, reducing perovskite surface roughness and surface potential fluctuations associated with surface steps and terraces. Second, the reaction product on the perovskite surface decreases the formation energy of charged iodine vacancies, leading to effective n-type doping with a reduced work function in the surface region. With this reactive surface engineering, the resulting p-i-n PSCs obtained a PCE of over 25 per cent, along with retaining 87 per cent of the initial PCE after over 2,400 hours of 1-sun operation at about 55 degrees Celsius in air.
+PD NOV 10
+PY 2022
+VL 611
+IS 7935
+BP 278
+EP +
+DI 10.1038/s41586-022-05268-x
+EA SEP 2022
+UT WOS:000867593600001
+ER
+
+PT J
+TI Teaching an Old Anchoring Group New Tricks: Enabling Low-Cost,
+   Eco-Friendly Hole-Transporting Materials for Efficient and Stable
+   Perovskite Solar Cells
+SO JOURNAL OF THE AMERICAN CHEMICAL SOCIETY
+AB As a key component in perovskite solar cells (PVSCs), hole-transporting materials (HTMs) have been extensively explored and studied. Aiming to meet the requirements for future commercialization of PVSCs, HTMs which can enable excellent device performance with low cost and eco-friendly processability are urgently needed but rarely reported. In this work, a traditional anchoring group (2-cyanoacrylic acid) widely used in molecules for dye-sensitized solar cells is incorporated into donor-acceptor-type HTMs to afford MPA-BT-CA, which enables effective regulation of the frontier molecular orbital energy levels, interfacial modification of an ITO electrode, efficient defect passivation toward the perovskite layer, and more importantly alcohol solubility. Consequently, inverted PVSCs with this low-cost HTM exhibit excellent device performance with a remarkable power conversion efficiency (PCE) of 21.24% and good long-term stability in ambient conditions. More encouragingly, when processing MPA-BT-CA films with the green solvent ethanol, the corresponding PVSCs also deliver a substantial PCE as high as 20.52% with negligible hysteresis. Such molecular design of anchoring group-based materials represents great progress for developing efficient HTMs which combine the advantages of low cost, eco-friendly processability, and high performance. We believe that such design strategy will pave a new path for the exploration of highly efficient HTMs applicable to commercialization of PVSCs.
+PD SEP 30
+PY 2020
+VL 142
+IS 39
+BP 16632
+EP 16643
+DI 10.1021/jacs.0c06373
+UT WOS:000577115100017
+ER
+
+PT J
+TI D-A-π-A-D-type Dopant-free Hole Transport Material for Low-Cost,
+   Efficient, and Stable Perovskite Solar Cells
+SO JOULE
+AB The development of low-cost and efficient hole transport materials (HTMs) is important for the commercialization of perovskite solar cells (PSCs). Comparing with the widely studied D-A-D and D-pi-D linear-type small molecule HTMs, DTB-FL with a D-A-pi-A-D molecular design is proposed, featuring facile synthesis and excellent optoelectronic properties. Moreover, the HTM with efficient surface passivation effects and proper energy level alignment at the hole extraction interface effectively inhibits recombination loss and improves the charge collection property. As a result, the champion efficiencies of 21.5% and 19.6% for active areas of 0.09 and 1.0 cm(2), respectively, with superior operational stability are achieved by using DTB-FL HTM. In addition, DTB-FL can also be used as efficient HTM for all-inorganic PSCs, producing an impressive PCE of 17.0% with a high V-oc of 1.30 V. These results underscore the promising potential of the D-A-pi-A-D molecular design in preparing low-cost dopant-free HTMs toward stable and efficient PSCs.
+PD JAN 20
+PY 2021
+VL 5
+IS 1
+BP 249
+EP 269
+DI 10.1016/j.joule.2020.12.003
+UT WOS:000610121200021
+ER
+
+PT J
+TI Intrinsic Instability of Inorganic-Organic Hybrid Halide Perovskite
+   Materials
+SO ADVANCED MATERIALS
+AB Hybrid lead halide perovskite materials are used in solar cells and show efficiencies greater than 23%. Furthermore, they are applied in light-emitting diodes, X-ray detectors, thin-film transistors, thermoelectrics, and memory devices. Lead trihalide hybrid materials contain methylammonium (MA) or formamidinium (FA) (or a mixture), or long alkylammonium halides, as alternative organic cations. However, the intrinsic stability of hybrid lead halide perovskites is not very high, and they are chemically unstable when exposed to moisture, light, or heat because of their organic contents and low formation energies. Therefore, although improvements in the chemical stability are crucial, changing the material composition is challenging because it is directly related to the desired application requirements. Fortunately, hybrid lead halide perovskites have a very high tolerance toward changes in physical properties arising from doping or addition of different cations and anions, in many cases showing improved properties. Here, the intrinsic instability of hybrid lead halide perovskites is reviewed in relation to the crystal phase and chemical stability. It is suggested that FA should be used for lead halide perovskites for chemical stability instead of MA. Furthermore, additives that stabilize the crystal phase with alpha-FAPbI(3) should eschew MA.
+PD MAY 17
+PY 2019
+VL 31
+IS 20
+SI SI
+AR 1805337
+DI 10.1002/adma.201805337
+UT WOS:000471970500014
+ER
+
+PT J
+TI A bilateral interfacial passivation strategy promoting efficiency and
+   stability of perovskite quantum dot light-emitting diodes
+SO NATURE COMMUNICATIONS
+AB Perovskite quantum-dot-based light-emitting diodes (QLEDs) possess the features of wide gamut and real color expression, which have been considered as candidates for high-quality lightings and displays. However, massive defects are prone to be reproduced during the quantum dot (QD) film assembly, which would sorely affect carrier injection, transportation and recombination, and finally degrade QLED performances. Here, we propose a bilateral passivation strategy through passivating both top and bottom interfaces of QD film with organic molecules, which has drastically enhanced the efficiency and stability of perovskite QLEDs. Various molecules were applied, and comparison experiments were conducted to verify the necessity of passivation on both interfaces. Eventually, the passivated device achieves a maximum external quantum efficiency (EQE) of 18.7% and current efficiency of 75cdA(-1). Moreover, the operational lifetime of QLEDs is enhanced by 20-fold, reaching 15.8h. These findings highlight the importance of interface passivation for efficient and stable QD-based optoelectronic devices. Perovskite quantum-dots are promising candidates for light-emitting diodes but the defects limit the device performance. Here Xu et al. show a passivation strategy to reduce the defect density at both interfaces, which increases the external quantum efficiency (EQE) and lifetime by more than 2-fold and 20-fold, respectively.
+PD AUG 6
+PY 2020
+VL 11
+IS 1
+AR 3902
+DI 10.1038/s41467-020-17633-3
+UT WOS:000561120500001
+ER
+
+PT J
+TI Solubilizing and stabilizing C60 with n-type polymer enables
+   efficient inverted perovskite solar cells
+SO JOULE
+AB Pristine fullerene C-60 is currently the best-performing electron transport layer (ETL) for perovskite solar cells (PSCs) but suffers from significant aggregation in solution. Consequently, the high-cost and complex thermal evaporation method is typically used to deposit high-quality C-60 ETLs. To address this challenge, we introduce an n-type polymeric additive that can solubilize and stabilize C-60 molecules for solution processing, leading to efficient and stable solution-processed-C-60 (SP-C-60) ETLs. The achievement is attributed to the well-matched properties of the n-type polymer and the precisely controlled intermolecular interactions between the polymer and C-60 . As a result, the SP-C-60 ETL with 5-wt % polymer addition afforded a champion power conversion efficiency of 25.60% (certified 25.09%). This is not only the highest performance among the current SP-C-60 devices but also highly competitive to the state-of-the-art thermally evaporated C-60 devices. Importantly, the champion device showed significantly enhanced stability (T95, light > 1,800 h; T80, heat = 700 h).
+PD APR 16
+PY 2025
+VL 9
+IS 4
+AR 101817
+DI 10.1016/j.joule.2024.101817
+EA APR 2025
+UT WOS:001473979200001
+ER
+
+PT J
+TI Redox mediator-modified self-assembled monolayer stabilizes a buried
+   interface in efficient inverted perovskite solar cells
+SO ENERGY & ENVIRONMENTAL SCIENCE
+AB Utilizing a self-assembled monolayer (SAM) of [4-(3,6-dimethyl-9H-carbazol-9-yl)butyl]phosphonic acid as the interfacial layer on NiOx (Me-4PACz) has been proven to be a feasible approach to improve the photovoltaic performance of inverted perovskite solar cells (PSCs). However, considering the chemical reactivity of the NiOx surface and inhomogeneous SAM, interface stability is still an urgent issue that needs to be addressed. Herein, methylene blue, a redox molecule, was co-absorbed with Me-4PACz to serve as a functionalized interfacial layer, which effectively enhanced interface stability. Methylene blue could serve as a redox mediator to selectively reduce the high-valence state of Ni species and oxidize metallic Pb0, suppressing the undesirable interfacial reaction and reducing interfacial defects. Besides, methylene blue could mitigate the uneven dispersion of Me-4PACz through pi-pi interaction, which reduced the generation of voids and aggregates, providing a flattened and compact interfacial layer. These effects enabled inverted 0.08 cm2-PSCs and 1 cm2-PSCs to achieve efficiencies of 26.39% and 24.89%, respectively. Encouragingly, the device possessed enhanced stability even under harsh damp-heat conditions, retaining 91% of its initial efficiency after 1500 hours of UV irradiation and 90% of its initial efficiency after 1500 hours of operation under 1-sun illumination.
+PD APR 1
+PY 2025
+VL 18
+IS 7
+BP 3186
+EP 3195
+DI 10.1039/d4ee05319b
+EA FEB 2025
+UT WOS:001428591600001
+ER
+
+PT J
+TI Low-loss contacts on textured substrates for inverted perovskite solar
+   cells
+SO NATURE
+AB Inverted perovskite solar cells (PSCs) promise enhanced operating stability compared to their normal-structure counterparts1-3. To improve efficiency further, it is crucial to combine effective light management with low interfacial losses4,5. Here we develop a conformal self-assembled monolayer (SAM) as the hole-selective contact on light-managing textured substrates. Molecular dynamics simulations indicate that cluster formation during phosphonic acid adsorption leads to incomplete SAM coverage. We devise a co-adsorbent strategy that disassembles high-order clusters, thus homogenizing the distribution of phosphonic acid molecules, and thereby minimizing interfacial recombination and improving electronic structures. We report a laboratory-measured power conversion efficiency (PCE) of 25.3% and a certified quasi-steady-state PCE of 24.8% for inverted PSCs, with a photocurrent approaching 95% of the Shockley-Queisser maximum. An encapsulated device having a PCE of 24.6% at room temperature retains 95% of its peak performance when stressed at 65 degrees C and 50% relative humidity following more than 1,000 h of maximum power point tracking under 1 sun illumination. This represents one of the most stable PSCs subjected to accelerated ageing: achieved with a PCE surpassing 24%. The engineering of phosphonic acid adsorption on textured substrates offers a promising avenue for efficient and stable PSCs. It is also anticipated to benefit other optoelectronic devices that require light management.
+   A co-adsorbent is used to achieve a uniform self-assembled phosphonic acid monolayer on a textured substrate, leading to more efficient inverted perovskite solar cells.
+PD DEC 14
+PY 2023
+VL 624
+IS 7991
+DI 10.1038/s41586-023-06745-7
+EA OCT 2023
+UT WOS:001182657300001
+ER
+
+PT J
+TI Reducing Energy Disorder in Perovskite Solar Cells by Chelation
+SO JOURNAL OF THE AMERICAN CHEMICAL SOCIETY
+AB In inverted perovskite solar cells (PSCs), the fullerene derivative [6,6]-phenyl-C-61-butyric acid methyl ester (PCBM) is a widely used electron transport material. However, a high degree of energy disorder and inadequate passivation of PCBM limit the efficiency of devices, and severe self-aggregation and unstable morphology limit the lifespan of devices. Here, we design a series of fullerene dyads FP-Cn (n = 4, 8, 12) to replace PCBM as an electron transport layer, where [60]fullerene is linked with a terpyridine chelating group via a flexible alkyl chain of different lengths as a spacer. Among three fullerene dyads, FP-C8 shows the most enhanced molecule ordering and adhesion with the perovskite surface due to the balanced decoupling between the chelation effect from terpyridine and the self-assembly of fullerene, leading to lower energy disorder and higher morphological stability relative to PCBM. The FP-C8/C60-based devices using Cs(0.05)FA(0.90)MA(0.05)PbI(2.85)Br(0.15) as a light absorber show a power conversion efficiency of 21.69%, higher than that of PCBM/C60 (20.09%), benefiting from improved electron extraction and transport as well as reduced charge recombination loss. When employing FAPbI(3) as a light absorber, the FP-C8/C60-based devices exhibit an efficiency of 23.08%, which is the champion value of inverted PSCs with solution-processed fullerene derivatives. Moreover, the FP-C8/C60-based devices show better moisture and thermal stability than PCBM/C60-based devices and maintain 96% of their original efficiency after 1200 h of operation, while their counterpart PCBM/C60 maintains 60% after 670 h.
+PD MAR 30
+PY 2022
+VL 144
+IS 12
+BP 5400
+EP 5410
+DI 10.1021/jacs.1c12732
+UT WOS:000799109400026
+ER
+
+PT J
+TI Buried Interfaces in Halide Perovskite Photovoltaics
+SO ADVANCED MATERIALS
+AB Understanding the fundamental properties of buried interfaces in perovskite photovoltaics is of paramount importance to the enhancement of device efficiency and stability. Nevertheless, accessing buried interfaces poses a sizeable challenge because of their non-exposed feature. Herein, the mystery of the buried interface in full device stacks is deciphered by combining advanced in situ spectroscopy techniques with a facile lift-off strategy. By establishing the microstructure-property relations, the basic losses at the contact interfaces are systematically presented, and it is found that the buried interface losses induced by both the sub-microscale extended imperfections and lead-halide inhomogeneities are major roadblocks toward improvement of device performance. The losses can be considerably mitigated by the use of a passivation-molecule-assisted microstructural reconstruction, which unlocks the full potential for improving device performance. The findings open a new avenue to understanding performance losses and thus the design of new passivation strategies to remove imperfections at the top surfaces and buried interfaces of perovskite photovoltaics, resulting in substantial enhancement in device performance.
+PD FEB
+PY 2021
+VL 33
+IS 7
+AR 2006435
+DI 10.1002/adma.202006435
+EA JAN 2021
+UT WOS:000604273900001
+ER
+
+PT J
+TI Stabilization of the Trigonal High-Temperature Phase of Formamidinium
+   Lead Iodide
+SO JOURNAL OF PHYSICAL CHEMISTRY LETTERS
+AB Formamidinium lead iodide (FAPbI(3)) has the potential to achieve higher performance than established perovskite solar cells like methylammonium lead iodide (MAPbl(3)), while maintaining a higher stability. The major drawback for the latter material is that it can crystallize at room temperature in a wide bandgap hexagonal symmetry (P6(3)mc) instead of the desired trigonal (P3m1) black phase formed at a higher temperature (130 degrees C). Our results show that employing a mixture of MM and FAI in films deposited via a two-step approach, where the Mid content is <20%, results in the exchange of FA molecules with MA without any significant lattice shrinkage. Additionally, we show with temperature dependent X-ray diffraction that the trigonal phase exhibits no phase changes in the temperature range studied (25 to 250 degrees C). We attribute the stabilization of the structure to stronger interactions between the MA cation and the inorganic cage. Finally, we show that the inclusion of this small amount of MA also has a positive effect on the lifetime of the photoexcited species and results in more efficient devices.
+PD APR 2
+PY 2015
+VL 6
+IS 7
+BP 1249
+EP 1253
+DI 10.1021/acs.jpclett.5b00380
+UT WOS:000352331400027
+ER
+
+PT J
+TI Cu-In Halide Perovskite Solar Absorbers
+SO JOURNAL OF THE AMERICAN CHEMICAL SOCIETY
+AB The long-term chemical instability and the presence of toxic Pb in otherwise stellar solar absorber APbX(3) made of organic molecules on the A site and halogens for X have hindered their large-scale commercialization. Previously explored ways to achieve Pb-free halide perovskites involved replacing Pb2+ with other similar M2+ cations in ns(2) electron configuration, e.g., Sn2+ or by Bi3+ (plus Ag+), but unfortunately this showed either poor stability (M = Sn) or weakly absorbing oversized indirect gaps (M = Bi), prompting concerns that perhaps stability and good optoelectronic properties might be contraindicated. Herein, we exploit the electronic structure underpinning of classic Cu[In,Ga]Se-2 (CIGS) chalcopyrite solar absorbers to design Pb-free halide perovskites by transmuting 2Pb to the pair [B-IB + C-III] such as [Cu + Ga] or [Ag + In] and combinations thereof. The resulting group of double perovskites with formula A(2)BCX(6) (A = K, Rb, Cs; B = Cu, Ag; C = Ga, In; X = Cl, Br, I) benefits from the ionic, yet narrow-gap character of halide perovskites, and at the same time borrows the advantage of the strong Cu(d)/Se(p) -> Ga/In(s/p) valence-to-conduction-band absorption spectra known from CIGS. This constitutes a new group of CuIn-based Halide Perovskite (CIHP). Our first principles calculations guided by such design principles indicate that the CIHPs class has members with clear thermodynamic stability, showing direct band gaps, and manifesting a wide-range of tunable gap values (from zero to about 2.5 eV) and combination of light electron and heavy-light hole effective masses. Materials screening of candidate CIHPs then identifies the best-of-class Rb-2[CuIn]Cl-6, Rb-2[AgIn]Br-6, and Cs-2[AgIn]Br-6, having direct band gaps of 1.36, 1.46, and 1.50 eV, and theoretical spectroscopic limited maximal efficiency comparable to chalcopyrites and CH3NH3PbI3. Our finding offers a new routine for designing new-type Pb-free halide perovskite solar absorbers.
+PD MAY 17
+PY 2017
+VL 139
+IS 19
+BP 6718
+EP 6725
+DI 10.1021/jacs.7b02120
+UT WOS:000401781900035
+ER
+
+PT J
+TI Mechanisms for light induced degradation in MAPbI3 perovskite
+   thin films and solar cells
+SO APPLIED PHYSICS LETTERS
+AB Organometal halide perovskites are highly promising materials for photovoltaic applications, yet their rapid degradation remains a significant challenge. Here, the light-induced structural degradation mechanism of methylammonium lead iodide (MAPbI(3)) perovskite films and devices is studied in low humidity environment using X-Ray Diffraction, Ultraviolet-Visible (UV-Vis) absorption spectroscopy, Extended X-ray Absorption Fine Structure spectroscopy, Fourier Transform Infrared spectroscopy, and device measurements. Under dry conditions, the perovskite film degrades only in the presence of both light and oxygen, which together induce the formation of halide anions through donation of electrons to the surrounding oxygen. The halide anions generate free radicals that deprotonate the methylammonium cation and form the highly volatile CH3NH2 molecules that escape and leave pure PbI2 behind. The device findings show that changes in the local structure at the TiO2 mesoporous layer occur with light, even in the absence of oxygen, and yet such changes can be prevented by the application of UV blocking layer on the cells. Our results indicate that the stability of mp-TiO2-MAPbI(3) photovoltaics can be dramatically improved with effective encapsulation that protects the device from UV light, oxygen, and moisture. Published by AIP Publishing.
+PD DEC 5
+PY 2016
+VL 109
+IS 23
+AR 233905
+DI 10.1063/1.4967840
+UT WOS:000390677700050
+ER
+
+PT J
+TI Water-induced MAPbBr3@PbBr(OH) with enhanced luminescence and
+   stability
+SO LIGHT-SCIENCE & APPLICATIONS
+AB Perovskite LEDs: extending lifetimes with a splash of water Inexpensive crystals useful for applications including display devices can be manufactured with exceptional environmental stability by following a new synthetic technique. Lead halide perovskites are materials that emit light with a range of colors, but also suffer from poor moisture stability. Kai-Kai Liu, Lin Dong, Chong-Xin Shan from China's Zhengzhou University and colleagues now report that adding a dose of water to lead halide perovskites enables them to emit bright fluorescent light, even when submerged underwater for more than a year. The team's experiments revealed that controlled hydration of the perovskite's outer surface helped remove defects that decrease light output, as well as protected against further incursions by air and water molecules. Successful fabrication of the hydrated crystals as phosphors within light-emitting devices (LEDs) indicates their potential for industrial purposes.
+   Poor stability has long been one of the key issues that hinder the practical applications of lead-based halide perovskites. In this paper, the photoluminescence (PL) quantum yield (QY) of bromide-based perovskites can be increased from 2.5% to 71.54% by introducing water, and the PL QY of a sample in aqueous solution decreases minimally over 1 year. The enhanced stability and PL QY can be attributed to the water-induced methylamino lead bromide perovskite (MAPbBr(3))@PbBr(OH). We note that this strategy is universal to MAPbBr(3), formamidine lead bromide perovskite (FAPbBr(3)), inorganic lead bromide perovskite (CsPbBr3), etc. Light-emitting devices (LEDs) are fabricated by using the as-prepared perovskite as phosphors on a 365 nm UV chip. The luminance intensity of the LED is 9549 cd/m(2) when the driven current is 200 mA, and blemishes on the surface of glass are clearly observed under the illumination of the LEDs. This work provides a new strategy for highly stable and efficient perovskites.
+PD MAR 17
+PY 2020
+VL 9
+IS 1
+AR 44
+DI 10.1038/s41377-020-0283-2
+UT WOS:000522129100001
+ER
+
+PT J
+TI Polar Solvent Induced Lattice Distortion of Cubic CsPbI3
+   Nanocubes and Hierarchical Self-Assembly into Orthorhombic
+   Single-Crystalline Nanowires
+SO JOURNAL OF THE AMERICAN CHEMICAL SOCIETY
+AB Despite the recent surge of interest in inorganic lead halide perovskite nanocrystals, there are still significant gaps in their stability disturbance and the understanding of their destabilization, assembly, and growth processes. Here, we discover that polar solvent molecules can induce the lattice distortion of ligand-stabilized cubic CsPbI3, leading to the phase transition into orthorhombic phase, which is unfavorable for photovoltaic applications. Such lattice distortion triggers the dipole moment on CsPbI3 nanocubes, which subsequently initiates the hierarchical self-assembly of CsPbI3 nanocubes into single-crystalline nanowires. The systematic investigations and in situ monitoring on the kinetics of the self-assembly process disclose that the more amount or the stronger polarity of solvent can induce the more rapid self-assembly and phase transition. These results not only elucidate the destabilization mechanism of cubic CsPbI3 nanocrystals, but also open up opportunities to synthesize and store cubic CsPbI3 for their practical applications in photovoltaics and optoelectronics.
+PD SEP 19
+PY 2018
+VL 140
+IS 37
+BP 11705
+EP 11715
+DI 10.1021/jacs.8b05949
+UT WOS:000445439700027
+ER
+
+PT J
+TI Uniaxial Expansion of the 2D Ruddlesden-Popper Perovskite Family for
+   Improved Environmental Stability
+SO JOURNAL OF THE AMERICAN CHEMICAL SOCIETY
+AB The unique hybrid nature of 2D Ruddlesden-Popper (R-P) perovskites has bestowed upon them not only tunability of their electronic properties but also high-performance electronic devices with improved environmental stability as compared to their 3D analogs. However, there is limited information about their inherent heat, light, and air stability and how different parameters such as the inorganic layer number and length of organic spacer molecule affect stability. To gain deeper understanding on the matter we have expanded the family of 2D R-P perovskites, by utilizing pentylamine (PA)(2)(MA)(n-1)PbnI3n+1 (n = 1-5, PA = CH (3) (CH (2) ) (4) NH (+)(3), C 5) and hexylamine (HA)(2)(MA)(n-1)PbnI3n+1 (n = 1-4, HA = CH3(CH2)(5)NH3+, C6) as the organic spacer molecules between the inorganic slabs, creating two new series of layered materials, for up to n = 5 and 4 layers, respectively. The resulting compounds were extensively characterized through a combination of physical and spectroscopic methods, including single crystal X-ray analysis. High resolution powder X-ray diffraction studies using synchrotron radiation shed light for the first time to the phase transitions of the higher layer 2D R-P perovskites. The increase in the length of the organic spacer molecules did not affect their optical properties; however, it has a pronounced effect on the air, heat, and light stability of the fabricated thin films. An extensive study of heat, light, and air stability with and without encapsulation revealed that specific compounds can be air stable (relative humidity (RH) = 20-80% +/- 5%) for more than 450 days, while heat and light stability in air can be exponentially increased by encapsulating the corresponding films. Evaluation of the out-of-plane mechanical properties of the corresponding materials showed that their soft and flexible nature can be compared to current commercially available polymer substrates (e.g., PMMA), rendering them suitable for fabricating flexible and wearable electronic devices.
+PD APR 3
+PY 2019
+VL 141
+IS 13
+BP 5518
+EP 5534
+DI 10.1021/jacs.9b01327
+UT WOS:000463843700057
+ER
+
+EF
