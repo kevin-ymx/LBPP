@@ -8,11 +8,11 @@ from typing import Optional
 @dataclass
 class Config:
     # Data loading mode
-    use_cache: bool = True  # True = Option 1 (load pre-augmented pairs from cache), False = Option 2 (load CSV, convert, augment in-memory)
+    use_cache: bool =False  # True = Option 1 (load pre-augmented pairs from cache), False = Option 2 (load CSV, convert, augment in-memory)
     
     # Data paths
-    csv_file: str = "/pscratch/sd/y/yeming/AI4M/prediction/dataset/ssl/combine.csv"  # CSV with PUBCHEM_COMPOUND_CID, SMILES (input to build_graph_cache.py and visualize_tsne.py)
-    cache_dir: str = "/pscratch/sd/y/yeming/AI4M/prediction/dataset/ssl/cache"  # val.pt + train_shard_0.pt to train_shard_3.pt (pre-augmented pairs, built by build_graph_cache.py)
+    csv_file: str = "/kfs3/scratch/yeming/ai4m/prediction/dataset/ssl/combine.csv"  # CSV with PUBCHEM_COMPOUND_CID, SMILES (input to build_graph_cache.py and visualize_tsne.py)
+    cache_dir: str = "/kfs3/scratch/yeming/ai4m/prediction/dataset/ssl/cache"  # val.pt + train_shard_0.pt to train_shard_3.pt (pre-augmented pairs, built by build_graph_cache.py)
     max_molecules: Optional[int] = None  # Limit molecules to load (None = all). Used by visualize_tsne.py and Option 2
     
     # Augmentation (used by Option 2 and build_graph_cache.py)
