@@ -480,14 +480,19 @@ def get_impact_factor_for_sorting(result: dict) -> float:
     return 0.0
 
 
-def results_to_csv_rows(all_results: List[dict]) -> List[dict]:
+def results_to_csv_rows(all_results: List[dict]) -> List[List[dict]]:
     """
-    Convert extracted results to flat CSV rows.
+    Convert extracted results to flat CSV rows grouped by abstract.
     Each molecule gets its own row. Excludes claimed_mechanisms.
+    
+    Returns:
+        List of lists, where each inner list contains rows for one abstract.
     """
-    rows = []
+    all_rows = []
     
     for result in all_results:
+        abstract_rows = []
+        
         # Paper metadata
         paper = result.get("paper_metadata", {})
         title = paper.get("title", "")
@@ -534,7 +539,7 @@ def results_to_csv_rows(all_results: List[dict]) -> List[dict]:
                     "perovskite_type": perovskite,
                     "stability": stability_str,
                 }
-                rows.append(row)
+                abstract_rows.append(row)
         else:
             # No molecules - still create a row for the paper
             row = {
@@ -555,9 +560,11 @@ def results_to_csv_rows(all_results: List[dict]) -> List[dict]:
                 "perovskite_type": perovskite,
                 "stability": stability_str,
             }
-            rows.append(row)
+            abstract_rows.append(row)
+        
+        all_rows.append(abstract_rows)
     
-    return rows
+    return all_rows
 
 
 # -----------------------
@@ -631,17 +638,23 @@ def main():
     
     # Write CSV table (excludes claimed_mechanisms)
     print(f"Writing CSV results to {OUTPUT_CSV}...")
-    csv_rows = results_to_csv_rows(all_results)
-    if csv_rows:
-        fieldnames = csv_rows[0].keys()
+    csv_rows_grouped = results_to_csv_rows(all_results)
+    total_rows = 0
+    if csv_rows_grouped and csv_rows_grouped[0]:
+        fieldnames = csv_rows_grouped[0][0].keys()
         with open(OUTPUT_CSV, "w", encoding="utf-8", newline="") as fout:
             writer = csv.DictWriter(fout, fieldnames=fieldnames)
             writer.writeheader()
-            writer.writerows(csv_rows)
+            for i, abstract_rows in enumerate(csv_rows_grouped):
+                writer.writerows(abstract_rows)
+                total_rows += len(abstract_rows)
+                # Add empty row between abstracts (except after the last one)
+                if i < len(csv_rows_grouped) - 1:
+                    writer.writerow({field: "" for field in fieldnames})
     
     print(f"\nDone!")
     print(f"  JSON: {len(all_results)} abstracts written to {OUTPUT_JSON}")
-    print(f"  CSV: {len(csv_rows)} rows written to {OUTPUT_CSV}")
+    print(f"  CSV: {total_rows} rows written to {OUTPUT_CSV}")
     print("Results are sorted by impact factor (highest first)")
 
 
