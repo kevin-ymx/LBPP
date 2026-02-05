@@ -1,0 +1,261 @@
+﻿FN Clarivate Analytics Web of Science
+VR 1.0
+PT J
+TI Suppressing defects through the synergistic effect of a Lewis base and a
+   Lewis acid for highly efficient and stable perovskite solar cells
+SO ENERGY & ENVIRONMENTAL SCIENCE
+AB Achieving long-term operational stability at a high efficiency level for perovskite solar cells is the most challenging issue toward commercialization of this emerging photovoltaic technology. Here, we investigated the cooperation of a Lewis base and a Lewis acid by combining commercial bis-PCBM mixed isomers as the Lewis acid in the antisolvent and N-(4-bromophenyl)thiourea (BrPh-ThR) as the Lewis base in the perovskite solution precursor. The combination of the Lewis base and the Lewis acid synergistically passivates Pb2+ and PbX3- antisite defects, enlarges the perovskite grain size, and improves charge-carrier separation and transport, leading to improved device efficiency from 19.3% to 21.7%. In addition, this Lewis base and acid combination also suppresses moisture incursion and passivates pinholes generated in the hole-transporting layer. The unsealed devices remained at 93% of the initial efficiency value in ambient air (10-20% relative humidity) after 3600 h at 20-25 degrees C and dropped by 10% after 1500 h under continuous operation at 1-sun illumination and 55 degrees C in nitrogen with maximum power-point tracking.
+PD DEC 1
+PY 2018
+VL 11
+IS 12
+BP 3480
+EP 3490
+DI 10.1039/c8ee02252f
+UT WOS:000452317700016
+ER
+
+PT J
+TI Rational Surface-Defect Control via Designed Passivation for
+   High-Efficiency Inorganic Perovskite Solar Cells
+SO ANGEWANDTE CHEMIE-INTERNATIONAL EDITION
+AB Iodine vacancies (V-I) and undercoordinated Pb2+ on the surface of all-inorganic perovskite films are mainly responsible for nonradiative charge recombination. An environmentally benign material, histamine (HA), is used to passivate the V-I in perovskite films. A theoretical study shows that HA bonds to the V-I on the surface of the perovskite film via a Lewis base-acid interaction; an additional hydrogen bond (H-bond) strengthens such interaction owing to the favorable molecular configuration of HA. Undercoordinated Pb2+ and Pb clusters are passivated, leading to significantly reduced surface trap density and prolonged charge lifetime within the perovskite films. HA passivation also induces an upward shift of the energy band edge of the perovskite layer, facilitating interfacial hole transfer. The combination of the above raises the solar cell efficiency from 19.5 to 20.8 % under 100 mW cm(-2) illumination, the highest efficiency so far for inorganic metal halide perovskite solar cells (PSCs).
+PD OCT 18
+PY 2021
+VL 60
+IS 43
+BP 23164
+EP 23170
+DI 10.1002/anie.202109724
+EA SEP 2021
+UT WOS:000695886000001
+ER
+
+PT J
+TI Tuning Molecular Interactions for Highly Reproducible and Efficient
+   Formamidinium Perovskite Solar Cells via Adduct Approach
+SO JOURNAL OF THE AMERICAN CHEMICAL SOCIETY
+AB The Lewis acid-base adduct approach has been widely used to form uniform perovskite films, which has provided a methodological base for the development of high-performance perovskite solar cells. However, its incompatibility with formamidinium (FA)-based perovskites has impeded further enhancement of photovoltaic performance and stability. Here, we report an efficient and reproducible method to fabricate highly uniform FAPbI(3) films via the adduct approach. Replacement of the typical Lewis base dimethyl sulfoxide (DMSO) with N-methyl-2-pyrrolidone (NMP) enabled the formation of a stable intermediate adduct phase, which can be converted into a uniform and pinhole-free FAPbI(3) film. Infrared and computational analyses revealed a stronger interaction between NMP with the FA cation than DMSO, which facilitates the formation of a stable FAI-PbI2 center dot NMP adduct. On the basis of the molecular interactions with different Lewis bases, we proposed criteria for selecting the Lewis bases. Owed to the high film quality, perovskite solar cells with the highest PCE over 20% (stabilized PCE of 19.34%) and average PCE of 18.83 +/- 0.73% were demonstrated.
+PD MAY 23
+PY 2018
+VL 140
+IS 20
+BP 6317
+EP 6324
+DI 10.1021/jacs.8b01037
+UT WOS:000433404000022
+ER
+
+PT J
+TI Reduction of bulk and surface defects in inverted methylammonium- and
+   bromide-free formamidinium perovskite solar cells
+SO NATURE ENERGY
+AB Power conversion efficiencies of inverted perovskite solar cells (PSCs) based on methylammonium- and bromide-free formamidinium lead triiodide (FAPbI(3)) perovskites still lag behind PSCs with a regular configuration. Here we improve the quality of both the bulk and surface of FA(0.98)Cs(0.02)PbI(3) perovskite films to reduce the efficiency gap. First, we use dibutyl sulfoxide, a Lewis base additive, to improve the crystallinity and reduce the defect density and internal residual stress of the perovskite bulk. Then, we treat the surface of the perovskite film with trifluorocarbon-modified phenethylammonium iodide to optimize the energy levels, passivate defects and protect the film against moisture. The inverted PSCs simultaneously achieve 25.1% efficiency (24.5% from the reverse current-voltage scan measured by a third-party institution) and improved stability. The devices maintained 97.4% and 98.2% of their initial power conversion efficiencies after operating under continuous 1-sun air mass 1.5 G illumination for 1,800 h and under damp heat conditions (85 & DEG;C and 85% relative humidity) for 1,000 h, respectively.
+   The efficiency and stability of methylammonium- and bromide-free perovskite inverted solar cells need improvement. Now, Chen et al. combine a Lewis-based additive with a fluorocarbon-modified ammonium salt to reduce defects in the perovskite, increasing the device performance.
+PD AUG
+PY 2023
+VL 8
+IS 8
+BP 839
+EP +
+DI 10.1038/s41560-023-01288-7
+EA JUL 2023
+UT WOS:001022760100001
+ER
+
+PT J
+TI Highly efficient all-inorganic perovskite solar cells with suppressed
+   non-radiative recombination by a Lewis base
+SO NATURE COMMUNICATIONS
+AB All-inorganic perovskite solar cells (PVSCs) have drawn increasing attention because of their outstanding thermal stability. However, their performance is still inferior than the typical organic-inorganic counterparts, especially for the devices with p-i-n configuration. Herein, we successfully employ a Lewis base small molecule to passivate the inorganic perovskite film, and its derived PVSCs achieved a champion efficiency of 16.1% and a certificated efficiency of 15.6% with improved photostability, representing the most efficient inverted all-inorganic PVSCs to date. Our studies reveal that the nitrile (C-N) groups on the small molecule effectively reduce the trap density of the perovskite film and thus significantly suppresses the non-radiative recombination in the derived PVSC by passivating the Pb-exposed surface, resulting in an improved open-circuit voltage from 1.10 V to 1.16 V after passivation. This work provides an insight in the design of functional interlayers for improving efficiencies and stability of all-inorganic PVSCs.
+PD JAN 10
+PY 2020
+VL 11
+IS 1
+AR 177
+DI 10.1038/s41467-019-13909-5
+UT WOS:000551458600006
+ER
+
+PT J
+TI Tailoring pyridine bridged chalcogen-concave molecules for defects
+   passivation enables efficient and stable perovskite solar cells
+SO NATURE COMMUNICATIONS
+AB Suppressing deep-level defects at the perovskite bulk and surface is indispensable for reducing the non-radiative recombination losses and improving efficiency and stability of perovskite solar cells (PSCs). In this study, two Lewis bases based on chalcogen-thiophene (n-Bu4S) and selenophene (n-Bu4Se) having tetra-pyridine as bridge are developed to passivate defects in perovskite film. The uncoordinated Pb2+ and iodine vacancy defects can interact with chalcogen-concave group and pyridine group through the formation of the Lewis acid-base adduct, particularly both the defects can be surrounded by concave molecules, resulting in effective suppression charge recombination. This approach enables a power conversion efficiency (PCE) as high as 25.37% (25.18% certified) for n-i-p PSCs with stable operation at 65 degrees C and 1-sun illumination for 1300 hours in N2 (ISOS-L-2 protocol), retaining 94% of the initial efficiency. Our work provides insight into the bowl-shaped Lewis base in defects passivation by coordinated strategy for high-performance photovoltaic devices.
+PD JAN 11
+PY 2025
+VL 16
+IS 1
+AR 602
+DI 10.1038/s41467-025-55815-z
+UT WOS:001396245300019
+ER
+
+PT J
+TI Rational design of Lewis base molecules for stable and efficient
+   inverted perovskite solar cells
+SO SCIENCE
+AB Lewis base molecules that bind undercoordinated lead atoms at interfaces and grain boundaries (GBs) are known to enhance the durability of metal halide perovskite solar cells (PSCs). Using density functional theory calculations, we found that phosphine-containing molecules have the strongest binding energy among members of a library of Lewis base molecules studied herein. Experimentally, we found that the best inverted PSC treated with 1,3-bis(diphenylphosphino)propane (DPPP), a diphosphine Lewis base that passivates, binds, and bridges interfaces and GBs, retained a power conversion efficiency (PCE) slightly higher than its initial PCE of similar to 23% after continuous operation under simulated AM1.5 illumination at the maximum power point and at similar to 40 degrees C for >3500 hours. DPPP-treated devices showed a similar increase in PCE after being kept under open-circuit conditions at 85 degrees C for >1500 hours.
+PD FEB 17
+PY 2023
+VL 379
+IS 6633
+BP 690
+EP 694
+DI 10.1126/science.ade3970
+UT WOS:001016371000012
+ER
+
+PT J
+TI Reconfiguration of interfacial energy band structure for
+   high-performance inverted structure perovskite solar cells
+SO NATURE COMMUNICATIONS
+AB Charged defects at the surface of the organic-inorganic perovskite active layer are detrimental to solar cells due to exacerbated charge carrier recombination. Here we show that charged surface defects can be benign after passivation and further exploited for reconfiguration of interfacial energy band structure. Based on the electrostatic interaction between oppositely charged ions, Lewis-acid-featured fullerene skeleton after iodide ionization (PCBB-3N-3I) not only efficiently passivates positively charged surface defects but also assembles on top of the perovskite active layer with preferred orientation. Consequently, PCBB-3N-3I with a strong molecular electric dipole forms a dipole interlayer to reconfigure interfacial energy band structure, leading to enhanced built-in potential and charge collection. As a result, inverted structure planar heterojunction perovskite solar cells exhibit the promising power conversion efficiency of 21.1% and robust ambient stability. This work opens up a new window to boost perovskite solar cells via rational exploitation of charged defects beyond passivation.
+PD OCT 9
+PY 2019
+VL 10
+AR 4593
+DI 10.1038/s41467-019-12613-8
+UT WOS:000489244400002
+ER
+
+PT J
+TI Lewis Base Strategy for Crystallization Control and Buried Interface
+   Passivation on Hydrophobic PTAA Substrate for Efficient Tin-Lead
+   Perovskite and All-Perovskite Tandem Solar Cells
+SO ACS ENERGY LETTERS
+AB Nonionic PTAA is an ideal substitute for PEDOT:PSS as a hole-selective layer to improve the stability of mixed tin-lead (Sn-Pb) perovskite solar cells (PSCs). However, its hydrophobic nature aggravates the unbalanced crystallization and poor buried contacts of Sn-Pb perovskite films. Here, we report a Lewis base strategy to tackle these issues by introducing 4-bromophenylurea (BPU) or 4-bromophenylthiourea (BPSU) to interact with precursor ingredients to form large clusters, which accelerate nucleation and delay crystal growth as well as suppress buried interfacial nonradiative recombination. Compared to BPU, the more polar BPSU enables stronger interactions with Sn-halides than Pb-halides, resulting in improved film and interface qualities. Consequently, the Sn-Pb PSCs achieve a power conversion efficiency of 23.87%, the highest reported value for Sn-Pb cells on PTAA. Furthermore, the all-perovskite tandems deliver an efficiency of 27.61% (certified 27.17%) and retain 90% of their initial value after 1200 h of maximum power point tracking in nitrogen.
+PD FEB 7
+PY 2025
+VL 10
+IS 3
+BP 1117
+EP 1128
+DI 10.1021/acsenergylett.4c03370
+EA FEB 2025
+UT WOS:001416531200001
+ER
+
+PT J
+TI In situ energetics modulation enables high-efficiency and stable
+   inverted perovskite solar cells
+SO NATURE PHOTONICS
+AB In contrast to conventional (n-i-p) perovskite solar cells (PSCs), inverted (p-i-n) PSCs offer enhanced stability and integrability with tandem solar cell architectures, which have garnered increasing interest. However, p-i-n cells suffer from energy level misalignment with transport layers, imbalanced transport of photo-generated electrons and holes, and significant defects with the perovskite films. Here we introduce tris(2,4,6-trimethyl-3-(pyridin-3-yl)phenyl)borane (3TPYMB), a nonionic n-type molecule that, through hydrogen bonding and Lewis acid-base reactions with perovskite surfaces or grain boundaries, enables in situ modulation of perovskite energetics, effectively mitigating the key challenges of p-i-n PSCs. The p-i-n PSCs incorporating 3TPYMB achieve a certified quasi-steady-state power conversion efficiency of 24.550.33%, with a reverse scan efficiency of 25.58%. They also exhibit exceptional stability, with unencapsulated devices retaining 97.8% of their initial efficiency after 1,800h of continuous operation at maximum power point under N-2 atmosphere, 1 sun illumination and 60 degrees C conditions.
+PD JAN
+PY 2025
+VL 19
+IS 1
+BP 28
+EP +
+DI 10.1038/s41566-024-01542-8
+EA OCT 2024
+UT WOS:001324513900001
+ER
+
+PT J
+TI Multifunctional Small Molecule as Buried Interface Passivator for
+   Efficient Planar Perovskite Solar Cells
+SO ADVANCED FUNCTIONAL MATERIALS
+AB The improvement of power conversion efficiency (PCE) and stability of the perovskite solar cell (PSC) is hindered by carrier recombination originating from the defects at the buried interface of the PSC. It is crucial to suppress the nonradiative recombination and facilitate carrier transfer in PSC via interface engineering. Herein, P-biguanylbenzoic acid hydrochloride (PBGH) is developed to modify the tin oxide (SnO2)/perovskite interface. The effects of PBGH on carrier transportation, perovskite growth, defect passivation, and PSC performance are systematically investigated. On the one hand, the PBGH can effectively passivate the trap states of Sn dangling bonds and O vacancies on the SnO2 surface via Lewis acid/base coordination, which is conducive to improving the conductivity of SnO2 film and accelerating the electron extraction. On the other hand, PBGH modification assists the formation of high-quality perovskite film with low defect density due to its strong interaction with PbI2. Consequently, the PBGH-modified PSC exhibits a champion power conversion efficiency (PCE) of 24.79%, which is one of the highest PCEs among all the FACsPbI(3)-based PSCs reported to date. In addition, the stabilities of perovskite films and devices under high temperature/humidity and light illumination conditions are also systematically studied.
+PD MAY
+PY 2023
+VL 33
+IS 22
+DI 10.1002/adfm.202300128
+EA MAR 2023
+UT WOS:000942633000001
+ER
+
+PT J
+TI A Universal Double-Side Passivation for High Open-Circuit Voltage in
+   Perovskite Solar Cells: Role of Carbonyl Groups in Poly(methyl
+   methacrylate)
+SO ADVANCED ENERGY MATERIALS
+AB The performance of state-of-the-art perovskite solar cells is currently limited by defect-induced recombination at interfaces between the perovskite and the electron and hole transport layers. These defects, most likely undercoordinated Pb and halide ions, must either be removed or passivated if cell efficiencies are to approach their theoretical limit. In this work, a universal double-side polymer passivation approach is introduced using ultrathin poly(methyl methacrylate) (PMMA) films. Very high-efficiency (approximate to 20.8%) perovskite cells with some of the highest open circuit voltages (1.22 V) reported for the same 1.6 eV bandgap are demonstrated. Photoluminescence imaging and transient spectroscopic measurements confirm a significant reduction in nonradiative recombination in the passivated cells, consistent with the voltage increase. Analysis of the molecular interactions between perovskite and PMMA reveals that the carbonyl (C=O) groups on the PMMA are responsible for the excellent passivation via Lewis-base electronic passivation of Pb2+ ions. This work provides new insights and a compelling explanation of how PMMA passivation works, and suggests future directions for developing improved passivation layers.
+PD OCT 25
+PY 2018
+VL 8
+IS 30
+AR 1801208
+DI 10.1002/aenm.201801208
+UT WOS:000448257300004
+ER
+
+PT J
+TI Stable High-Performance Perovskite Solar Cells via Grain Boundary
+   Passivation
+SO ADVANCED MATERIALS
+AB The trap states at grain boundaries (GBs) within polycrystalline perovskite films deteriorate their optoelectronic properties, making GB engineering particularly important for stable high-performance optoelectronic devices. It is demonstrated that trap states within bulk films can be effectively passivated by semiconducting molecules with Lewis acid or base functional groups. The perovskite crystallization kinetics are studied using in situ synchrotron-based grazing-incidence X-ray scattering to explore the film formation mechanism. A model of the passivation mechanism is proposed to understand how the molecules simultaneously passivate the Pb-I antisite defects and vacancies created by under-coordinated Pb atoms. In addition, it also explains how the energy offset between the semiconducting molecules and the perovskite influences trap states and intergrain carrier transport. The superior optoelectronic properties are attained by optimizing the molecular passivation treatments. These benefits are translated into significant enhancements of the power conversion efficiencies to 19.3%, as well as improved environmental and thermal stability of solar cells. The passivated devices without encapsulation degrade only by approximate to 13% after 40 d of exposure in 50% relative humidity at room temperature, and only approximate to 10% after 24 h at 80 degrees C in controlled environment.
+PD APR 19
+PY 2018
+VL 30
+IS 16
+AR 1706576
+DI 10.1002/adma.201706576
+UT WOS:000430460100016
+ER
+
+PT J
+TI Overcoming Redox Reactions at Perovskite-Nickel Oxide Interfaces to
+   Boost Voltages in Perovskite Solar Cells
+SO JOULE
+AB Nickel oxide (NiOx) hole transport layers (HTLs) are desirable contacts for perovskite photovoltaics because they are low cost, stable, and readily scalable; however, they deliver lower open-circuit voltages (V(OC)s) compared to organic HTLs. Here, we characterize and mitigate electron transfer-proton transfer reactions between NiOx HTLs and perovskite precursors. Using XPS and UPS characterization, we identify that Ni >= 3+ metal cation sites in NiOx thin films act both as Bronsted proton acceptors and Lewis electron acceptors, deprotonating cationic amines and oxidizing iodide species, forming PbI2-xBrx-rich hole extraction barriers at the perovskite-NiOx. interface. Titrating reactive Ni >= 3+ surface states with excess A-site cation salts during perovskite active layer deposition yielded an increase in V-OC values to 1.15 V and power conversion efficiencies of similar to 20%. This may be a general finding for metal oxide contacts that act as Bronsted and Lewis acid-base reactants toward perovskite precursors, an observation that has also been made recently for TiO2 and SnO2 contacts.
+PD AUG 19
+PY 2020
+VL 4
+IS 8
+BP 1759
+EP 1775
+DI 10.1016/j.joule.2020.06.004
+UT WOS:000561454400017
+ER
+
+PT J
+TI Rational selection of the polymeric structure for interface engineering
+   of perovskite solar cells
+SO JOULE
+AB Tedious trial-and-error procedures are commonly practiced for surface modification of the perovskite solar cell (PSC) active layers. A guideline to rationally choose the passivating functional groups of the polymeric structure that is eminently effective in passivating the charged defects and elongating the device lifetime is hence in urgent demand, Herein, three prototypical polymers, polyvinyl acetate) (PVA), polyethylene glycol (PEG), and poly(9-vinylcarbazole) (PVK), are selected to investigate the structural effect of the polymeric modification agents on the PSCs. We found that PVA possesses the Lewis base functional group with the minimized steric hindrance and the strongest electron-donating ability, enabling the most effective defect passivation on the perovskite film surface and the most enhanced carrier diffusion capacity. It demonstrates a power conversion efficiency (PCE) of 23.20% and noticeably enhanced operational stability. Our work provides important insights toward the selection of polymeric modification agents for high-performance and long-term stable PSCs.
+PD MAY 18
+PY 2022
+VL 6
+IS 5
+BP 1032
+EP 1048
+DI 10.1016/j.joule.2022.04.002
+EA MAY 2022
+UT WOS:000804710900015
+ER
+
+PT J
+TI Interfacial Defect Passivation and Stress Release via Multi-Active-Site
+   Ligand Anchoring Enables Efficient and Stable Methylammonium-Free
+   Perovskite Solar Cells
+SO ACS ENERGY LETTERS
+AB Interfacial trap-assisted non-radiative recombination and residual stress impede the further increase of power conversion efficiency (PCE) and stability of the methylammonium-free (MA-free) perovskite solar cells (PSCs). Here, we report an interfacial defect passivation and stress release strategy through employing the multi-active-site Lewis base ligand (i.e., (5-mercapto-1,3,4-thiadiazol-2-ylthio)acetic acid (MTDAA)) to modify the surface and grain boundaries (GBs) of MA-free perovskite films. Both experimental and theoretical results confirm strong chemical interactions between multiple active sites in the MTDAA molecule and undercoordinated Pb2+ at the surface or GBs of perovskite films. It is demonstrated theoretically that multi-active-site adsorption is more favorable thermodynamically as compared to single-active-site adsorption, regardless of PbI(2)( )termination and formamidinium iodide (FM) termination types. MTDAA modification results in much reduced defect density, increased carrier lifetime, and almost thoroughly released interfacial residual stress. Upon MTDAA passivation, the PCE is boosted from 20.26% to 21.92%. The unencapsulated device modified by MTDAA maintains 99% of its initial PCE after aging under the relative humidity range of 10-20% for 1776 h, and 91% after aging at 60 degrees C for 1032 h.
+PD JUL 9
+PY 2021
+VL 6
+IS 7
+BP 2526
+EP 2538
+DI 10.1021/acsenergylett.1c00794
+EA JUN 2021
+UT WOS:000672746800021
+ER
+
+PT J
+TI Chemical oxidization of PTAA enables stable slot-die-coated perovskite
+   solar modules
+SO JOULE
+AB The stability of perovskite solar modules has rarely been reported due to inefficient coating reproducibility and charge extraction, especially for the slot-die-coating process. In this study, we regulated the energy-level mismatch and improved the surface wettability by chemical oxidization between antimony trichloride (SbCl3) and poly[bis(4-phenyl)](2,4,6-trimethylphenyl)amine (PTAA) through a Lewis acid-base interaction. As a result, charge extraction and coating reproducibility of the slot-die-coated perovskite film were improved. The modules' power conversion efficiency (PCE) was enhanced to 22.05% and 20.65% (certified 20.33%) with aperture areas of 25 and 64 cm2 for the rigid substrates and 18.86% with an aperture area of 12 cm2 for the flexible substrates. Furthermore, the encapsulated SbCl3-doped PTAA module devices with an aperture area of 64 cm2 maintain 90% of the initial PCE after a durability test under continuous 1 sun illumination for 1,000 h at 85 degrees C and 85% relative humidity.
+PD APR 16
+PY 2025
+VL 9
+IS 4
+AR 101850
+DI 10.1016/j.joule.2025.101850
+EA APR 2025
+UT WOS:001473652700001
+ER
+
+EF
