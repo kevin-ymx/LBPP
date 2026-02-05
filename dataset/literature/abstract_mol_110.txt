@@ -1,4 +1,4 @@
-﻿FN Clarivate Analytics Web of Science
+FN Clarivate Analytics Web of Science
 VR 1.0
 PT J
 TI Perovskite-polymer composite cross-linker approach for highly-stable and
