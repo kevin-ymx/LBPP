@@ -11,7 +11,8 @@ class Config:
     use_cache: bool =False  # True = Option 1 (load pre-augmented pairs from cache), False = Option 2 (load CSV, convert, augment in-memory)
     
     # Data paths
-    csv_file: str = "/kfs3/scratch/yeming/ai4m/prediction/dataset/ssl/combine.csv"  # CSV with PUBCHEM_COMPOUND_CID, SMILES (input to build_graph_cache.py and visualize_tsne.py)
+    csv_file: str = "/kfs3/scratch/yeming/ai4m/prediction/dataset/ssl/combine.csv"  # Full CSV with PUBCHEM_COMPOUND_CID, SMILES
+    csv_file_sampled: str = "/kfs3/scratch/yeming/ai4m/prediction/dataset/ssl/sampled.csv"  # Sampled CSV (for train_ssl_sampled.py)
     cache_dir: str = "/kfs3/scratch/yeming/ai4m/prediction/dataset/ssl/cache"  # val.pt + train_shard_0.pt to train_shard_3.pt (pre-augmented pairs, built by build_graph_cache.py)
     max_molecules: Optional[int] = None  # Limit molecules to load (None = all). Used by visualize_tsne.py and Option 2
     
@@ -31,12 +32,12 @@ class Config:
     
     # GIN-E training parameters
     batch_size: int = 512
-    num_epochs: int = 30
+    num_epochs: int = 50
     learning_rate: float = 0.001
     weight_decay: float = 1e-4
     temperature: float = 0.07  # Temperature parameter for NT-Xent loss
-    checkpoint_frequency: int = 5  # Save periodic checkpoint every N epochs (each epoch trains on all 4 shards)
-    resume_checkpoint: Optional[str] = None  # Path to checkpoint to resume from (e.g., "./checkpoints/best_model.pt")
+    checkpoint_frequency: int = 3  # Save periodic checkpoint every N epochs (each epoch trains on all 4 shards)
+    resume_checkpoint: str = "./checkpoints/best_model.pt"  # Path to checkpoint to resume from (e.g., "./checkpoints/best_model.pt")
     
     # Downstream model parameters
     num_property_tasks: int = 1  # Number of molecular properties to predict (1 = binding energy only)
