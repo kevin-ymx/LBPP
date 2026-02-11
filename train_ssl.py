@@ -386,7 +386,8 @@ def save_checkpoint(
     model: nn.Module,
     optimizer: torch.optim.Optimizer,
     epoch: int,
-    loss: float,
+    val_loss: float,
+    train_loss: float,
     checkpoint_dir: str
 ):
     """Save periodic epoch checkpoint."""
@@ -396,7 +397,9 @@ def save_checkpoint(
         'epoch': epoch,
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
-        'loss': loss,
+        'loss': val_loss,  # Keep 'loss' for backward compatibility
+        'val_loss': val_loss,
+        'train_loss': train_loss,
     }
     
     checkpoint_path = os.path.join(checkpoint_dir, f'checkpoint_epoch_{epoch}.pt')
@@ -408,7 +411,8 @@ def save_best_model(
     model: nn.Module,
     optimizer: torch.optim.Optimizer,
     epoch: int,
-    loss: float,
+    val_loss: float,
+    train_loss: float,
     checkpoint_dir: str
 ):
     """Save best model checkpoint immediately."""
@@ -418,12 +422,14 @@ def save_best_model(
         'epoch': epoch,
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
-        'loss': loss,
+        'loss': val_loss,  # Keep 'loss' for backward compatibility
+        'val_loss': val_loss,
+        'train_loss': train_loss,
     }
     
     best_path = os.path.join(checkpoint_dir, 'best_model.pt')
     torch.save(checkpoint, best_path)
-    print(f"Saved best model (epoch {epoch}, loss {loss:.4f}) to {best_path}")
+    print(f"Saved best model (epoch {epoch}, val_loss {val_loss:.4f}, train_loss {train_loss:.4f}) to {best_path}")
 
 
 def load_checkpoint(
@@ -719,7 +725,8 @@ def main():
                     model=model,
                     optimizer=optimizer,
                     epoch=epoch,
-                    loss=val_loss,
+                    val_loss=val_loss,
+                    train_loss=train_loss,
                     checkpoint_dir=config.checkpoint_dir
                 )
         
@@ -739,7 +746,8 @@ def main():
                 model=model,
                 optimizer=optimizer,
                 epoch=epoch,
-                loss=val_loss,
+                val_loss=val_loss,
+                train_loss=train_loss,
                 checkpoint_dir=config.checkpoint_dir
             )
 
