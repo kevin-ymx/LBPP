@@ -15,10 +15,10 @@ from tqdm import tqdm
 OPENAI_API_KEY = "api_key"
 
 MODEL_NAME = "gpt-5-mini"  # or gpt-4.1 / gpt-4o / gpt-4.1-mini / gpt-5-mini
-INPUT_FILE = "abstract_LB_525.txt"  # WOS export format (SO=journal, AB=abstract, ER=end record)
-OUTPUT_JSON = "extracted_results_LB_525.json"  # JSON output sorted by impact factor (high to low)
-OUTPUT_CSV = "extracted_results_LB_525.csv"  # CSV table output (excludes claimed_mechanisms)
-SLEEP_BETWEEN_CALLS = 0.2  # seconds (rate limit safety)
+INPUT_FILE = "abstract_mol_4209.txt"  # WOS export format (SO=journal, AB=abstract, ER=end record)
+OUTPUT_JSON = "extracted_results_mol_4209.json"  # JSON output sorted by impact factor (high to low)
+OUTPUT_CSV = "extracted_results_mol_4209.csv"  # CSV table output (excludes claimed_mechanisms)
+SLEEP_BETWEEN_CALLS = 0.1  # seconds (rate limit safety)
 PUBCHEM_API_TIMEOUT = 10.0  # seconds
 
 # Initialize OpenAI client
@@ -29,6 +29,29 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 # -----------------------
 # PUBCHEM CID AND SMILES LOOKUP
 # -----------------------
+# Max length of parenthetical content to treat as abbreviation (strip for CID lookup only).
+_ABBR_PAREN_MAX_LEN = 20
+
+
+def _name_for_cid_lookup(molecule_name: str) -> str:
+    """
+    For CID lookup: strip only a trailing parenthetical that looks like an abbreviation
+    (space before '(', content short and no comma). Do not strip descriptive parentheticals
+    e.g. "(1,2-dihydro)" or "(2F)" at end with space before paren -> strip "(2F)";
+    "name (1,2-dihydro)" -> keep full name.
+    """
+    name = molecule_name.strip()
+    if not name:
+        return name
+    # Trailing " (X)" with a space before the opening paren
+    m = re.match(r"^(.+)\s+\(([^)]*)\)\s*$", name)
+    if m:
+        prefix, in_paren = m.group(1).rstrip(), m.group(2)
+        if "," not in in_paren and len(in_paren) <= _ABBR_PAREN_MAX_LEN:
+            return prefix
+    return name
+
+
 def get_pubchem_cid_and_smiles(molecule_name: str) -> tuple:
     """
     Look up PubChem Compound ID (CID) and SMILES for a molecule by name.
@@ -42,10 +65,7 @@ def get_pubchem_cid_and_smiles(molecule_name: str) -> tuple:
     if not molecule_name or molecule_name.lower() == "null":
         return None, None
     
-    # Clean up the name: strip whitespace and remove content in parentheses
-    # e.g., "phenethylammonium iodide (PEAI)" -> "phenethylammonium iodide"
-    name = molecule_name.strip()
-    name = re.sub(r'\s*\([^)]*\)', '', name).strip()
+    name = _name_for_cid_lookup(molecule_name.strip())
     
     if not name:
         return None, None
@@ -102,143 +122,370 @@ def get_pubchem_cid_batch(molecule_names: List[str]) -> Dict[str, tuple]:
 # -----------------------
 # JOURNAL IMPACT FACTOR LOOKUP
 # -----------------------
-# Journals in materials science, chemistry, and energy research with approximate impact factors (2023-2024)
-# Note: Impact factors change yearly. Update as needed.
-# Ordered by impact factor (high to low) for reference.
+# Merged from journal_summary + JCR and original non-zero; ordered by IF (high to low).
 JOURNAL_IMPACT_FACTORS = {
-    # Very high impact (IF >50)
-    "NATURE REVIEWS MATERIALS": 86.2,
-    "NATURE": 48.5,
-    "CHEMICAL REVIEWS": 55.8,
-    "SCIENCE": 45.8,
-    "NATURE ENERGY": 60.1,
-    "NATURE REVIEWS CHEMISTRY": 51.7,
-    # High impact (IF 20-50)
-    "JOULE": 35.4,
-    "CHEMICAL SOCIETY REVIEWS": 39.0,
-    "NATURE MATERIALS": 38.5,
-    "NATURE NANOTECHNOLOGY": 37.2,
-    "NATURE CHEMISTRY": 20.2,
-    "NATURE ELECTRONICS": 40.9,
-    "NATURE PHOTONICS": 32.9,
-    "ENERGY & ENVIRONMENTAL SCIENCE": 29.1,
-    "ADVANCED MATERIALS": 30.2,
-    "ADVANCED ENERGY MATERIALS": 26.9,
-    "CHEM": 23.5,
-    "ACS ENERGY LETTERS": 22.0,
-    "MATERIALS TODAY": 21.1,
-    "MATTER": 19.7,
-    "ADVANCED FUNCTIONAL MATERIALS": 19.5,
-    "CARBON ENERGY": 20.5,
-    "INFOMAT": 22.7,
-    "ENERGY STORAGE MATERIALS": 20.4,
-    "APPLIED CATALYSIS B ENVIRONMENTAL": 21.1,
-    "SCIENCE BULLETIN": 18.9,
-    "NATIONAL SCIENCE REVIEW": 20.6,
-    "ADVANCES IN OPTICS AND PHOTONICS": 23.8,
-    "OPTO-ELECTRONIC ADVANCES": 22.4,
-    # Medium-high impact (IF 15-20)
-    "NANO ENERGY": 16.8,
-    "NATURE COMMUNICATIONS": 15.7,
-    "ANGEWANDTE CHEMIE INTERNATIONAL EDITION": 16.1,
-    "ANGEWANDTE CHEMIE": 16.1,
-    "ACS NANO": 16.0,
-    "JOURNAL OF THE AMERICAN CHEMICAL SOCIETY": 15.6,
-    "CHEMICAL ENGINEERING JOURNAL": 15.1,
-    "ADVANCED SCIENCE": 14.3,
-    "SCIENCE ADVANCES": 13.6,
-    "SMALL": 13.3,
-    "ACS CATALYSIS": 11.7,
-    "JOURNAL OF ENERGY CHEMISTRY": 14.0,
-    "MATERIALS HORIZONS": 10.7,
-    "SMALL METHODS": 12.4,
-    "SMALL STRUCTURES": 12.0,
-    "MATERIALS TODAY PHYSICS": 11.5,
-    "ECOMAT": 11.8,
-    "JOURNAL OF MATERIALS CHEMISTRY A": 11.9,
-    "GREEN CHEMISTRY": 11.0,
-    "CARBON": 10.9,
-    "NANO LETTERS": 9.1,
-    "RESEARCH": 11.0,
-    # Medium impact (IF 10-15)
-    "JOURNAL OF POWER SOURCES": 8.1,
-    "MATERIALS TODAY ENERGY": 8.6,
-    "CHEMISTRY OF MATERIALS": 7.0,
-    "SOLAR ENERGY MATERIALS AND SOLAR CELLS": 6.3,
-    "SOLAR RRL": 6.0,
-    "ISCIENCE": 5.8,
-    "SUSTAINABLE ENERGY & FUELS": 5.8,
-    "ELECTROCHIMICA ACTA": 5.5,
-    "JOURNAL OF MATERIALS CHEMISTRY C": 6.4,
-    "JOURNAL OF MATERIALS CHEMISTRY B": 5.8,
-    "JOURNAL OF PHYSICAL CHEMISTRY LETTERS": 4.6,
-    "JOURNAL OF PHYSICAL CHEMISTRY C": 3.7,
-    "ACS APPLIED ENERGY MATERIALS": 6.4,
-    "ACS SUSTAINABLE CHEMISTRY & ENGINEERING": 8.4,
-    "INORGANIC CHEMISTRY": 4.6,
-    "CHEMSUSCHEM": 8.4,
-    "NANOSCALE": 6.7,
-    "JOURNAL OF COLLOID AND INTERFACE SCIENCE": 9.9,
-    "APPLIED SURFACE SCIENCE": 6.7,
-    "ADVANCED OPTICAL MATERIALS": 9.0,
-    "ADVANCED ELECTRONIC MATERIALS": 6.2,
-    "BATTERIES & SUPERCAPS": 5.3,
-    "MATERIALS TODAY ADVANCES": 8.1,
-    "MATERIALS TODAY CHEMISTRY": 7.3,
-    "MATERIALS TODAY SUSTAINABILITY": 7.1,
-    "ADVANCED MATERIALS INTERFACES": 5.4,
-    "ADVANCED MATERIALS TECHNOLOGIES": 7.0,
-    # Standard impact (IF 5-10)
-    "CELL REPORTS PHYSICAL SCIENCE": 8.9,
-    "ACS APPLIED MATERIALS & INTERFACES": 8.2,
-    "SURFACE AND COATINGS TECHNOLOGY": 5.4,
-    "JOURNAL OF ALLOYS AND COMPOUNDS": 6.2,
-    "MATERIALS RESEARCH BULLETIN": 5.4,
-    "MATERIALS SCIENCE AND ENGINEERING B": 4.6,
-    "JOURNAL OF THE ELECTROCHEMICAL SOCIETY": 3.4,
-    "ELECTROCHEMISTRY COMMUNICATIONS": 4.1,
-    "PHYSICAL CHEMISTRY CHEMICAL PHYSICS": 3.3,
-    "DALTON TRANSACTIONS": 4.0,
-    "NEW JOURNAL OF CHEMISTRY": 3.3,
-    "CRYSTENGCOMM": 2.6,
-    "CRYSTAL GROWTH & DESIGN": 3.8,
-    "JOURNAL OF CRYSTAL GROWTH": 1.8,
-    "RSC ADVANCES": 4.6,
-    "MATERIALS CHEMISTRY AND PHYSICS": 4.7,
-    "JOURNAL OF SOLID STATE CHEMISTRY": 3.5,
-    "SOLID STATE SCIENCES": 3.1,
-    "JOURNAL OF PHYSICS D APPLIED PHYSICS": 3.4,
-    "APPLIED PHYSICS LETTERS": 3.5,
-    "JOURNAL OF APPLIED PHYSICS": 2.9,
-    "AIP ADVANCES": 1.6,
-    "SCIENTIFIC REPORTS": 4.6,
-    "PLOS ONE": 3.7,
-    "FRONTIERS IN CHEMISTRY": 5.5,
-    "FRONTIERS IN MATERIALS": 3.2,
-    "MOLECULES": 4.6,
-    "MATERIALS": 3.2,
-    "NANOMATERIALS": 5.3,
-    "POLYMERS": 5.0,
-    "CATALYSTS": 3.9,
-    "ENERGIES": 3.2,
-    "CHEMELECTROCHEM": 4.2,
-    "CHEMPHOTOCHEM": 3.9,
-    "CHEMNANOMAT": 3.8,
-    "CHEMPHYSCHEM": 3.0,
-    "FRONTIERS OF OPTOELECTRONICS": 5.2,
-    # Lower impact (IF < 5)
-    "MATERIALS LETTERS": 3.0,
-    "PHYSICA STATUS SOLIDI RAPID RESEARCH LETTERS": 2.5,
-    "PHYSICA STATUS SOLIDI A": 2.0,
-    "PHYSICA STATUS SOLIDI B": 1.8,
-    "THIN SOLID FILMS": 2.1,
-    "IET OPTOELECTRONICS": 1.6,
-    "OPTO-ELECTRONICS REVIEW": 0.9,
-    "JOURNAL OF OPTOELECTRONICS AND ADVANCED MATERIALS": 0.6,
-    "JOURNAL OF THE EUROPEAN OPTICAL SOCIETY - RAPID PUBLICATIONS": 3.2,
-    "OPTICS": 1.6,
-    "JOURNAL OF OPTOELECTRONIC AND BIOMEDICAL MATERIALS": 1.1
+"NATURE REVIEWS MATERIALS": 86.2,
+"NATURE ENERGY": 60.1,
+"NATURE REVIEWS CHEMISTRY": 51.7,
+"NATURE": 48.5,
+"SCIENCE": 45.8,
+"NATURE ELECTRONICS": 40.9,
+"NATURE MATERIALS": 38.5,
+"NATURE NANOTECHNOLOGY": 37.2,
+"NATURE PHOTONICS": 32.9,
+"NATURE CHEMISTRY": 20.2,
+"NATURE SYNTHESIS": 20.0,
+"NATURE COMMUNICATIONS": 15.7,
+"SCIENCE ADVANCES": 13.6,
+"CHEMICAL REVIEWS": 55.8,
+"NANO-MICRO LETTERS": 36.3,
+"JOULE": 35.4,
+"INTERDISCIPLINARY MATERIALS": 31.6,
+"ADVANCED MATERIALS": 30.2,
+"ENERGY & ENVIRONMENTAL SCIENCE": 29.1,
+"ADVANCED ENERGY MATERIALS": 26.9,
+"ADVANCES IN OPTICS AND PHOTONICS": 23.8,
+"CHEM": 23.5,
+"LIGHT-SCIENCE & APPLICATIONS": 23.4,
+"INFOMAT": 22.7,
+"OPTO-ELECTRONIC ADVANCES": 22.4,
+"ACS ENERGY LETTERS": 22.0,
+"ADVANCED COMPOSITES AND HYBRID MATERIALS": 21.8,
+"ADVANCED FIBER MATERIALS": 21.3,
+"APPLIED CATALYSIS B ENVIRONMENTAL": 21.1,
+"MATERIALS TODAY": 21.1,
+"NATIONAL SCIENCE REVIEW": 20.6,
+"CARBON ENERGY": 20.5,
+"ENERGY STORAGE MATERIALS": 20.4,
+"MATTER": 19.7,
+"ADVANCED FUNCTIONAL MATERIALS": 19.5,
+"SCIENCE BULLETIN": 18.9,
+"NANO ENERGY": 16.8,
+"ANGEWANDTE CHEMIE": 16.1,
+"ANGEWANDTE CHEMIE-INTERNATIONAL EDITION": 16.1,
+"ACS NANO": 16.0,
+"ENERGY MATERIAL ADVANCES": 15.9,
+"JOURNAL OF THE AMERICAN CHEMICAL SOCIETY": 15.6,
+"CHEMICAL ENGINEERING JOURNAL": 15.1,
+"ACCOUNTS OF MATERIALS RESEARCH": 14.7,
+"ADVANCED SCIENCE": 14.3,
+"JOURNAL OF MATERIALS SCIENCE & TECHNOLOGY": 14.3,
+"ENERGY & ENVIRONMENTAL MATERIALS": 14.1,
+"JOURNAL OF ENERGY CHEMISTRY": 14.0,
+"ACTA PHYSICO-CHIMICA SINICA": 13.7,
+"SMALL": 13.3,
+"CARBON NEUTRALITY": 12.5,
+"SMALL METHODS": 12.4,
+"CARBON NEUTRALIZATION": 12.0,
+"SMALL STRUCTURES": 12.0,
+"JOURNAL OF MATERIALS CHEMISTRY A": 11.9,
+"NPJ COMPUTATIONAL MATERIALS": 11.9,
+"ECOMAT": 11.8,
+"ACS CATALYSIS": 11.7,
+"MATERIALS TODAY PHYSICS": 11.5,
+"ENERGY MATERIALS": 11.2,
+"GREEN CHEMISTRY": 11.0,
+"RARE METALS": 11.0,
+"RESEARCH": 11.0,
+"CARBON": 10.9,
+"MATERIALS HORIZONS": 10.7,
+"BIOSENSORS & BIOELECTRONICS": 10.5,
+"CHINESE JOURNAL OF STRUCTURAL CHEMISTRY": 10.3,
+"JOURNAL OF COLLOID AND INTERFACE SCIENCE": 9.9,
+"SCIENCE CHINA-CHEMISTRY": 9.7,
+"COMMUNICATIONS MATERIALS": 9.6,
+"CCS CHEMISTRY": 9.2,
+"NANO LETTERS": 9.1,
+"RENEWABLE ENERGY": 9.1,
+"ADVANCED OPTICAL MATERIALS": 9.0,
+"NANO RESEARCH": 9.0,
+"CELL REPORTS PHYSICAL SCIENCE": 8.9,
+"CHINESE CHEMICAL LETTERS": 8.9,
+"ACS MATERIALS LETTERS": 8.7,
+"JACS AU": 8.7,
+"MATERIALS TODAY ENERGY": 8.6,
+"TRANSACTIONS OF TIANJIN UNIVERSITY": 8.5,
+"ACS SUSTAINABLE CHEMISTRY & ENGINEERING": 8.4,
+"CHEMSUSCHEM": 8.4,
+"INTERNATIONAL JOURNAL OF HYDROGEN ENERGY": 8.3,
+"SMALL SCIENCE": 8.3,
+"ACS APPLIED MATERIALS & INTERFACES": 8.2,
+"JOURNAL OF POWER SOURCES": 8.1,
+"MATERIALS TODAY ADVANCES": 8.1,
+"MATERIALS & DESIGN": 7.9,
+"RESULTS IN ENGINEERING": 7.9,
+"SENSORS AND ACTUATORS B-CHEMICAL": 7.7,
+"PROGRESS IN PHOTOVOLTAICS": 7.6,
+"CHEMICAL RECORD": 7.5,
+"CHEMICAL SCIENCE": 7.4,
+"SCIENCE CHINA-MATERIALS": 7.4,
+"MATERIALS TODAY CHEMISTRY": 7.3,
+"INTERNATIONAL JOURNAL OF MINERALS METALLURGY AND MATERIALS": 7.2,
+"MATERIALS TODAY SUSTAINABILITY": 7.1,
+"ADVANCED MATERIALS TECHNOLOGIES": 7.0,
+"CHEMISTRY OF MATERIALS": 7.0,
+"APPLIED MATERIALS TODAY": 6.9,
+"ACS PHOTONICS": 6.7,
+"APPLIED SURFACE SCIENCE": 6.7,
+"NANOSCALE": 6.7,
+"NANOPHOTONICS": 6.6,
+"NANOSCALE HORIZONS": 6.6,
+"SOLAR ENERGY": 6.6,
+"ACS APPLIED ENERGY MATERIALS": 6.4,
+"INORGANIC CHEMISTRY FRONTIERS": 6.4,
+"JOURNAL OF MATERIALS CHEMISTRY C": 6.4,
+"MATERIALS CHEMISTRY FRONTIERS": 6.4,
+"JOURNAL OF PHYSICS-ENERGY": 6.3,
+"SOLAR ENERGY MATERIALS AND SOLAR CELLS": 6.3,
+"SURFACES AND INTERFACES": 6.3,
+"ADVANCED ELECTRONIC MATERIALS": 6.2,
+"JOURNAL OF ALLOYS AND COMPOUNDS": 6.2,
+"ADVANCED SUSTAINABLE SYSTEMS": 6.1,
+"JOURNAL OF INDUSTRIAL AND ENGINEERING CHEMISTRY": 6.0,
+"SOLAR RRL": 6.0,
+"ISCIENCE": 5.8,
+"JOURNAL OF MATERIALS CHEMISTRY B": 5.8,
+"SUSTAINABLE ENERGY & FUELS": 5.8,
+"ADVANCED ENERGY AND SUSTAINABILITY RESEARCH": 5.7,
+"CERAMICS INTERNATIONAL": 5.6,
+"DIGITAL DISCOVERY": 5.6,
+"ACS APPLIED NANO MATERIALS": 5.5,
+"CHINESE JOURNAL OF CHEMISTRY": 5.5,
+"ELECTROCHIMICA ACTA": 5.5,
+"FRONTIERS IN CHEMISTRY": 5.5,
+"MATERIALS FOR RENEWABLE AND SUSTAINABLE ENERGY": 5.5,
+"ADVANCED MATERIALS INTERFACES": 5.4,
+"COLLOIDS AND SURFACES A-PHYSICOCHEMICAL AND ENGINEERING ASPECTS": 5.4,
+"INORGANIC CHEMISTRY COMMUNICATIONS": 5.4,
+"MATERIALS RESEARCH BULLETIN": 5.4,
+"SURFACE AND COATINGS TECHNOLOGY": 5.4,
+"BATTERIES & SUPERCAPS": 5.3,
+"ENERGY & FUELS": 5.3,
+"JOURNAL OF SEMICONDUCTORS": 5.3,
+"NANOMATERIALS": 5.3,
+"FRONTIERS OF OPTOELECTRONICS": 5.2,
+"JOURNAL OF MOLECULAR LIQUIDS": 5.2,
+"MACROMOLECULES": 5.2,
+"ENERGY REPORTS": 5.1,
+"ORGANIC LETTERS": 5.0,
+"POLYMERS": 5.0,
+"INTERNATIONAL JOURNAL OF MOLECULAR SCIENCES": 4.9,
+"JOURNAL OF PHYSICS AND CHEMISTRY OF SOLIDS": 4.9,
+"ACS APPLIED ELECTRONIC MATERIALS": 4.7,
+"JOURNAL OF MOLECULAR STRUCTURE": 4.7,
+"JOURNAL OF PHOTOCHEMISTRY AND PHOTOBIOLOGY A-CHEMISTRY": 4.7,
+"MATERIALS ADVANCES": 4.7,
+"MATERIALS CHEMISTRY AND PHYSICS": 4.7,
+"INORGANIC CHEMISTRY": 4.6,
+"JOURNAL OF PHYSICAL CHEMISTRY LETTERS": 4.6,
+"MATERIALS SCIENCE AND ENGINEERING B-ADVANCED FUNCTIONAL SOLID-STATE MATERIALS": 4.6,
+"MATERIALS SCIENCE IN SEMICONDUCTOR PROCESSING": 4.6,
+"MOLECULES": 4.6,
+"RSC ADVANCES": 4.6,
+"SCIENTIFIC REPORTS": 4.6,
+"SPECTROCHIMICA ACTA PART A-MOLECULAR AND BIOMOLECULAR SPECTROSCOPY": 4.6,
+"SYNTHETIC METALS": 4.6,
+"IEEE ELECTRON DEVICE LETTERS": 4.5,
+"MATERIALS TODAY COMMUNICATIONS": 4.5,
+"PHYSICAL REVIEW APPLIED": 4.4,
+"ACS OMEGA": 4.3,
+"CHEMICAL ENGINEERING SCIENCE": 4.3,
+"CHEMICAL PHYSICS IMPACT": 4.3,
+"ENERGY ADVANCES": 4.3,
+"CHEMELECTROCHEM": 4.2,
+"CHEMICAL COMMUNICATIONS": 4.2,
+"DYES AND PIGMENTS": 4.2,
+"INTERNATIONAL JOURNAL OF ENERGY RESEARCH": 4.2,
+"OPTICAL MATERIALS": 4.2,
+"RESULTS IN CHEMISTRY": 4.2,
+"ELECTROCHEMISTRY COMMUNICATIONS": 4.1,
+"EMERGENT MATERIALS": 4.1,
+"JOURNAL OF ELECTROANALYTICAL CHEMISTRY": 4.1,
+"NANOSCALE RESEARCH LETTERS": 4.1,
+"CHINESE JOURNAL OF POLYMER SCIENCE": 4.0,
+"DALTON TRANSACTIONS": 4.0,
+"OPTICAL AND QUANTUM ELECTRONICS": 4.0,
+"POLYMER CHEMISTRY": 4.0,
+"CATALYSTS": 3.9,
+"CHEMPHOTOCHEM": 3.9,
+"JOURNAL OF MATERIALS SCIENCE": 3.9,
+"LANGMUIR": 3.9,
+"VACUUM": 3.9,
+"CHEMNANOMAT": 3.8,
+"CRYSTAL GROWTH & DESIGN": 3.8,
+"ENERGY TECHNOLOGY": 3.8,
+"CHEMISTRY-A EUROPEAN JOURNAL": 3.7,
+"JOURNAL OF PHYSICAL CHEMISTRY C": 3.7,
+"PHYSICAL REVIEW B": 3.7,
+"PLOS ONE": 3.7,
+"JOURNAL OF LUMINESCENCE": 3.6,
+"JOURNAL OF ORGANIC CHEMISTRY": 3.6,
+"APPLIED PHYSICS LETTERS": 3.5,
+"JOURNAL OF SOLID STATE CHEMISTRY": 3.5,
+"NANO SELECT": 3.5,
+"RESEARCH ON CHEMICAL INTERMEDIATES": 3.5,
+"JOURNAL OF PHYSICS D APPLIED PHYSICS": 3.4,
+"JOURNAL OF THE ELECTROCHEMICAL SOCIETY": 3.4,
+"MACROMOLECULAR RESEARCH": 3.4,
+"PHYSICAL REVIEW MATERIALS": 3.4,
+"CHEMISTRY-AN ASIAN JOURNAL": 3.3,
+"COMPUTATIONAL MATERIALS SCIENCE": 3.3,
+"NEW JOURNAL OF CHEMISTRY": 3.3,
+"PHYSICAL CHEMISTRY CHEMICAL PHYSICS": 3.3,
+"SILICON": 3.3,
+"ENERGIES": 3.2,
+"FRONTIERS IN MATERIALS": 3.2,
+"IEEE TRANSACTIONS ON ELECTRON DEVICES": 3.2,
+"JOURNAL OF PHYSICS D-APPLIED PHYSICS": 3.2,
+"JOURNAL OF THE EUROPEAN OPTICAL SOCIETY - RAPID PUBLICATIONS": 3.2,
+"KOREAN JOURNAL OF CHEMICAL ENGINEERING": 3.2,
+"MATERIALS": 3.2,
+"MOLECULAR SYSTEMS DESIGN & ENGINEERING": 3.2,
+"PHOTOCHEMICAL & PHOTOBIOLOGICAL SCIENCES": 3.2,
+"CHEMICAL PHYSICS LETTERS": 3.1,
+"CURRENT APPLIED PHYSICS": 3.1,
+"JOURNAL OF CHEMICAL PHYSICS": 3.1,
+"JOURNAL OF FLUORESCENCE": 3.1,
+"SOLID STATE SCIENCES": 3.1,
+"CHEMPHYSCHEM": 3.0,
+"JOURNAL OF MOLECULAR GRAPHICS & MODELLING": 3.0,
+"MATERIALS LETTERS": 3.0,
+"MICROMACHINES": 3.0,
+"EUROPEAN PHYSICAL JOURNAL PLUS": 2.9,
+"JOURNAL OF APPLIED PHYSICS": 2.9,
+"JOURNAL OF PHYSICAL CHEMISTRY B": 2.9,
+"ADVANCED PHYSICS RESEARCH": 2.8,
+"APPLIED PHYSICS A-MATERIALS SCIENCE & PROCESSING": 2.8,
+"CHEMPLUSCHEM": 2.8,
+"COATINGS": 2.8,
+"JOURNAL OF MATERIALS SCIENCE-MATERIALS IN ELECTRONICS": 2.8,
+"JOURNAL OF PHYSICAL CHEMISTRY A": 2.8,
+"NANOTECHNOLOGY": 2.8,
+"ORGANIC ELECTRONICS": 2.8,
+"PHYSICA B-CONDENSED MATTER": 2.8,
+"ASIAN JOURNAL OF ORGANIC CHEMISTRY": 2.7,
+"BEILSTEIN JOURNAL OF NANOTECHNOLOGY": 2.7,
+"EUROPEAN JOURNAL OF ORGANIC CHEMISTRY": 2.7,
+"CRYSTENGCOMM": 2.6,
+"IEEE JOURNAL OF PHOTOVOLTAICS": 2.6,
+"JOURNAL OF PHYSICS-CONDENSED MATTER": 2.6,
+"JOURNAL OF SOLID STATE ELECTROCHEMISTRY": 2.6,
+"PHYSICA SCRIPTA": 2.6,
+"APPLIED SCIENCES-BASEL": 2.5,
+"JOURNAL OF COMPUTATIONAL ELECTRONICS": 2.5,
+"JOURNAL OF ELECTRONIC MATERIALS": 2.5,
+"JOURNAL OF MOLECULAR MODELING": 2.5,
+"JOURNAL OF OPTICS-INDIA": 2.5,
+"METALS": 2.5,
+"PHYSICA STATUS SOLIDI-RAPID RESEARCH LETTERS": 2.5,
+"CHEMICAL PHYSICS": 2.4,
+"CRYSTALS": 2.4,
+"MODELLING AND SIMULATION IN MATERIALS SCIENCE AND ENGINEERING": 2.4,
+"SOLID STATE COMMUNICATIONS": 2.4,
+"IEEE TRANSACTIONS ON DEVICE AND MATERIALS RELIABILITY": 2.3,
+"INTERNATIONAL JOURNAL OF APPLIED CERAMIC TECHNOLOGY": 2.3,
+"JOURNAL OF COMPUTATIONAL BIOPHYSICS AND CHEMISTRY": 2.3,
+"APPLIED PHYSICS EXPRESS": 2.2,
+"ECS JOURNAL OF SOLID STATE SCIENCE AND TECHNOLOGY": 2.2,
+"MATERIALS RESEARCH EXPRESS": 2.2,
+"STRUCTURAL CHEMISTRY": 2.2,
+"TETRAHEDRON": 2.2,
+"BULLETIN OF MATERIALS SCIENCE": 2.1,
+"JOURNAL OF VACUUM SCIENCE & TECHNOLOGY A": 2.1,
+"SEMICONDUCTOR SCIENCE AND TECHNOLOGY": 2.1,
+"THIN SOLID FILMS": 2.1,
+"CHEMISTRYSELECT": 2.0,
+"INTERNATIONAL JOURNAL OF QUANTUM CHEMISTRY": 2.0,
+"MOLECULAR SIMULATION": 2.0,
+"NEXT MATERIALS": 1.9,
+"HELVETICA CHIMICA ACTA": 1.8,
+"JAPANESE JOURNAL OF APPLIED PHYSICS": 1.8,
+"MOLECULAR PHYSICS": 1.8,
+"PHYSICA STATUS SOLIDI B-BASIC SOLID STATE PHYSICS": 1.8,
+"MENDELEEV COMMUNICATIONS": 1.7,
+"ACTA CHIMICA SINICA": 1.6,
+"AIP ADVANCES": 1.6,
+"CHIMIA": 1.6,
+"JOURNAL OF INORGANIC MATERIALS": 1.6,
+"OPTICS": 1.6,
+"CHINESE PHYSICS B": 1.5,
+"CURRENT NANOSCIENCE": 1.5,
+"JOURNAL OF ELECTRON SPECTROSCOPY AND RELATED PHENOMENA": 1.5,
+"TETRAHEDRON LETTERS": 1.5,
+"KOREAN JOURNAL OF METALS AND MATERIALS": 1.4,
+"JOURNAL OF THE BRAZILIAN CHEMICAL SOCIETY": 1.3,
+"PROGRESS IN CHEMISTRY": 1.2,
+"SURFACE REVIEW AND LETTERS": 1.2,
+"CHINA SURFACE ENGINEERING": 1.1,
+"JOURNAL OF OPTOELECTRONIC AND BIOMEDICAL MATERIALS": 1.1,
+"CANADIAN JOURNAL OF CHEMISTRY": 1.0,
+"CHINESE JOURNAL OF CHEMICAL PHYSICS": 1.0,
+"JOURNAL OF NANO RESEARCH": 1.0,
+"MAIN GROUP CHEMISTRY": 1.0,
+"OPTO-ELECTRONICS REVIEW": 0.9,
+"ACTA PHYSICA SINICA": 0.8,
+"CHINESE JOURNAL OF INORGANIC CHEMISTRY": 0.7,
+"JOURNAL OF OPTOELECTRONICS AND ADVANCED MATERIALS": 0.6,
+"SCIENTIA SINICA-PHYSICA MECHANICA & ASTRONOMICA": 0.5,
+"ADVANCED THEORY AND SIMULATIONS": 2.9,
+"CHINESE SCIENCE BULLETIN-CHINESE": 0.0,
+"ENERGY MATERIALS AND DEVICES": 0.0,
+"NANO RESEARCH ENERGY": 0.0,
+"NEXT ENERGY": 0.0,
+"OPTIK": 0.0,
+"POLYOXOMETALATES": 0.0,
+"RESOURCES CHEMICALS AND MATERIALS": 0.0,
 }
+
+
+def _is_nature_or_science_family(journal_name: str) -> bool:
+    """True if journal is in the Nature or Science series (sister journals)."""
+    u = journal_name.strip().upper()
+    # Explicit exclusions: do NOT treat these as front-of-list sisters
+    excluded = {
+        "SCIENCE BULLETIN",
+        "NPJ COMPUTATIONAL MATERIALS",
+        "SCIENCE CHINA-CHEMISTRY",
+        "COMMUNICATIONS MATERIALS",
+        "SCIENCE CHINA-MATERIALS",
+        "SCIENTIFIC REPORTS",
+    }
+    if u in excluded:
+        return False
+    # Nature series
+    if u.startswith("NATURE"):
+        return True
+    if u.startswith("NPJ "):  # Nature Partner Journals (except excluded above)
+        return True
+    # Science (AAAS) series
+    if u == "SCIENCE" or (u.startswith("SCIENCE ") and not u.startswith("SCIENCE CHINA")):
+        return True
+    # Science China series (except excluded above)
+    if u.startswith("SCIENCE CHINA"):
+        return True
+    return False
+
+
+def _reorder_journal_impact_factors(d: dict) -> dict:
+    """Put Nature and Science series first (by IF desc), then others (by IF desc)."""
+    family = [(k, v) for k, v in d.items() if _is_nature_or_science_family(k)]
+    rest = [(k, v) for k, v in d.items() if not _is_nature_or_science_family(k)]
+    family.sort(key=lambda x: (-x[1], x[0]))
+    rest.sort(key=lambda x: (-x[1], x[0]))
+    return dict(family + rest)
+
+
+JOURNAL_IMPACT_FACTORS = _reorder_journal_impact_factors(JOURNAL_IMPACT_FACTORS)
+
+# Build journal -> rank map for CSV/JSON ordering (follow JOURNAL_IMPACT_FACTORS dict order)
+_JOURNAL_ORDER_LIST = list(JOURNAL_IMPACT_FACTORS.keys())
+_JOURNAL_ORDER_LEN = len(_JOURNAL_ORDER_LIST)
+_JOURNAL_ORDER_RANK = {}
+for _i, _k in enumerate(_JOURNAL_ORDER_LIST):
+    _JOURNAL_ORDER_RANK[_k] = _i
+    for _v in (_k.replace(" AND ", " & "), _k.replace(" & ", " AND ")):
+        if _v != _k:
+            _JOURNAL_ORDER_RANK[_v] = _i
 
 
 def get_journal_impact_factor(journal_name: str) -> Optional[float]:
@@ -265,16 +512,12 @@ def get_journal_impact_factor(journal_name: str) -> Optional[float]:
     ]
     
     for name in name_variants:
-        # Direct match
         if name in JOURNAL_IMPACT_FACTORS:
             return JOURNAL_IMPACT_FACTORS[name]
     
-    # Partial match (journal name contains key or key contains journal name)
-    for name in name_variants:
-        for key, value in JOURNAL_IMPACT_FACTORS.items():
-            if key in name or name in key:
-                return value
-    
+    # No partial match: short keys like "SCIENCE" or "MATERIALS" would incorrectly
+    # match many journals (e.g. SCIENCE CHINA-CHEMISTRY, MATERIALS SCIENCE IN ...).
+    # Only exact key match (with AND/& variants) is used; unknown journals get None.
     return None
 
 # -----------------------
@@ -481,13 +724,12 @@ def enrich_with_external_data(result: dict) -> dict:
     Returns:
         Enriched result dictionary.
     """
-    # Add journal impact factor
+    # Add journal impact factor (None if journal not in JOURNAL_IMPACT_FACTORS)
     journal = result.get("paper_metadata", {}).get("journal")
-    if journal:
-        impact_factor = get_journal_impact_factor(journal)
-        result["paper_metadata"]["impact_factor"] = impact_factor
-        if impact_factor:
-            print(f"    Impact factor for '{journal}': {impact_factor}")
+    impact_factor = get_journal_impact_factor(journal) if journal else None
+    result["paper_metadata"]["impact_factor"] = impact_factor
+    if impact_factor is not None:
+        print(f"    Impact factor for '{journal}': {impact_factor}")
     
     # Add PubChem CIDs and SMILES for molecules
     molecules = result.get("molecules", [])
@@ -508,14 +750,36 @@ def enrich_with_external_data(result: dict) -> dict:
 
 
 def get_impact_factor_for_sorting(result: dict) -> float:
-    """Get impact factor for sorting (returns 0 if not available)."""
+    """
+    Get impact factor for sorting.
+    Entries with no matching journal (IF None) return 0 so they sort last (not ranked).
+    """
     try:
         impact_factor = result.get("paper_metadata", {}).get("impact_factor")
         if impact_factor is not None:
             return float(impact_factor)
     except (TypeError, ValueError):
         pass
-    return 0.0
+    return 0.0  # No match → sort last (do not rank)
+
+
+def get_journal_order_key(result: dict) -> tuple:
+    """
+    Sort key so results follow JOURNAL_IMPACT_FACTORS dict order, then IF desc, then title.
+    Used for CSV and JSON output order.
+    """
+    meta = result.get("paper_metadata") or {}
+    journal = (meta.get("journal") or "").upper().strip()
+    rank = _JOURNAL_ORDER_RANK.get(journal)
+    if rank is None:
+        rank = _JOURNAL_ORDER_RANK.get(journal.replace(" AND ", " & "))
+    if rank is None:
+        rank = _JOURNAL_ORDER_RANK.get(journal.replace(" & ", " AND "))
+    if rank is None:
+        rank = _JOURNAL_ORDER_LEN
+    if_val = get_impact_factor_for_sorting(result)
+    title = (meta.get("title") or "").strip()
+    return (rank, -if_val, title)
 
 
 def results_to_csv_rows(all_results: List[dict]) -> List[List[dict]]:
@@ -531,12 +795,13 @@ def results_to_csv_rows(all_results: List[dict]) -> List[List[dict]]:
     for result in all_results:
         abstract_rows = []
         
-        # Paper metadata
+        # Paper metadata (impact_factor None when journal not in JOURNAL_IMPACT_FACTORS)
         paper = result.get("paper_metadata", {})
         title = paper.get("title", "")
         year = paper.get("year", "")
         journal = paper.get("journal", "")
-        impact_factor = paper.get("impact_factor", "")
+        impact_factor = paper.get("impact_factor")
+        impact_factor = impact_factor if impact_factor is not None else ""
         
         # Device metrics
         device = result.get("device_metrics", {})
@@ -694,25 +959,20 @@ def main():
         try:
             # Extract with GPT
             result = call_gpt(abstract)
-            
             # Override title and journal with WOS source (more reliable)
             result.setdefault("paper_metadata", {})
             if title:
                 result["paper_metadata"]["title"] = title
             if journal:
                 result["paper_metadata"]["journal"] = journal
-            
             # Enrich with external data (impact factor, CIDs)
             result = enrich_with_external_data(result)
-            
             # Write result to file immediately (on-the-fly)
             is_first = (success_count == 0)
             write_result_to_file(result, OUTPUT_JSON, is_first)
-            
             # Add to processed titles
             if title:
                 processed_titles.add(title.lower().strip())
-            
             success_count += 1
             tqdm.write(f"[OK] Saved: {title[:50]}..." if title and len(title) > 50 else f"[OK] Saved: {title}")
         except Exception as e:
@@ -730,14 +990,24 @@ def main():
     print(f"\nReloading results for sorting...")
     all_results, _ = load_existing_results(OUTPUT_JSON)
     
-    # Sort results by impact factor (high to low)
-    print(f"Sorting {len(all_results)} results by impact factor (high to low)...")
-    all_results.sort(key=get_impact_factor_for_sorting, reverse=True)
+    # Re-apply impact factor lookup so existing entries get corrected IFs (exact-match only)
+    print("Re-applying impact factor lookup to all results...")
+    for result in all_results:
+        meta = result.get("paper_metadata")
+        if meta is not None:
+            journal = meta.get("journal")
+            meta["impact_factor"] = get_journal_impact_factor(journal)
     
-    # Print sorted order
+    # Sort results by journal order in JOURNAL_IMPACT_FACTORS, then by IF (high to low), then title
+    print(f"Sorting {len(all_results)} results by journal order (JOURNAL_IMPACT_FACTORS)...")
+    all_results.sort(key=get_journal_order_key)
+    
+    # Print sorted order (IF None = not in JOURNAL_IMPACT_FACTORS, shown as N/A, not ranked)
     print("\nSorted order:")
     for i, result in enumerate(all_results):
-        impact_factor = result.get("paper_metadata", {}).get("impact_factor", "N/A")
+        impact_factor = result.get("paper_metadata", {}).get("impact_factor")
+        if impact_factor is None:
+            impact_factor = "N/A"
         journal = result.get("paper_metadata", {}).get("journal", "Unknown")
         title = result.get("paper_metadata", {}).get("title", "Unknown")[:40]
         print(f"  {i+1}. {title}... - {journal} (IF: {impact_factor})")
@@ -769,7 +1039,7 @@ def main():
     print(f"\nDone!")
     print(f"  JSON: {len(all_results)} abstracts written to {OUTPUT_JSON}")
     print(f"  CSV: {total_rows} rows written to {OUTPUT_CSV}")
-    print("Results are sorted by impact factor (highest first)")
+    print("Results follow JOURNAL_IMPACT_FACTORS order (then IF, then title)")
 
 
 if __name__ == "__main__":
