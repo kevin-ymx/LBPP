@@ -1,11 +1,15 @@
 """
 Training script for downstream molecular property prediction.
 Uses a pretrained GIN-E encoder plus a single MLP head for binding energy prediction.
-Loads molecules from PubChem using CID numbers from adsorption results CSV file.
-Extracts mlp_adsorption_energy as the target property.
+Loads molecules from merged CSV (min_ads_mult1p2_struct_cleaned_merged.csv): CIDs, DFT
+adsorbate_structure, pb_bond_encoding. Binding sites are identified by geometry-based
+mapping (DFT -> canonical mol by element + Hungarian assignment), then heavy-atom graphs
+are built with binding tags.
 """
-import os
+import ast
 import csv
+import json
+import os
 import torch
 import torch.nn as nn
 from torch.optim import Adam
@@ -15,42 +19,16 @@ import numpy as np
 import random
 from torch_geometric.data import Data, Batch
 from torch.utils.data import Dataset, DataLoader
-from typing import List, Tuple, Optional, Dict
+from typing import List, Tuple, Optional, Dict, Any
+
+from scipy.optimize import linear_sum_assignment
+
 from rdkit import Chem
-from rdkit.Chem import AllChem, rdMolDescriptors
+from rdkit.Chem import AllChem
 
 from config import Config
 from models.gin_e import GINEEncoder
 from models.downstream_model import DownstreamModel
-
-
-# SMARTS patterns for identifying binding heteroatoms in each functional group
-# Format: 'donor_type': ('SMARTS_pattern', binding_atom_index_in_match)
-# binding_atom_index specifies which atom in the SMARTS match should have binding_tag=1
-FUNCTIONAL_GROUP_SMARTS = {
-    'alkoxide_O': ('[O-;H0]', 0),  # Negatively charged oxygen
-    'amide': ('[O]=C[N]', 0),  # Amide (binding on O)
-    'amide_carbonyl_O': ('[C](=O)[N]', 1),  # Amide carbonyl (binding on O, not C or N)
-    'amine_primary': ('[N;X3;H2;!$(N=*)]', 0),  # Primary amine nitrogen
-    'amine_secondary': ('[N;X3;H1;!$(N=*)]', 0),  # Secondary amine nitrogen  
-    'amine_tertiary': ('[N;X3;H0;!$(N=*)]', 0),  # Tertiary amine nitrogen
-    'aromatic_N_pyridinic': ('[n;H0]', 0),  # Pyridinic nitrogen in aromatic ring
-    'aromatic_N_pyrrolic': ('[nH]', 0),  # Pyrrolic nitrogen
-    'carbonyl_O': ('[O]=C', 0),  # Carbonyl oxygen
-    'cooh_like': ('[O]=C[O;H1]', 0),  # Carboxylic acid-like (binding on first O)
-    'ether_O': ('[O;X2;H0;!$(O=*);!$([O-])]', 0),  # Ether oxygen
-    'hydroxyl': ('[O;X2;H1;!$(O=*)]', 0),  # Hydroxyl oxygen
-    'imine': ('[N;X2]=C', 0),  # Imine nitrogen
-    'nitrile_CN': ('[N]#C', 0),  # Nitrile nitrogen
-    'phenoxide_O': ('[O-]-[c]', 0),  # Phenoxide oxygen (oxygen attached to aromatic carbon)
-    'phosphine': ('[P;X3;!$(P=*)]', 0),  # Phosphine phosphorus
-    'p_oxide': ('[O]=P', 0),  # Phosphine oxide (binding on O)
-    'sox_like': ('[O]=S(=O)O', 0),  # Sulfonate-like (binding on first O)
-    'sulfoxide': ('[O]=S', 0),  # Sulfoxide (binding on O)
-    'thiocarbonyl': ('[S]=C', 0),  # Thiocarbonyl sulfur
-    'thioether_S': ('[S;X2;H0;!$(S=*);!$([S-])]', 0),  # Thioether sulfur
-    'thiol': ('[S;X2;H1]', 0),  # Thiol sulfur
-}
 
 
 def set_seed(seed: int):
@@ -115,38 +93,149 @@ def fetch_molecule_from_smiles(smiles: str) -> Optional[Chem.Mol]:
         return None
 
 
-def find_binding_atom_indices(mol: Chem.Mol, donor_type: str) -> List[int]:
-    """
-    Find the indices of binding heteroatoms using SMARTS matching.
-    
-    Args:
-        mol: RDKit molecule object.
-        donor_type: Type of functional group (from DonorType column).
-        
-    Returns:
-        List of atom indices that are binding heteroatoms.
-    """
-    smarts_entry = FUNCTIONAL_GROUP_SMARTS.get(donor_type)
-    if smarts_entry is None:
-        print(f"  Warning: Unknown donor type: {donor_type}")
-        return []
-    
-    # Unpack SMARTS pattern and binding atom index
-    smarts, binding_atom_idx = smarts_entry
-    
+# --------------- Merged CSV parsing and geometry-based binding mapping ---------------
+
+def parse_pb_bond_encoding(s: str) -> Optional[List[int]]:
+    """Parse pb_bond_encoding string to list of 0/1. Same index as adsorbate_structure atoms."""
+    if not s or not str(s).strip():
+        return None
     try:
-        pattern = Chem.MolFromSmarts(smarts)
-        if pattern is None:
-            return []
-        
-        matches = mol.GetSubstructMatches(pattern)
-        
-        # Return the specified binding atom from each match
-        binding_indices = [match[binding_atom_idx] for match in matches if len(match) > binding_atom_idx]
-        return binding_indices
-    except Exception as e:
-        print(f"  Warning: SMARTS matching failed for {donor_type}: {e}")
-        return []
+        out = ast.literal_eval(str(s).strip())
+        if not isinstance(out, list) or not all(x in (0, 1) for x in out):
+            return None
+        return out
+    except (ValueError, SyntaxError):
+        return None
+
+
+def parse_adsorbate_structure(s: str) -> Optional[Dict[str, Any]]:
+    """Parse adsorbate_structure JSON. Keys: coords['3d'], elements['number']."""
+    if not s or not str(s).strip():
+        return None
+    try:
+        return json.loads(str(s).strip())
+    except json.JSONDecodeError:
+        return None
+
+
+def extract_dft_atomic_numbers_and_coords(struct: Optional[Dict]) -> Optional[Tuple[List[int], np.ndarray]]:
+    """
+    Extract atomic_numbers and coords from adsorbate_structure.
+    coords['3d'] is flat [x0,y0,z0, x1,y1,z1, ...], elements['number'] is list of atomic numbers.
+    Returns (atomic_numbers, coords) with coords shape (n_atoms, 3).
+    """
+    if not struct or not isinstance(struct, dict):
+        return None
+    coords = struct.get("coords") or {}
+    elements = struct.get("elements") or {}
+    numbers = elements.get("number")
+    flat = coords.get("3d") if isinstance(coords, dict) else None
+    if not numbers or not flat or len(flat) != 3 * len(numbers):
+        return None
+    atomic_numbers = [int(numbers[i]) for i in range(len(numbers))]
+    coords_arr = np.array(
+        [[float(flat[3 * i]), float(flat[3 * i + 1]), float(flat[3 * i + 2])] for i in range(len(numbers))],
+        dtype=np.float64,
+    )
+    return (atomic_numbers, coords_arr)
+
+
+def build_rdkit_mol_dft(atomic_numbers: List[int], coords: np.ndarray) -> Optional[Chem.Mol]:
+    """
+    Build RDKit Mol for DFT structure from atomic numbers and 3D coords (reference step 1).
+    RWMol + AddAtom per Z, then AddConformer with positions.
+    """
+    mol_dft = Chem.RWMol()
+    for Z in atomic_numbers:
+        atom = Chem.Atom(int(Z))
+        mol_dft.AddAtom(atom)
+    mol_dft = mol_dft.GetMol()
+    conf = Chem.Conformer(len(atomic_numbers))
+    for i in range(len(atomic_numbers)):
+        x, y, z = coords[i, 0], coords[i, 1], coords[i, 2]
+        conf.SetAtomPosition(i, (float(x), float(y), float(z)))
+    mol_dft.AddConformer(conf)
+    return mol_dft
+
+
+def center_coords_to_com(coords: np.ndarray) -> np.ndarray:
+    """Translate coords (n, 3) so center-of-mass is at origin."""
+    com = coords.mean(axis=0)
+    return coords - com
+
+
+def get_canonical_mol_with_coords(cid: int) -> Optional[Chem.Mol]:
+    """Fetch mol from PubChem by CID. Ensure it has 3D coords (embed if missing)."""
+    mol = fetch_molecule_from_pubchem(cid)
+    if mol is None:
+        return None
+    if mol.GetNumConformers() == 0:
+        try:
+            AllChem.EmbedMolecule(mol, randomSeed=42)
+        except Exception:
+            pass
+    if mol.GetNumConformers() == 0:
+        return None
+    return mol
+
+
+def geometry_based_mapping(
+    atomic_numbers: List[int],
+    coords: np.ndarray,
+    canon_mol: Chem.Mol,
+) -> Optional[Dict[int, int]]:
+    """
+    Geometry-based mapping: DFT index -> canonical mol index (reference step 2).
+    Center both to COM, then for each element Z use Hungarian assignment on distance matrix.
+    """
+    # Center DFT coords to COM
+    dft_coords = center_coords_to_com(np.asarray(coords, dtype=np.float64))
+
+    # Canonical mol coords (n_atoms, 3), then center to COM
+    conf = canon_mol.GetConformer()
+    can_coords = np.array(
+        [[conf.GetAtomPosition(i).x, conf.GetAtomPosition(i).y, conf.GetAtomPosition(i).z] for i in range(canon_mol.GetNumAtoms())],
+        dtype=np.float64,
+    )
+    can_coords = center_coords_to_com(can_coords)
+
+    mapping: Dict[int, int] = {}
+    for Z in set(atomic_numbers):
+        dft_indices = [i for i, z in enumerate(atomic_numbers) if z == Z]
+        can_indices = [i for i, a in enumerate(canon_mol.GetAtoms()) if a.GetAtomicNum() == Z]
+
+        if len(dft_indices) != len(can_indices):
+            return None
+
+        dft_pts = dft_coords[dft_indices]
+        can_pts = can_coords[can_indices]
+
+        dist_matrix = np.linalg.norm(dft_pts[:, None, :] - can_pts[None, :, :], axis=2)
+        row_ind, col_ind = linear_sum_assignment(dist_matrix)
+
+        for r, c in zip(row_ind, col_ind):
+            mapping[dft_indices[r]] = can_indices[c]
+    return mapping
+
+
+def transfer_binding_and_remove_hydrogens(
+    canon_mol: Chem.Mol,
+    binding_indices_canonical: List[int],
+) -> Tuple[Chem.Mol, List[int]]:
+    """
+    Transfer multiple binding sites to heavy-atom indices and remove hydrogens (reference steps 3 & 4).
+    heavy_map: canonical atom idx -> heavy index; binding_indices_heavy for graph.
+    """
+    heavy_map: Dict[int, int] = {}
+    heavy_counter = 0
+    for atom in canon_mol.GetAtoms():
+        if atom.GetAtomicNum() != 1:
+            heavy_map[atom.GetIdx()] = heavy_counter
+            heavy_counter += 1
+
+    binding_indices_heavy = [heavy_map[i] for i in binding_indices_canonical if i in heavy_map]
+    mol_heavy = Chem.RemoveHs(canon_mol)
+    return mol_heavy, binding_indices_heavy
 
 
 class MolecularGraphWithBinding:
@@ -288,67 +377,74 @@ class MolecularGraphWithBinding:
 
 def load_adsorption_data(csv_path: str, use_pubchem: bool = True) -> Tuple[List[Data], List[float], List[str]]:
     """
-    Load adsorption data from CSV file.
-    
-    Args:
-        csv_path: Path to adsorption results CSV file.
-        use_pubchem: If True, fetch molecules from PubChem. If False, use SMILES.
-        
-    Returns:
-        Tuple of (graphs, energies, cid_list).
+    Load adsorption data from merged cleaned CSV (min_ads_mult1p2_struct_cleaned_merged.csv).
+    Columns: cid, functional_group, formula, pb_bond_encoding, adsorption_energy, config_name, adsorbate_structure.
+    Builds graphs from CIDs with binding tags determined by geometry-based mapping (DFT -> canonical -> heavy-atom).
     """
     print(f"Loading adsorption data from {csv_path}...")
-    
+    required = ["cid", "adsorption_energy", "pb_bond_encoding", "adsorbate_structure"]
     graphs = []
     energies = []
     cid_list = []
-    
-    with open(csv_path, 'r') as f:
+
+    with open(csv_path, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         rows = list(reader)
-    
+        fieldnames = list(reader.fieldnames or [])
+    for col in required:
+        if col not in fieldnames:
+            raise ValueError(f"CSV missing column: {col}. Required: {required}")
+
     print(f"Found {len(rows)} entries in CSV")
-    
+
     for row in tqdm(rows, desc="Processing molecules"):
-        cid = row['CID']
-        donor_type = row['DonorType']
-        smiles = row['SMILES']
-        mlp_energy = float(row['mlp_adsorption_energy'])
-        
-        # Skip samples with mlp_adsorption_energy < -5
-        if mlp_energy < -5:
-            continue
-        
-        # Try to get molecule from PubChem first, fallback to SMILES
-        mol = None
-        if use_pubchem:
-            mol = fetch_molecule_from_pubchem(int(cid))
-        
-        if mol is None:
-            # Fallback to SMILES
-            mol = fetch_molecule_from_smiles(smiles)
-        
-        if mol is None:
-            print(f"  Skipping CID {cid}: Could not create molecule")
-            continue
-        
-        # Find binding atom indices
-        binding_indices = find_binding_atom_indices(mol, donor_type)
-        
-        if len(binding_indices) == 0:
-            print(f"  Warning: No binding atoms found for CID {cid} with donor type {donor_type}")
-            # Still create the graph with no binding tags
-        
-        # Convert to graph
         try:
-            graph = MolecularGraphWithBinding.mol_to_graph(mol, binding_indices)
-            graphs.append(graph)
-            energies.append(mlp_energy)
-            cid_list.append(cid)
-        except Exception as e:
-            print(f"  Skipping CID {cid}: Graph conversion failed: {e}")
+            cid = int(row["cid"])
+        except (ValueError, KeyError):
             continue
-    
+        adsorption_energy = float(row["adsorption_energy"])
+
+        binding_mask_dft = parse_pb_bond_encoding(row.get("pb_bond_encoding", ""))
+        struct = parse_adsorbate_structure(row.get("adsorbate_structure", ""))
+        extracted = extract_dft_atomic_numbers_and_coords(struct)
+        if not extracted:
+            continue
+        atomic_numbers, coords = extracted
+        if not binding_mask_dft or len(binding_mask_dft) != len(atomic_numbers):
+            continue
+
+        canon_mol = get_canonical_mol_with_coords(cid)
+        if canon_mol is None:
+            continue
+
+        mapping = geometry_based_mapping(atomic_numbers, coords, canon_mol)
+        if mapping is None:
+            continue
+
+        # Transfer multiple binding sites (reference step 3)
+        binding_indices_dft = [i for i, v in enumerate(binding_mask_dft) if v == 1]
+        binding_indices_canonical = [mapping[i] for i in binding_indices_dft]
+        if not binding_indices_canonical:
+            continue
+
+        try:
+            mol_heavy, binding_indices_heavy = transfer_binding_and_remove_hydrogens(
+                canon_mol, binding_indices_canonical
+            )
+        except Exception:
+            continue
+
+        if mol_heavy.GetNumAtoms() < 2:
+            continue
+
+        try:
+            graph = MolecularGraphWithBinding.mol_to_graph(mol_heavy, binding_indices_heavy)
+            graphs.append(graph)
+            energies.append(adsorption_energy)
+            cid_list.append(str(cid))
+        except Exception:
+            continue
+
     print(f"Successfully processed {len(graphs)} molecules")
     return graphs, energies, cid_list
 
@@ -702,9 +798,10 @@ def save_best_model(
     optimizer: torch.optim.Optimizer,
     epoch: int,
     loss: float,
-    checkpoint_dir: str
+    checkpoint_dir: str,
+    save_finetuned_encoder: bool = False,
 ):
-    """Save best model checkpoint immediately."""
+    """Save best model checkpoint immediately. If save_finetuned_encoder=True, also save GIN-E encoder state."""
     os.makedirs(checkpoint_dir, exist_ok=True)
     
     checkpoint = {
@@ -717,6 +814,14 @@ def save_best_model(
     best_path = os.path.join(checkpoint_dir, 'downstream_best_model.pt')
     torch.save(checkpoint, best_path)
     print(f"Saved best downstream model (epoch {epoch}, loss {loss:.4f}) to {best_path}")
+
+    if save_finetuned_encoder and hasattr(model, 'gin_e_encoder'):
+        encoder_path = os.path.join(checkpoint_dir, 'gin_e_finetuned.pt')
+        torch.save({
+            'epoch': epoch,
+            'encoder_state_dict': model.gin_e_encoder.state_dict(),
+        }, encoder_path)
+        print(f"Saved finetuned GIN-E encoder to {encoder_path}")
 
 
 def save_predictions(
@@ -765,12 +870,13 @@ def main():
     os.makedirs(downstream_checkpoint_dir, exist_ok=True)
     os.makedirs(config.log_dir, exist_ok=True)
     
-    # Load adsorption data from CSV
-    csv_path = "./combined_data.csv"
-    
-    # Try loading from SMILES first (faster than PubChem API calls)
-    print("\nLoading molecules from SMILES (fallback to PubChem if needed)...")
-    graphs, energies, cids = load_adsorption_data(csv_path, use_pubchem=False)
+    # Load adsorption data from merged cleaned CSV (binding sites from DFT geometry mapping)
+    default_csv = os.path.join(os.path.dirname(__file__), "dataset", "prediction", "min_ads_mult1p2_struct_cleaned_merged.csv")
+    csv_path = (config.downstream_csv or os.environ.get("DOWNSTREAM_CSV") or default_csv).strip()
+    if not csv_path or not os.path.isfile(csv_path):
+        raise FileNotFoundError(f"Merged CSV not found: {csv_path}. Set config.downstream_csv in config.py, or DOWNSTREAM_CSV, or place file at {default_csv}")
+    print("\nLoading molecules from merged CSV (CID + PubChem, geometry-based binding tags)...")
+    graphs, energies, cids = load_adsorption_data(csv_path, use_pubchem=True)
     
     if len(graphs) == 0:
         raise RuntimeError("No molecules loaded! Check the CSV file.")
@@ -898,7 +1004,8 @@ def main():
                     optimizer=optimizer,
                     epoch=epoch,
                     loss=val_loss,
-                    checkpoint_dir=downstream_checkpoint_dir
+                    checkpoint_dir=downstream_checkpoint_dir,
+                    save_finetuned_encoder=not config.freeze_pretrained_encoder,
                 )
         
         # Save periodic checkpoint every 10 epochs
