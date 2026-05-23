@@ -1,9 +1,10 @@
 """
-Downstream binding-energy training (3-feature: atomic_num + tetrahedral_chirality + coordination_number).
-
-Same training pipeline as the main LBPP train_downstream.py (weighted MSE, val-MAE
-checkpointing, CLI, eval splits). Graph node features: 3-D (atomic_num, chirality, coordination_number).
-Uses comparison_2feat SSL checkpoint at config.checkpoint_dir/best_model.pt.
+Training script for downstream molecular property prediction.
+Uses a pretrained GIN-E encoder plus a single MLP head for binding energy prediction.
+Loads molecules from merged CSV (min_ads_mult1p2_struct_cleaned_merged.csv): CIDs, DFT
+adsorbate_structure, pb_bond_encoding. Binding sites are identified by geometry-based
+mapping (DFT -> canonical mol by element + Hungarian assignment), then heavy-atom graphs
+are built with binding tags.
 """
 import argparse
 import ast
@@ -344,14 +345,35 @@ class MolecularGraphWithBinding:
         """
         if binding_atom_indices is None:
             binding_atom_indices = []
-
-        # Node features: [atomic_num, chirality, coordination_number]
+        
+        # Get partial charges
+        partial_charges = cls.get_partial_charges(mol)
+        
+        # Node features: [atomic_num, chirality, partial_charge, hybridization, 
+        #                 coordination_num, valence_electrons, electronegativity, binding_tag]
         node_features = []
         for atom in mol.GetAtoms():
+            atom_idx = atom.GetIdx()
+            atomic_num = atom.GetAtomicNum()
+            chirality = int(atom.GetChiralTag())
+            partial_charge = partial_charges[atom_idx]
+            hybridization = int(atom.GetHybridization())
+            coordination_num = cls.get_coordination_number(atom)
+            valence_electrons = cls.get_valence_electrons(atomic_num)
+            electronegativity = cls.get_electronegativity(atomic_num)
+            
+            # Set binding_tag to 1 if this atom is in the binding_atom_indices list
+            binding_tag = 1.0 if atom_idx in binding_atom_indices else 0.0
+            
             node_features.append([
-                float(atom.GetAtomicNum()),
-                float(int(atom.GetChiralTag())),
-                float(len(atom.GetNeighbors())),
+                float(atomic_num),
+                float(chirality),
+                float(partial_charge),
+                float(hybridization),
+                float(coordination_num),
+                float(valence_electrons),
+                float(electronegativity),
+                float(binding_tag),
             ])
         
         node_features = torch.tensor(node_features, dtype=torch.float)
@@ -572,7 +594,7 @@ def load_adsorption_data(
         print(f"Saved graph cache to {graph_cache_path} ({len(graphs)} molecules)")
 
     # Print node features for the first 5 samples
-    node_feature_names = ['atomic_num', 'chirality', 'coordination_number']
+    node_feature_names = ["atomic_num", "chirality", "partial_charge", "hybridization", "coordination_num", "valence_electrons", "electronegativity", "binding_tag"]
     n_show = min(5, len(graphs))
     for s in range(n_show):
         g = graphs[s]
@@ -592,7 +614,7 @@ def load_extra_smiles_csv(
     """
     Load additional (SMILES, binding energy) pairs from a CSV and convert to graphs.
     CSV must have columns: SMILES, best_adsorption_energy.
-    Graphs use 3 node features: atomic_num, chirality, coordination_number (same as MolecularGraphWithBinding.mol_to_graph).
+    Graphs use the same 8 node features as MolecularGraphWithBinding (binding_tag=0.0).
 
     Returns:
         graphs: list of Data objects (heavy-atom only)
@@ -640,6 +662,9 @@ def load_extra_smiles_csv(
             skipped += 1
             continue
 
+        if zero_binding_tags and graph.x is not None and graph.x.size(-1) > 7:
+            graph.x[:, 7] = 0.0
+
         graphs.append(graph)
         energies.append(energy)
 
@@ -673,41 +698,41 @@ def collate_binding_batch(batch: List[Tuple[Data, torch.Tensor]]) -> Tuple[Batch
 
 
 def split_data(
-    graphs: List[Data], 
+    graphs: List[Data],
     energies: List[float],
     train_ratio: float = 0.7,
     val_ratio: float = 0.2,
     test_ratio: float = 0.1,
-    seed: int = 42
+    seed: int = 42,
 ) -> Tuple[List[Data], List[float], List[Data], List[float], List[Data], List[float]]:
     """
     Split data into train, validation, and test sets.
-    
+
     Returns:
         Tuple of (train_graphs, train_energies, val_graphs, val_energies, test_graphs, test_energies).
     """
     assert abs(train_ratio + val_ratio + test_ratio - 1.0) < 1e-6, "Ratios must sum to 1"
-    
+
     random.seed(seed)
     indices = list(range(len(graphs)))
     random.shuffle(indices)
-    
+
     n_train = int(len(graphs) * train_ratio)
     n_val = int(len(graphs) * val_ratio)
-    
+
     train_indices = indices[:n_train]
-    val_indices = indices[n_train:n_train + n_val]
-    test_indices = indices[n_train + n_val:]
-    
+    val_indices = indices[n_train : n_train + n_val]
+    test_indices = indices[n_train + n_val :]
+
     train_graphs = [graphs[i] for i in train_indices]
     train_energies = [energies[i] for i in train_indices]
-    
+
     val_graphs = [graphs[i] for i in val_indices]
     val_energies = [energies[i] for i in val_indices]
-    
+
     test_graphs = [graphs[i] for i in test_indices]
     test_energies = [energies[i] for i in test_indices]
-    
+
     return train_graphs, train_energies, val_graphs, val_energies, test_graphs, test_energies
 
 
@@ -1008,6 +1033,7 @@ def test_model(
 ) -> Tuple[float, float, List[float], List[float]]:
     """Test the model and return predictions."""
     return evaluate_model(model, test_loader, criterion, device, desc="Testing")
+
 
 def save_checkpoint(
     model: nn.Module,
