@@ -1,15 +1,16 @@
 """
-Training script for downstream molecular property prediction.
-Uses a pretrained GIN-E encoder plus a single MLP head for binding energy prediction.
-Loads molecules from merged CSV (min_ads_mult1p2_struct_cleaned_merged.csv): CIDs, DFT
-adsorbate_structure, pb_bond_encoding. Binding sites are identified by geometry-based
-mapping (DFT -> canonical mol by element + Hungarian assignment), then heavy-atom graphs
-are built with binding tags.
+Downstream binding-energy training (3-feature: atomic_num + tetrahedral_chirality + coordination_number).
+
+Same training pipeline as the main LBPP train_downstream.py (weighted MSE, val-MAE
+checkpointing, CLI, eval splits). Graph node features: 3-D (atomic_num, chirality, coordination_number).
+Uses comparison_2feat SSL checkpoint at config.checkpoint_dir/best_model.pt.
 """
+import argparse
 import ast
 import csv
 import json
 import os
+import time
 import torch
 import torch.nn as nn
 from torch.optim import Adam
@@ -18,7 +19,7 @@ from tqdm import tqdm
 import numpy as np
 import random
 from torch_geometric.data import Data, Batch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 from typing import List, Tuple, Optional, Dict, Any
 
 from scipy.optimize import linear_sum_assignment
@@ -41,35 +42,46 @@ def set_seed(seed: int):
     torch.backends.cudnn.benchmark = False
 
 
-def fetch_molecule_from_pubchem(cid: int) -> Optional[Chem.Mol]:
+def fetch_molecule_from_pubchem(
+    cid: int,
+    max_retries: int = 6,
+    retry_base_delay: float = 3.0,
+    timeout: int = 30,
+) -> Optional[Chem.Mol]:
     """
-    Fetch molecule from PubChem using CID.
-    
-    Args:
-        cid: PubChem Compound ID.
-        
-    Returns:
-        RDKit molecule object or None if failed.
+    Fetch molecule from PubChem using CID, with retries and exponential backoff on 503/timeout.
     """
-    try:
-        import urllib.request
-        url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/{cid}/SDF"
-        
-        with urllib.request.urlopen(url, timeout=30) as response:
-            sdf_data = response.read().decode('utf-8')
-        
-        # Parse SDF data
-        mol = Chem.MolFromMolBlock(sdf_data, removeHs=False)
-        if mol is None:
-            # Try adding hydrogens
-            mol = Chem.MolFromMolBlock(sdf_data, removeHs=True)
-            if mol is not None:
-                mol = Chem.AddHs(mol)
-        
-        return mol
-    except Exception as e:
-        print(f"  Warning: Failed to fetch CID {cid}: {e}")
-        return None
+    import urllib.request
+    import urllib.error
+    url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/{cid}/SDF"
+    last_error = None
+    for attempt in range(max_retries):
+        try:
+            with urllib.request.urlopen(url, timeout=timeout) as response:
+                sdf_data = response.read().decode('utf-8')
+            mol = Chem.MolFromMolBlock(sdf_data, removeHs=False)
+            if mol is None:
+                mol = Chem.MolFromMolBlock(sdf_data, removeHs=True)
+                if mol is not None:
+                    mol = Chem.AddHs(mol)
+            return mol
+        except (urllib.error.HTTPError, OSError, TimeoutError) as e:
+            last_error = e
+            is_retryable = (
+                getattr(e, "code", None) in (503, 502, 429) or
+                "timeout" in str(e).lower() or "timed out" in str(e).lower()
+            )
+            if attempt < max_retries - 1 and is_retryable:
+                delay = retry_base_delay * (2 ** attempt)
+                time.sleep(delay)
+                continue
+            break
+        except Exception as e:
+            last_error = e
+            break
+    if last_error is not None:
+        print(f"  Warning: Failed to fetch CID {cid}: {last_error}")
+    return None
 
 
 def fetch_molecule_from_smiles(smiles: str) -> Optional[Chem.Mol]:
@@ -164,9 +176,28 @@ def center_coords_to_com(coords: np.ndarray) -> np.ndarray:
     return coords - com
 
 
-def get_canonical_mol_with_coords(cid: int) -> Optional[Chem.Mol]:
+def get_canonical_mol_from_smiles(smiles: str) -> Optional[Chem.Mol]:
+    """Build mol with 3D coords from SMILES (no API call). For geometry-based mapping."""
+    mol = fetch_molecule_from_smiles(smiles)
+    if mol is None:
+        return None
+    if mol.GetNumConformers() == 0:
+        try:
+            AllChem.EmbedMolecule(mol, randomSeed=42)
+        except Exception:
+            pass
+    if mol.GetNumConformers() == 0:
+        return None
+    return mol
+
+
+def get_canonical_mol_with_coords(
+    cid: int,
+    max_retries: int = 6,
+    retry_base_delay: float = 3.0,
+) -> Optional[Chem.Mol]:
     """Fetch mol from PubChem by CID. Ensure it has 3D coords (embed if missing)."""
-    mol = fetch_molecule_from_pubchem(cid)
+    mol = fetch_molecule_from_pubchem(cid, max_retries=max_retries, retry_base_delay=retry_base_delay)
     if mol is None:
         return None
     if mol.GetNumConformers() == 0:
@@ -313,35 +344,14 @@ class MolecularGraphWithBinding:
         """
         if binding_atom_indices is None:
             binding_atom_indices = []
-        
-        # Get partial charges
-        partial_charges = cls.get_partial_charges(mol)
-        
-        # Node features: [atomic_num, chirality, partial_charge, hybridization, 
-        #                 coordination_num, valence_electrons, electronegativity, binding_tag]
+
+        # Node features: [atomic_num, chirality, coordination_number]
         node_features = []
         for atom in mol.GetAtoms():
-            atom_idx = atom.GetIdx()
-            atomic_num = atom.GetAtomicNum()
-            chirality = int(atom.GetChiralTag())
-            partial_charge = partial_charges[atom_idx]
-            hybridization = int(atom.GetHybridization())
-            coordination_num = cls.get_coordination_number(atom)
-            valence_electrons = cls.get_valence_electrons(atomic_num)
-            electronegativity = cls.get_electronegativity(atomic_num)
-            
-            # Set binding_tag to 1 if this atom is in the binding_atom_indices list
-            binding_tag = 1.0 if atom_idx in binding_atom_indices else 0.0
-            
             node_features.append([
-                float(atomic_num),
-                float(chirality),
-                float(partial_charge),
-                float(hybridization),
-                float(coordination_num),
-                float(valence_electrons),
-                float(electronegativity),
-                float(binding_tag),
+                float(atom.GetAtomicNum()),
+                float(int(atom.GetChiralTag())),
+                float(len(atom.GetNeighbors())),
             ])
         
         node_features = torch.tensor(node_features, dtype=torch.float)
@@ -375,18 +385,44 @@ class MolecularGraphWithBinding:
         )
 
 
-def load_adsorption_data(csv_path: str, use_pubchem: bool = True) -> Tuple[List[Data], List[float], List[str]]:
+def load_adsorption_data(
+    csv_path: str,
+    use_pubchem: bool = True,
+    pubchem_request_delay: float = 0.5,
+    pubchem_max_retries: int = 6,
+    pubchem_retry_base_delay: float = 3.0,
+    use_graph_cache: bool = True,
+    graph_cache_path: Optional[str] = None,
+    prefer_smiles: bool = True,
+    skip_pubchem: bool = False,
+    zero_binding_tags: bool = False,
+) -> Tuple[List[Data], List[float], List[str]]:
     """
     Load adsorption data from merged cleaned CSV (min_ads_mult1p2_struct_cleaned_merged.csv).
-    Columns: cid, functional_group, formula, pb_bond_encoding, adsorption_energy, config_name, adsorbate_structure.
-    Builds graphs from CIDs with binding tags determined by geometry-based mapping (DFT -> canonical -> heavy-atom).
+    Columns: cid, adsorption_energy, pb_bond_encoding, adsorbate_structure; optional: SMILES.
+    (1) If prefer_smiles and row has SMILES: build mol from SMILES (no API). Else if not skip_pubchem: fetch from PubChem (consecutive same CID reused).
+    (2) If skip_pubchem=True: never call PubChem; only process rows with valid SMILES.
+    (3) If use_graph_cache and cache exists: load from cache; else build and save cache.
     """
-    print(f"Loading adsorption data from {csv_path}...")
-    required = ["cid", "adsorption_energy", "pb_bond_encoding", "adsorbate_structure"]
-    graphs = []
-    energies = []
-    cid_list = []
+    if graph_cache_path is None or graph_cache_path == "":
+        base = os.path.splitext(os.path.basename(csv_path))[0]
+        graph_cache_path = os.path.join(os.path.dirname(os.path.abspath(csv_path)), base + "_graph_cache.pt")
 
+    if use_graph_cache and os.path.isfile(graph_cache_path):
+        print(f"Loading adsorption data from cache: {graph_cache_path}")
+        data = torch.load(graph_cache_path, map_location="cpu", weights_only=False)
+        graphs = data["graphs"]
+        energies = data["energies"]
+        cid_list = data["cids"]
+        if zero_binding_tags:
+            print("  zero_binding_tags=True: setting binding_tag feature to 0 for all cached graphs")
+            for g in graphs:
+                if hasattr(g, "x") and g.x is not None and g.x.size(-1) > 7:
+                    g.x[:, 7] = 0.0
+        print(f"Loaded {len(graphs)} molecules from cache")
+        return graphs, energies, cid_list
+
+    required = ["cid", "adsorption_energy", "pb_bond_encoding", "adsorbate_structure"]
     with open(csv_path, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         rows = list(reader)
@@ -395,58 +431,220 @@ def load_adsorption_data(csv_path: str, use_pubchem: bool = True) -> Tuple[List[
         if col not in fieldnames:
             raise ValueError(f"CSV missing column: {col}. Required: {required}")
 
-    print(f"Found {len(rows)} entries in CSV")
+    has_smiles_col = "SMILES" in fieldnames or "smiles" in fieldnames
+    smiles_col = "SMILES" if "SMILES" in fieldnames else ("smiles" if "smiles" in fieldnames else None)
+    if skip_pubchem and not has_smiles_col:
+        raise ValueError("downstream_skip_pubchem=True but CSV has no SMILES column. Add SMILES or set skip_pubchem=False.")
+
+    print(f"Loading adsorption data from {csv_path}...")
+    print(f"  Prefer SMILES (no API): {prefer_smiles}, Skip PubChem: {skip_pubchem}, CSV has SMILES: {has_smiles_col}")
+    if not skip_pubchem:
+        print(f"  PubChem: delay={pubchem_request_delay}s, max_retries={pubchem_max_retries}; consecutive same CID reused.")
+    print(f"  Graph cache: will save to {graph_cache_path}")
+    total_rows = len(rows)
+    print(f"Found {total_rows} entries in CSV")
+
+    graphs: List[Data] = []
+    energies: List[float] = []
+    cid_list: List[str] = []
+
+    # Track why rows are dropped (fatal) vs. where binding info is missing (soft)
+    rejection_counts: Dict[str, int] = {}
+    binding_info_issues: Dict[str, int] = {}
+
+    def inc(d: Dict[str, int], key: str) -> None:
+        d[key] = d.get(key, 0) + 1
+
+    last_cid = None
+    last_canon_mol = None
 
     for row in tqdm(rows, desc="Processing molecules"):
+        # cid and adsorption_energy are mandatory for training
         try:
             cid = int(row["cid"])
-        except (ValueError, KeyError):
+        except (ValueError, KeyError, TypeError):
+            inc(rejection_counts, "invalid_cid")
             continue
-        adsorption_energy = float(row["adsorption_energy"])
+        try:
+            adsorption_energy = float(row["adsorption_energy"])
+        except (ValueError, KeyError, TypeError):
+            inc(rejection_counts, "invalid_adsorption_energy")
+            continue
 
+        # Build canonical molecule (SMILES preferred, otherwise PubChem if allowed)
+        use_smiles = (prefer_smiles or skip_pubchem) and smiles_col and row.get(smiles_col, "").strip()
+        canon_mol = None
+        if use_smiles:
+            canon_mol = get_canonical_mol_from_smiles(row[smiles_col].strip())
+        elif not skip_pubchem:
+            if cid == last_cid and last_canon_mol is not None:
+                canon_mol = last_canon_mol
+            else:
+                if use_pubchem and pubchem_request_delay > 0:
+                    time.sleep(pubchem_request_delay)
+                canon_mol = get_canonical_mol_with_coords(
+                    cid,
+                    max_retries=pubchem_max_retries,
+                    retry_base_delay=pubchem_retry_base_delay,
+                )
+                last_cid = cid
+                last_canon_mol = canon_mol
+        else:
+            inc(rejection_counts, "no_smiles_and_skip_pubchem")
+            continue
+
+        if canon_mol is None:
+            inc(rejection_counts, "canonical_mol_failed")
+            continue
+
+        # Default: no binding indices (binding_tag will be all zeros) unless mapping succeeds
+        binding_indices_canonical: List[int] = []
+
+        # Try to recover binding information from DFT structure + pb_bond_encoding
         binding_mask_dft = parse_pb_bond_encoding(row.get("pb_bond_encoding", ""))
         struct = parse_adsorbate_structure(row.get("adsorbate_structure", ""))
-        extracted = extract_dft_atomic_numbers_and_coords(struct)
-        if not extracted:
-            continue
-        atomic_numbers, coords = extracted
-        if not binding_mask_dft or len(binding_mask_dft) != len(atomic_numbers):
-            continue
+        if binding_mask_dft is None or struct is None:
+            inc(binding_info_issues, "missing_or_invalid_binding_or_structure")
+        else:
+            extracted = extract_dft_atomic_numbers_and_coords(struct)
+            if not extracted:
+                inc(binding_info_issues, "struct_extract_failed")
+            else:
+                atomic_numbers, coords = extracted
+                if len(binding_mask_dft) != len(atomic_numbers):
+                    inc(binding_info_issues, "binding_struct_length_mismatch")
+                else:
+                    mapping = geometry_based_mapping(atomic_numbers, coords, canon_mol)
+                    if mapping is None:
+                        inc(binding_info_issues, "geometry_mapping_failed")
+                    else:
+                        binding_indices_dft = [i for i, v in enumerate(binding_mask_dft) if v == 1]
+                        binding_indices_canonical = [mapping[i] for i in binding_indices_dft if i in mapping]
+                        if not binding_indices_canonical:
+                            inc(binding_info_issues, "no_binding_indices_canonical")
 
-        canon_mol = get_canonical_mol_with_coords(cid)
-        if canon_mol is None:
-            continue
-
-        mapping = geometry_based_mapping(atomic_numbers, coords, canon_mol)
-        if mapping is None:
-            continue
-
-        # Transfer multiple binding sites (reference step 3)
-        binding_indices_dft = [i for i, v in enumerate(binding_mask_dft) if v == 1]
-        binding_indices_canonical = [mapping[i] for i in binding_indices_dft]
-        if not binding_indices_canonical:
-            continue
-
+        # Build heavy-atom mol and graph (even if no binding indices; then binding_tag is all zeros)
         try:
             mol_heavy, binding_indices_heavy = transfer_binding_and_remove_hydrogens(
                 canon_mol, binding_indices_canonical
             )
         except Exception:
+            inc(rejection_counts, "transfer_binding_and_remove_hs_failed")
             continue
 
         if mol_heavy.GetNumAtoms() < 2:
+            inc(rejection_counts, "too_few_heavy_atoms")
             continue
 
         try:
             graph = MolecularGraphWithBinding.mol_to_graph(mol_heavy, binding_indices_heavy)
-            graphs.append(graph)
-            energies.append(adsorption_energy)
-            cid_list.append(str(cid))
         except Exception:
+            inc(rejection_counts, "graph_build_failed")
             continue
 
-    print(f"Successfully processed {len(graphs)} molecules")
+        graphs.append(graph)
+        energies.append(adsorption_energy)
+        cid_list.append(str(cid))
+
+    kept = len(graphs)
+    dropped = total_rows - kept
+    print(f"Successfully processed {kept} molecules (from {total_rows} rows)")
+    if dropped > 0:
+        print(f"  Dropped rows: {dropped}")
+        for reason, cnt in sorted(rejection_counts.items(), key=lambda x: -x[1]):
+            print(f"    {reason}: {cnt}")
+    if binding_info_issues:
+        print("  Binding info issues (molecules kept but binding_tag may be all zeros):")
+        for reason, cnt in sorted(binding_info_issues.items(), key=lambda x: -x[1]):
+            print(f"    {reason}: {cnt}")
+
+    if zero_binding_tags:
+        print("zero_binding_tags=True: setting binding_tag feature to 0 for all graphs before caching/training")
+        for g in graphs:
+            if hasattr(g, "x") and g.x is not None and g.x.size(-1) > 7:
+                g.x[:, 7] = 0.0
+
+    if use_graph_cache and graph_cache_path:
+        cache_dir = os.path.dirname(os.path.abspath(graph_cache_path))
+        if cache_dir:
+            os.makedirs(cache_dir, exist_ok=True)
+        torch.save({"graphs": graphs, "energies": energies, "cids": cid_list}, graph_cache_path)
+        print(f"Saved graph cache to {graph_cache_path} ({len(graphs)} molecules)")
+
+    # Print node features for the first 5 samples
+    node_feature_names = ['atomic_num', 'chirality', 'coordination_number']
+    n_show = min(5, len(graphs))
+    for s in range(n_show):
+        g = graphs[s]
+        cid = cid_list[s] if s < len(cid_list) else "?"
+        print(f"\n--- Sample {s + 1}/{n_show} (CID {cid}), num_nodes={g.num_nodes} ---")
+        print("Node features (rows=atoms, cols=" + ", ".join(node_feature_names) + "):")
+        x = g.x.detach().cpu().numpy() if g.x.is_cuda else g.x.numpy()
+        print(x)
+
     return graphs, energies, cid_list
+
+
+def load_extra_smiles_csv(
+    csv_path: str,
+    zero_binding_tags: bool = True,
+) -> Tuple[List[Data], List[float]]:
+    """
+    Load additional (SMILES, binding energy) pairs from a CSV and convert to graphs.
+    CSV must have columns: SMILES, best_adsorption_energy.
+    Graphs use 3 node features: atomic_num, chirality, coordination_number (same as MolecularGraphWithBinding.mol_to_graph).
+
+    Returns:
+        graphs: list of Data objects (heavy-atom only)
+        energies: list of float adsorption energies
+    """
+    graphs: List[Data] = []
+    energies: List[float] = []
+    skipped = 0
+
+    with open(csv_path, "r", encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+
+    print(f"Loading extra training data from {csv_path} ({len(rows)} rows)...")
+
+    for row in tqdm(rows, desc="Extra CSV"):
+        smiles = (row.get("SMILES") or row.get("smiles") or "").strip()
+        energy_str = (row.get("best_adsorption_energy") or "").strip()
+        if not smiles or not energy_str:
+            skipped += 1
+            continue
+        try:
+            energy = float(energy_str)
+        except (ValueError, TypeError):
+            skipped += 1
+            continue
+
+        # Only keep strong binders (< -1.3 eV) and weak binders ([-0.6, 0] eV)
+        if not (energy < -1.3 or (-0.6 <= energy <= 0)):
+            skipped += 1
+            continue
+
+        mol = Chem.MolFromSmiles(smiles)
+        if mol is None:
+            skipped += 1
+            continue
+        mol_heavy = Chem.RemoveHs(mol)
+        if mol_heavy.GetNumAtoms() < 2:
+            skipped += 1
+            continue
+
+        try:
+            graph = MolecularGraphWithBinding.mol_to_graph(mol_heavy, binding_atom_indices=[])
+        except Exception:
+            skipped += 1
+            continue
+
+        graphs.append(graph)
+        energies.append(energy)
+
+    print(f"  Loaded {len(graphs)} extra molecules (skipped {skipped})")
+    return graphs, energies
 
 
 class BindingEnergyDataset(Dataset):
@@ -513,6 +711,26 @@ def split_data(
     return train_graphs, train_energies, val_graphs, val_energies, test_graphs, test_energies
 
 
+def _build_sample_weights(
+    energies: List[float],
+    strong_threshold: float = -1.3,
+    weak_low: float = -0.6,
+    weak_high: float = 0.0,
+    strong_weight: float = 4.0,
+    weak_weight: float = 4.0,
+) -> List[float]:
+    """Assign sampling weights: strong_weight for strong binders, weak_weight for weak binders, 1.0 otherwise."""
+    weights = []
+    for e in energies:
+        if e < strong_threshold:
+            weights.append(strong_weight)
+        elif weak_low <= e <= weak_high:
+            weights.append(weak_weight)
+        else:
+            weights.append(1.0)
+    return weights
+
+
 def create_data_loaders(
     train_graphs: List[Data],
     train_energies: List[float],
@@ -524,10 +742,10 @@ def create_data_loaders(
     num_workers: int = 4
 ) -> Tuple[DataLoader, DataLoader, Optional[DataLoader]]:
     """Create data loaders for train, validation, and optionally test sets."""
-    
+
     train_dataset = BindingEnergyDataset(train_graphs, train_energies)
     val_dataset = BindingEnergyDataset(val_graphs, val_energies)
-    
+
     train_loader = DataLoader(
         train_dataset,
         batch_size=batch_size,
@@ -584,6 +802,22 @@ class EarlyStopping:
         return self.early_stop
 
 
+def _compute_loss_weights(
+    energies: torch.Tensor,
+    strong_threshold: float = -1.3,
+    weak_low: float = -0.6,
+    weak_high: float = 0.0,
+    rare_loss_weight: float = 3.0,
+) -> torch.Tensor:
+    """Per-sample loss weights: rare_loss_weight for strong/weak binders, 1.0 otherwise."""
+    e = energies.squeeze(-1)  # [B]
+    strong = e < strong_threshold
+    weak = (e >= weak_low) & (e <= weak_high)
+    weights = torch.ones_like(e)
+    weights[strong | weak] = rare_loss_weight
+    return weights  # [B]
+
+
 def train_epoch(
     model: nn.Module,
     train_loader: DataLoader,
@@ -591,15 +825,16 @@ def train_epoch(
     optimizer: torch.optim.Optimizer,
     device: torch.device,
     collect_predictions: bool = False,
-    max_grad_norm: float = 1.0
+    max_grad_norm: float = 1.0,
+    rare_loss_weight: float = 3.0,
 ) -> Tuple[float, float, Optional[List[float]], Optional[List[float]]]:
     """
     Train for one epoch.
-    
+
     Args:
         collect_predictions: If True, collect and return predictions and targets.
         max_grad_norm: Maximum gradient norm for gradient clipping.
-    
+
     Returns:
         Tuple of (avg_loss, avg_mae, predictions, targets).
         predictions and targets are None if collect_predictions=False.
@@ -610,30 +845,34 @@ def train_epoch(
     num_batches = 0
     all_predictions = [] if collect_predictions else None
     all_targets = [] if collect_predictions else None
-    
+
     pbar = tqdm(train_loader, desc="Training")
     for batch_graph, batch_energies in pbar:
         batch_graph = batch_graph.to(device)
         batch_energies = batch_energies.to(device)
-        
+
         predictions = model(
             x=batch_graph.x,
             edge_index=batch_graph.edge_index,
             edge_attr=batch_graph.edge_attr,
             batch=batch_graph.batch
         )
-        
-        loss = criterion(predictions, batch_energies)
+
+        loss_weights = _compute_loss_weights(
+            batch_energies, rare_loss_weight=rare_loss_weight
+        ).to(device)
+        per_sample_loss = (predictions.squeeze(-1) - batch_energies.squeeze(-1)) ** 2
+        loss = (per_sample_loss * loss_weights).mean()
         mae = torch.mean(torch.abs(predictions - batch_energies)).item()
-        
+
         optimizer.zero_grad()
         loss.backward()
-        
+
         # Gradient clipping to prevent exploding gradients
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=max_grad_norm)
-        
+
         optimizer.step()
-        
+
         total_loss += loss.item()
         total_mae += mae
         num_batches += 1
@@ -770,15 +1009,15 @@ def test_model(
     """Test the model and return predictions."""
     return evaluate_model(model, test_loader, criterion, device, desc="Testing")
 
-
 def save_checkpoint(
     model: nn.Module,
     optimizer: torch.optim.Optimizer,
     epoch: int,
     loss: float,
-    checkpoint_dir: str
+    checkpoint_dir: str,
+    val_mae: Optional[float] = None,
 ):
-    """Save periodic epoch checkpoint."""
+    """Save periodic epoch checkpoint (loss = validation MSE)."""
     os.makedirs(checkpoint_dir, exist_ok=True)
     
     checkpoint = {
@@ -786,11 +1025,13 @@ def save_checkpoint(
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
         'loss': loss,
+        'val_mae': val_mae,
     }
     
     checkpoint_path = os.path.join(checkpoint_dir, f'downstream_checkpoint_epoch_{epoch}.pt')
     torch.save(checkpoint, checkpoint_path)
-    print(f"Saved checkpoint to {checkpoint_path}")
+    mae_str = ", val MAE {:.4f}".format(val_mae) if val_mae is not None else ""
+    print("Saved checkpoint to {} (val MSE {:.4f}{})".format(checkpoint_path, loss, mae_str))
 
 
 def save_best_model(
@@ -800,6 +1041,9 @@ def save_best_model(
     loss: float,
     checkpoint_dir: str,
     save_finetuned_encoder: bool = False,
+    val_mae: Optional[float] = None,
+    rare_loss_weight: Optional[float] = None,
+    best_metric: Optional[str] = None,
 ):
     """Save best model checkpoint immediately. If save_finetuned_encoder=True, also save GIN-E encoder state."""
     os.makedirs(checkpoint_dir, exist_ok=True)
@@ -809,11 +1053,15 @@ def save_best_model(
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
         'loss': loss,
+        'val_mae': val_mae,
+        'rare_loss_weight': rare_loss_weight,
+        'best_metric': best_metric,
     }
     
     best_path = os.path.join(checkpoint_dir, 'downstream_best_model.pt')
     torch.save(checkpoint, best_path)
-    print(f"Saved best downstream model (epoch {epoch}, loss {loss:.4f}) to {best_path}")
+    mae_str = f", val MAE {val_mae:.4f}" if val_mae is not None else ""
+    print(f"Saved best downstream model (epoch {epoch}, val MSE {loss:.4f}{mae_str}) to {best_path}")
 
     if save_finetuned_encoder and hasattr(model, 'gin_e_encoder'):
         encoder_path = os.path.join(checkpoint_dir, 'gin_e_finetuned.pt')
@@ -828,83 +1076,107 @@ def save_predictions(
     predictions: List[float],
     targets: List[float],
     output_path: str,
-    dataset_name: str = "dataset"
+    dataset_name: str = "dataset",
 ):
     """
     Save predictions and targets to a CSV file.
-    
+
     Args:
         predictions: List of predicted binding energies.
         targets: List of target binding energies.
         output_path: Path to save the CSV file.
         dataset_name: Name of the dataset (for logging).
     """
-    os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else '.', exist_ok=True)
-    
-    with open(output_path, 'w', newline='') as f:
+    os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else ".", exist_ok=True)
+
+    with open(output_path, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(['target_binding_energy', 'predicted_binding_energy', 'error'])
-        
+        writer.writerow(["target_binding_energy", "predicted_binding_energy", "error"])
+
         for target, pred in zip(targets, predictions):
             error = pred - target
             writer.writerow([target, pred, error])
-    
+
     print(f"Saved {dataset_name} predictions to {output_path}")
     print(f"  Total samples: {len(predictions)}")
 
 
-def main():
-    """Main training function."""
-    # Load configuration
-    config = Config()
-    
-    # Set random seed
-    set_seed(config.seed)
-    
-    # Set device
-    device = torch.device(config.device if torch.cuda.is_available() else "cpu")
-    print(f"Using device: {device}")
-    
-    # Create directories
-    downstream_checkpoint_dir = os.path.join(config.checkpoint_dir, "downstream")
-    os.makedirs(downstream_checkpoint_dir, exist_ok=True)
-    os.makedirs(config.log_dir, exist_ok=True)
-    
-    # Load adsorption data from merged cleaned CSV (binding sites from DFT geometry mapping)
-    default_csv = os.path.join(os.path.dirname(__file__), "dataset", "prediction", "min_ads_mult1p2_struct_cleaned_merged.csv")
+def compute_rmse(targets: List[float], predictions: List[float]) -> float:
+    """Root mean squared error (eV) from aligned target/prediction lists."""
+    t = np.asarray(targets, dtype=np.float64)
+    p = np.asarray(predictions, dtype=np.float64)
+    return float(np.sqrt(np.mean((p - t) ** 2)))
+
+
+def build_downstream_dataloaders(
+    config: Config,
+) -> Tuple[DataLoader, DataLoader, DataLoader]:
+    """Load downstream CSV, split, optional extra train data, and build loaders."""
+    default_csv = os.path.join(
+        os.path.dirname(__file__), "dataset", "prediction", "min_ads_mult1p2_struct_cleaned_merged.csv"
+    )
     csv_path = (config.downstream_csv or os.environ.get("DOWNSTREAM_CSV") or default_csv).strip()
     if not csv_path or not os.path.isfile(csv_path):
-        raise FileNotFoundError(f"Merged CSV not found: {csv_path}. Set config.downstream_csv in config.py, or DOWNSTREAM_CSV, or place file at {default_csv}")
+        raise FileNotFoundError(
+            "Merged CSV not found: {}. Set config.downstream_csv, DOWNSTREAM_CSV, or {}".format(
+                csv_path, default_csv
+            )
+        )
     print("\nLoading molecules from merged CSV (CID + PubChem, geometry-based binding tags)...")
-    graphs, energies, cids = load_adsorption_data(csv_path, use_pubchem=True)
-    
+    cache_path = (config.downstream_graph_cache_path or "").strip()
+    graphs, energies, cids = load_adsorption_data(
+        csv_path,
+        use_pubchem=not config.downstream_skip_pubchem,
+        pubchem_request_delay=config.pubchem_request_delay,
+        pubchem_max_retries=config.pubchem_max_retries,
+        pubchem_retry_base_delay=config.pubchem_retry_base_delay,
+        use_graph_cache=config.downstream_use_graph_cache,
+        graph_cache_path=cache_path if cache_path else None,
+        prefer_smiles=config.downstream_prefer_smiles,
+        skip_pubchem=config.downstream_skip_pubchem,
+        zero_binding_tags=config.downstream_zero_binding_tags,
+    )
     if len(graphs) == 0:
         raise RuntimeError("No molecules loaded! Check the CSV file.")
-    
-    # Split data: 0.7 train, 0.2 val, 0.1 test
+
     print("\nSplitting data (70% train, 20% val, 10% test)...")
     train_graphs, train_energies, val_graphs, val_energies, test_graphs, test_energies = split_data(
-        graphs, energies,
-        train_ratio=0.7,
-        val_ratio=0.2,
-        test_ratio=0.1,
-        seed=config.seed
+        graphs,
+        energies,
+        train_ratio=config.downstream_train_split,
+        val_ratio=config.downstream_val_split,
+        test_ratio=config.downstream_test_split,
+        seed=config.seed,
     )
     print(f"Train: {len(train_graphs)}, Val: {len(val_graphs)}, Test: {len(test_graphs)}")
-    
-    # Create data loaders
-    train_loader, val_loader, test_loader = create_data_loaders(
-        train_graphs, train_energies,
-        val_graphs, val_energies,
-        test_graphs, test_energies,
+
+    extra_csv = (config.downstream_extra_csv or "").strip()
+    if extra_csv and os.path.isfile(extra_csv):
+        extra_graphs, extra_energies = load_extra_smiles_csv(
+            extra_csv, zero_binding_tags=config.downstream_zero_binding_tags,
+        )
+        train_graphs.extend(extra_graphs)
+        train_energies.extend(extra_energies)
+        print(f"Train after extra data: {len(train_graphs)} (added {len(extra_graphs)} from extra CSV)")
+    elif extra_csv:
+        print(f"Warning: downstream_extra_csv not found: {extra_csv}")
+
+    return create_data_loaders(
+        train_graphs,
+        train_energies,
+        val_graphs,
+        val_energies,
+        test_graphs,
+        test_energies,
         batch_size=config.downstream_batch_size,
-        num_workers=config.num_workers
+        num_workers=config.num_workers,
     )
-    
-    # Load pretrained encoder
-    print("\n" + "="*60)
+
+
+def build_downstream_model(config: Config, device: torch.device) -> DownstreamModel:
+    """Initialize downstream model with optional pretrained GIN-E weights."""
+    print("\n" + "=" * 60)
     print("Loading pretrained GIN-E encoder...")
-    
     gin_e_encoder = GINEEncoder(
         node_feature_dim=config.node_feature_dim,
         edge_feature_dim=config.edge_feature_dim,
@@ -912,20 +1184,17 @@ def main():
         edge_embedding_dim=config.edge_embedding_dim,
         hidden_dim=config.hidden_dim,
         num_layers=config.num_gin_layers,
-        dropout=config.dropout
+        dropout=config.dropout,
     )
-    
-    # Check for checkpoint
     gin_e_checkpoint_path = os.path.join(config.checkpoint_dir, "best_model.pt")
     if not os.path.exists(gin_e_checkpoint_path):
         print(f"WARNING: GIN-E checkpoint not found at {gin_e_checkpoint_path}")
-        print(f"         Will train downstream model with randomly initialized GIN-E encoder.")
+        print("         Will train downstream model with randomly initialized GIN-E encoder.")
         gin_e_checkpoint_path = None
     else:
         print(f"Found GIN-E checkpoint at: {gin_e_checkpoint_path}")
-    print("="*60 + "\n")
-    
-    # Create downstream model with only 1 prediction task (binding energy)
+    print("=" * 60 + "\n")
+
     print("Initializing downstream model (single prediction head for binding energy)...")
     model = DownstreamModel(
         gin_e_encoder=gin_e_encoder,
@@ -933,41 +1202,68 @@ def main():
         freeze_gin_e=config.freeze_pretrained_encoder,
         mlp_hidden_dim=config.downstream_mlp_hidden_dim,
         mlp_dropout=config.downstream_mlp_dropout,
-        num_tasks=1,  # Single task: binding energy prediction
+        num_tasks=1,
         task_hidden_dim=config.downstream_task_hidden_dim,
-        task_dropout=config.downstream_task_dropout
+        task_dropout=config.downstream_task_dropout,
     ).to(device)
-    
     print(f"Model parameters: {sum(p.numel() for p in model.parameters()):,}")
-    print(f"Trainable parameters: {sum(p.numel() for p in model.parameters() if p.requires_grad):,}")
-    
-    # Create loss function (MSE for regression)
+    print(
+        "Trainable parameters: "
+        f"{sum(p.numel() for p in model.parameters() if p.requires_grad):,}"
+    )
+    return model
+
+
+def run_downstream_training(
+    config: Config,
+    train_loader: DataLoader,
+    val_loader: DataLoader,
+    test_loader: DataLoader,
+    device: torch.device,
+    *,
+    rare_loss_weight: float,
+    checkpoint_dir: str,
+    log_dir: str,
+    best_metric: str = "mae",
+    save_predictions_csv: bool = True,
+    save_val_predictions_csv: bool = False,
+    eval_all_splits: bool = False,
+) -> Dict[str, Any]:
+    """
+    Train binding-energy downstream model; select best checkpoint by validation MAE or MSE.
+
+    Returns dict with best_val_mae, best_val_loss, best_epoch, test_mae, test_rmse, test_loss.
+    """
+    best_metric = best_metric.lower().strip()
+    if best_metric not in ("mae", "loss"):
+        raise ValueError("best_metric must be 'mae' or 'loss', got {!r}".format(best_metric))
+
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    os.makedirs(log_dir, exist_ok=True)
+
+    model = build_downstream_model(config, device)
     criterion = nn.MSELoss()
-    
-    # Create optimizer
     trainable_params = [p for p in model.parameters() if p.requires_grad]
     optimizer = Adam(
         trainable_params,
         lr=config.downstream_learning_rate,
-        weight_decay=config.downstream_weight_decay
+        weight_decay=config.downstream_weight_decay,
     )
-    
-    # Create learning rate scheduler
     scheduler = CosineAnnealingLR(
-        optimizer,
-        T_max=config.downstream_num_epochs,
-        eta_min=1e-6
+        optimizer, T_max=config.downstream_num_epochs, eta_min=1e-6
     )
-    
-    # Training loop
-    print("\nStarting downstream training for binding energy prediction...")
-    best_val_loss = float('inf')
-    best_val_mae = float('inf')
-    
+
+    print(
+        "\nStarting downstream training (rare_loss_weight={}, best_metric={})...".format(
+            rare_loss_weight, best_metric
+        )
+    )
+    best_val_loss = float("inf")
+    best_val_mae = float("inf")
+    best_epoch = 0
+
     for epoch in range(1, config.downstream_num_epochs + 1):
         print(f"\nEpoch {epoch}/{config.downstream_num_epochs}")
-        
-        # Train
         train_loss, train_mae, _, _ = train_epoch(
             model=model,
             train_loader=train_loader,
@@ -975,142 +1271,263 @@ def main():
             optimizer=optimizer,
             device=device,
             collect_predictions=False,
-            max_grad_norm=1.0
+            max_grad_norm=1.0,
+            rare_loss_weight=rare_loss_weight,
         )
-        
-        # Validate
         val_loss, val_mae, _, _ = validate(
             model=model,
             val_loader=val_loader,
             criterion=criterion,
             device=device,
-            collect_predictions=False
+            collect_predictions=False,
         )
-        
-        # Update learning rate
         scheduler.step()
-        
-        # Print statistics
         print(f"Train Loss: {train_loss:.4f}, Train MAE: {train_mae:.4f} eV")
-        print(f"Val Loss: {val_loss:.4f}, Val MAE: {val_mae:.4f} eV, LR: {scheduler.get_last_lr()[0]:.6f}")
-        
-        # Save best model immediately
-        if not torch.isnan(torch.tensor(val_loss)) and not torch.isinf(torch.tensor(val_loss)):
-            if val_loss < best_val_loss:
-                best_val_loss = val_loss
-                best_val_mae = val_mae
-                save_best_model(
-                    model=model,
-                    optimizer=optimizer,
-                    epoch=epoch,
-                    loss=val_loss,
-                    checkpoint_dir=downstream_checkpoint_dir,
-                    save_finetuned_encoder=not config.freeze_pretrained_encoder,
-                )
-        
-        # Save periodic checkpoint every 10 epochs
+        print(
+            f"Val Loss: {val_loss:.4f}, Val MAE: {val_mae:.4f} eV, "
+            f"LR: {scheduler.get_last_lr()[0]:.6f}"
+        )
+
+        if torch.isnan(torch.tensor(val_loss)) or torch.isinf(torch.tensor(val_loss)):
+            continue
+
+        improved = (
+            val_mae < best_val_mae
+            if best_metric == "mae"
+            else val_loss < best_val_loss
+        )
+        if improved:
+            best_val_loss = val_loss
+            best_val_mae = val_mae
+            best_epoch = epoch
+            save_best_model(
+                model=model,
+                optimizer=optimizer,
+                epoch=epoch,
+                loss=val_loss,
+                checkpoint_dir=checkpoint_dir,
+                save_finetuned_encoder=not config.freeze_pretrained_encoder,
+                val_mae=val_mae,
+                rare_loss_weight=rare_loss_weight,
+                best_metric=best_metric,
+            )
+
         if epoch % 10 == 0:
             save_checkpoint(
                 model=model,
                 optimizer=optimizer,
                 epoch=epoch,
                 loss=val_loss,
-                checkpoint_dir=downstream_checkpoint_dir
+                checkpoint_dir=checkpoint_dir,
+                val_mae=val_mae,
             )
-    
-    # Final evaluation with best model
-    print("\n" + "="*60)
+
+    print("\n" + "=" * 60)
     print("Final Evaluation with Best Model")
-    print("="*60)
-    
-    # Load best model for evaluation
-    best_model_path = os.path.join(downstream_checkpoint_dir, 'downstream_best_model.pt')
+    print("=" * 60)
+    best_model_path = os.path.join(checkpoint_dir, "downstream_best_model.pt")
     if os.path.exists(best_model_path):
         checkpoint = torch.load(best_model_path, map_location=device)
-        model.load_state_dict(checkpoint['model_state_dict'])
-        print(f"Loaded best model from epoch {checkpoint['epoch']}")
-    
-    # Collect predictions for all three sets
-    print("\nCollecting predictions for train, validation, and test sets...")
-    
-    # Train set predictions
-    print("  Evaluating on training set...")
-    train_loss, train_mae, train_predictions, train_targets = evaluate_model(
-        model=model,
-        data_loader=train_loader,
-        criterion=criterion,
-        device=device,
-        desc="Evaluating train set"
+        model.load_state_dict(checkpoint["model_state_dict"])
+        print(f"Loaded best model from epoch {checkpoint['epoch']} ({best_metric})")
+    else:
+        print("WARNING: No best checkpoint saved; evaluating last epoch weights.")
+
+    def _eval_split(loader: DataLoader, name: str):
+        loss, mae, preds, tgts = evaluate_model(
+            model=model,
+            data_loader=loader,
+            criterion=criterion,
+            device=device,
+            desc="Evaluating {} set".format(name),
+        )
+        rmse = compute_rmse(tgts, preds)
+        return loss, mae, rmse, preds, tgts
+
+    if eval_all_splits:
+        print("\nCollecting predictions for train, validation, and test sets...")
+        train_loss, train_mae, train_rmse, train_preds, train_tgts = _eval_split(
+            train_loader, "train"
+        )
+        val_loss, val_mae, val_rmse, val_preds, val_tgts = _eval_split(val_loader, "val")
+        test_loss, test_mae, test_rmse, test_predictions, test_targets = _eval_split(
+            test_loader, "test"
+        )
+
+        def compute_r2(targets, predictions):
+            targets_arr = np.array(targets)
+            predictions_arr = np.array(predictions)
+            ss_res = np.sum((targets_arr - predictions_arr) ** 2)
+            ss_tot = np.sum((targets_arr - np.mean(targets_arr)) ** 2)
+            return 1 - (ss_res / ss_tot) if ss_tot > 0 else 0.0
+
+        print("\nFinal Results (Best Model):")
+        print(
+            "  Train MSE: {:.4f}, MAE: {:.4f} eV, RMSE: {:.4f} eV".format(
+                train_loss, train_mae, train_rmse
+            )
+        )
+        print(
+            "  Val MSE: {:.4f}, MAE: {:.4f} eV, RMSE: {:.4f} eV".format(
+                val_loss, val_mae, val_rmse
+            )
+        )
+        print(
+            "  Test MSE: {:.4f}, MAE: {:.4f} eV, RMSE: {:.4f} eV".format(
+                test_loss, test_mae, test_rmse
+            )
+        )
+        print(
+            "  Train R2: {:.4f}, Val R2: {:.4f}, Test R2: {:.4f}".format(
+                compute_r2(train_tgts, train_preds),
+                compute_r2(val_tgts, val_preds),
+                compute_r2(test_targets, test_predictions),
+            )
+        )
+        if save_predictions_csv:
+            predictions_dir = os.path.join(log_dir, "predictions")
+            os.makedirs(predictions_dir, exist_ok=True)
+            save_predictions(
+                train_preds, train_tgts,
+                os.path.join(predictions_dir, "train_predictions.csv"), "train",
+            )
+            save_predictions(
+                val_preds, val_tgts,
+                os.path.join(predictions_dir, "val_predictions.csv"), "validation",
+            )
+            save_predictions(
+                test_predictions, test_targets,
+                os.path.join(predictions_dir, "test_predictions.csv"), "test",
+            )
+    else:
+        val_loss = val_mae = val_rmse = float("nan")
+        val_preds: List[float] = []
+        val_tgts: List[float] = []
+        if save_val_predictions_csv:
+            val_loss, val_mae, val_rmse, val_preds, val_tgts = _eval_split(val_loader, "val")
+            print(
+                "\nValidation set (best by val {}): MSE {:.4f}, MAE {:.4f} eV, RMSE {:.4f} eV".format(
+                    best_metric.upper(), val_loss, val_mae, val_rmse
+                )
+            )
+
+        test_loss, test_mae, test_predictions, test_targets = evaluate_model(
+            model=model,
+            data_loader=test_loader,
+            criterion=criterion,
+            device=device,
+            desc="Evaluating test set",
+        )
+        test_rmse = compute_rmse(test_targets, test_predictions)
+        print(f"\nTest set (best by val {best_metric.upper()}):")
+        print(
+            "  Test MSE: {:.4f}, Test MAE: {:.4f} eV, Test RMSE: {:.4f} eV".format(
+                test_loss, test_mae, test_rmse
+            )
+        )
+        if save_predictions_csv:
+            predictions_dir = os.path.join(log_dir, "predictions")
+            os.makedirs(predictions_dir, exist_ok=True)
+            if save_val_predictions_csv:
+                save_predictions(
+                    val_preds,
+                    val_tgts,
+                    os.path.join(predictions_dir, "val_predictions.csv"),
+                    "validation",
+                )
+            save_predictions(
+                test_predictions,
+                test_targets,
+                os.path.join(predictions_dir, "test_predictions.csv"),
+                "test",
+            )
+
+    print(
+        "  Best epoch: {}, Best val MAE: {:.4f} eV, Best val MSE: {:.4f}".format(
+            best_epoch, best_val_mae, best_val_loss
+        )
     )
-    
-    # Validation set predictions
-    print("  Evaluating on validation set...")
-    val_loss, val_mae, val_predictions, val_targets = evaluate_model(
-        model=model,
-        data_loader=val_loader,
-        criterion=criterion,
-        device=device,
-        desc="Evaluating val set"
+
+    return {
+        "rare_loss_weight": rare_loss_weight,
+        "best_metric": best_metric,
+        "best_epoch": best_epoch,
+        "best_val_mae": best_val_mae,
+        "best_val_loss": best_val_loss,
+        "test_mae": test_mae,
+        "test_rmse": test_rmse,
+        "test_loss": test_loss,
+        "checkpoint_dir": checkpoint_dir,
+        "log_dir": log_dir,
+    }
+
+
+def parse_downstream_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Downstream binding-energy training.")
+    parser.add_argument(
+        "--rare-loss-weight",
+        type=float,
+        default=None,
+        help="MSE weight for strong (E<-1.3) and weak ([-0.6,0]) binders (default: config).",
     )
-    
-    # Test set predictions
-    print("  Evaluating on test set...")
-    test_loss, test_mae, test_predictions, test_targets = evaluate_model(
-        model=model,
-        data_loader=test_loader,
-        criterion=criterion,
-        device=device,
-        desc="Evaluating test set"
+    parser.add_argument(
+        "--checkpoint-dir",
+        default=None,
+        help="Directory for downstream_best_model.pt (default: <config.checkpoint_dir>/downstream).",
     )
-    
-    # Print results
-    print(f"\nFinal Results (Best Model):")
-    print(f"  Train Loss (MSE): {train_loss:.4f}, Train MAE: {train_mae:.4f} eV")
-    print(f"  Val Loss (MSE): {val_loss:.4f}, Val MAE: {val_mae:.4f} eV")
-    print(f"  Test Loss (MSE): {test_loss:.4f}, Test MAE: {test_mae:.4f} eV")
-    
-    # Compute R^2 scores
-    def compute_r2(targets, predictions):
-        targets_arr = np.array(targets)
-        predictions_arr = np.array(predictions)
-        ss_res = np.sum((targets_arr - predictions_arr) ** 2)
-        ss_tot = np.sum((targets_arr - np.mean(targets_arr)) ** 2)
-        return 1 - (ss_res / ss_tot) if ss_tot > 0 else 0.0
-    
-    train_r2 = compute_r2(train_targets, train_predictions)
-    val_r2 = compute_r2(val_targets, val_predictions)
-    test_r2 = compute_r2(test_targets, test_predictions)
-    
-    print(f"  Train R² Score: {train_r2:.4f}")
-    print(f"  Val R² Score: {val_r2:.4f}")
-    print(f"  Test R² Score: {test_r2:.4f}")
-    
-    # Save predictions to CSV files
-    print("\nSaving predictions and targets...")
-    predictions_dir = os.path.join(config.log_dir, "predictions")
-    os.makedirs(predictions_dir, exist_ok=True)
-    
-    save_predictions(
-        train_predictions, train_targets,
-        os.path.join(predictions_dir, "train_predictions.csv"),
-        "train"
+    parser.add_argument(
+        "--log-dir",
+        default=None,
+        help="Log/predictions directory (default: config.log_dir).",
     )
-    
-    save_predictions(
-        val_predictions, val_targets,
-        os.path.join(predictions_dir, "val_predictions.csv"),
-        "validation"
+    parser.add_argument(
+        "--best-metric",
+        choices=("mae", "loss"),
+        default=None,
+        help="Metric for best checkpoint: val MAE or val MSE (default: config.downstream_best_metric).",
     )
-    
-    save_predictions(
-        test_predictions, test_targets,
-        os.path.join(predictions_dir, "test_predictions.csv"),
-        "test"
+    return parser.parse_args()
+
+
+def main():
+    """Main training function."""
+    args = parse_downstream_args()
+    config = Config()
+    set_seed(config.seed)
+    device = torch.device(config.device if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
+
+    rare_loss_weight = (
+        args.rare_loss_weight
+        if args.rare_loss_weight is not None
+        else config.downstream_rare_loss_weight
     )
-    
+    best_metric = args.best_metric or config.downstream_best_metric
+    checkpoint_dir = args.checkpoint_dir or os.path.join(config.checkpoint_dir, "downstream")
+    log_dir = args.log_dir or config.log_dir
+
+    train_loader, val_loader, test_loader = build_downstream_dataloaders(config)
+    metrics = run_downstream_training(
+        config,
+        train_loader,
+        val_loader,
+        test_loader,
+        device,
+        rare_loss_weight=rare_loss_weight,
+        checkpoint_dir=checkpoint_dir,
+        log_dir=log_dir,
+        best_metric=best_metric,
+        save_predictions_csv=True,
+        eval_all_splits=True,
+    )
     print("\nDownstream training completed!")
-    print(f"Best validation loss: {best_val_loss:.4f}")
-    print(f"Predictions saved to: {predictions_dir}")
+    print(
+        "Best validation {}: {:.4f}".format(
+            best_metric,
+            metrics["best_val_mae"] if best_metric == "mae" else metrics["best_val_loss"],
+        )
+    )
+    print("Predictions saved to: {}".format(os.path.join(log_dir, "predictions")))
 
 
 if __name__ == "__main__":
